@@ -1,10 +1,10 @@
 #!/usr/bin/env python3 -u
 
 '''
-re.corder settings tool.
+re.corder configuration tool.
 
 SYNOPSIS
-  python re_configure.py \
+  python3 re_configure.py \
           [-p port] [-f] [-r] [-u user_mode] [-m midi_channel] [-t threshold] \
           [-v velocity] [-s settings_file] [-c chart_file] [-w]
 
@@ -39,7 +39,7 @@ DESCRIPTION
   Command line arguments override settings in the settings file.
 
   Sample invocation:
-    python re_configure.py -u Breath -m 5 -t 12000 -v 0 \
+    python3 re_configure.py -u Breath -m 5 -t 12000 -v 0 \
         -s settings.json -c tin_whistle_d.json
 
 Copyright (c) 2021 Peter Brinkmann <peter.brinkmann@gmail.com>
