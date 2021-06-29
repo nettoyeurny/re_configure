@@ -1,0 +1,120 @@
+re.corder sysex format
+
+Transport buttons:
+  f0002f7f0001 34 nn mm f7
+
+  nn: { 01: "Shift octave", 02: "Record", 03: "Stop", 04: "Play",
+        05: "Disconnect" }
+  mm: Octave shift, if applicable.
+
+
+Factory reset:
+  Request:  f0002f7f0001 10 f7
+  Response: None (closes Bluetooth connection)
+
+
+Restore default settings:
+  Request:  f0002f7f0001    2f    f7   # Hold Record when sending this message.
+  Response: f0002f7f0001 01 2f    f7   # Success.
+            f0002f7f0001 02 2f mm f7   # Failure.
+
+  mm: Error code
+  Appears to  be the same as factory reset, except it doesn't close the
+  Bluetooth connection.
+
+
+User mode:
+  Get:  f0002f7f0001    2205    f7
+  Resp: f0002f7f0001 01 2205 nn f7
+
+  Set:  f0002f7f0001    2105 nn f7   # Hold Record when sending this message.
+  Resp: f0002f7f0001 01 21      f7   # Success.
+        f0002f7f0001 02 21   mm f7   # Failure.
+
+  nn: { 01: "Breath", 02: "Lip", 03: "Keyboard" }
+  mm: Error code
+
+
+MIDI channel:
+  Get:  f0002f7f0001    2203    f7
+  Resp: f0002f7f0001 01 2203 nn f7
+
+  Set:  f0002f7f0001    2103 nn f7   # Hold Record when sending this message.
+  Resp: f0002f7f0001 01 21      f7   # Success.
+        f0002f7f0001 02 21   mm f7   # Failure.
+
+  nn: MIDI channel 1-16
+  mm: Error code
+
+
+Sensitivity:
+  Get:  f0002f7f0001    3107 01               f7
+  Resp: f0002f7f0001 01 3107 ww 00 xxyy 01 zz f7
+
+  Set:  f0002f7f0001    3007 02 00 xxyy 01 zz f7
+  Resp: f0002f7f0001 01 30                    f7
+
+  ww: current user mode
+  xxyy: Config settings; xxyy is the threshold: (xx << 7) | yy;
+        default is 3000, low 6000, high 1000
+  zz: velocity; 0 means dynamic detection
+
+
+Controllers: Pressure, Acc_X, Acc_Y, Acc_Z:
+  Get:  f0002f7f0001    3101 01 f7
+  Resp: f0002f7f0001 01 3101
+        ww
+        00 7f 7f 00 7f   # Controller 0?!?
+        01 nn 7f mm 7f   # Pressure
+        02 nn 7f mm 7f   # Acc_X
+        03 nn 7f mm 7f   # Acc_Y
+        04 nn 7f mm 7f   # Acc_Z
+        41 7f 7f 00 7f   # Controller 41?!?
+        f7
+
+  Set:  f0002f7f0001 3001 00
+        00 00 00 00 7f
+        01 nn 7f mm 7f    # Pressure
+        02 nn 7f mm 7f    # Acc_X
+        03 nn 7f mm 7f    # Acc_Y
+        04 nn 7f mm 7f    # Acc_Z
+        f7
+  Resp: f0002f7f0001 0130 f7
+
+  ww: current user mode
+  nn: MIDI channel 1-16
+  mm: { 00: "None", 01: "Linear", 02: "Embedded1", ... }
+
+  Apparently there are controllers 00 and 41?!?
+
+
+Fingering
+  Set:  f0002f7f0001 300000
+        xx yyzz
+        ...      # Up to 62 entries altogether.
+        f7
+  Resp: f0002f7f0001 0130 f7
+
+  xx: MIDI note
+  yyzz:
+    Breath or lip sensor mode:
+      yyzz is an 11-bit fingering code whose bits correspond to holes in order;
+      left thumb is LSB, right pinkie MSB; yy = f >> 7, zz = f & 0x7f. For
+      example, E6 is 0b1111110, and D6 is 0b1000.
+    Keyboard mode:
+      yyzz is a one-hot value specifying a hole on top of re.corder, from
+      left (0002) to right (0400).
+
+  Baroque fingering chart from the app:
+    3c0f7f 3d077f 3e037f 3f017f 40007f 41033f 410f3f 41013f
+    41003f 42035f 420f5f 43001f 44036f 44006f 44016f 45000f
+    460037 46003b 460017 460f37 460357 470007 48000b 49000c
+    490003 4a0008 4a037e 4b0378 4b017e 4b037c 4c007e 4c007c
+    4c0078 4d033e 4d013e 4d0138 4d003e 4e005e 4f001e 50002e
+    500f1e 51000e 52036e 52034e 52014e 53006e 540066 550f36
+    560336 570f32 57035a 580c0e 590c2e 590c36 5a0c4e 5a0c56
+    5b0c16 5c0c12 5d0c7a 5e0c3a 5f0c1a 600c0a
+
+  C major keyboard chart:
+    3c0002 3e0004 400008 410010 430020 450040 470100 480200 4a0400
+
