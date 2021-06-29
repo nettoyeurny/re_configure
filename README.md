@@ -5,7 +5,7 @@ Command line configuration tools for
 
 ```
 SYNOPSIS
-  python3 python/re_configure.py \
+  re_configure.py \
           [-p port] [-f] [-r] [-u user_mode] [-m midi_channel] [-t threshold] \
           [-v velocity] [-s settings_file] [-c chart_file] [-w]
 
@@ -26,8 +26,8 @@ DESCRIPTION
   -m, --midi_channel
     MIDI channel 1-16.
   -t, --threshold
-    Breath pressure threshold value. Default is 3000; the low setting in the
-    re_corder app is 6000; the high setting is 1000.
+    Breath pressure threshold value, ranging from 601 to 16383. Default is 3000;
+    the low setting in the re_corder app is 6000; the high setting is 1000.
   -v, --velocity
     Note on velocity 0-127; 0 means dynamic velocity.
   -s, --settings
@@ -40,6 +40,6 @@ DESCRIPTION
   Command line arguments override settings in the settings file.
 
   Sample invocation:
-    python3 python/re_configure.py -u Breath -m 5 -t 12000 -v 0 \
-        -s configs/settings.json -c configs/tin_whistle_d.json
+    python3 python/re_configure.py -u Breath -m 5 -t 2000 -v 0 \
+        -s configs/all_sensors_off.json -c configs/tin_whistle_d.json
 ```
