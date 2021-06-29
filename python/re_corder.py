@@ -15,38 +15,38 @@ import rtmidi
 
 
 USER_MODES = {
-  1: 'Breath',
-  2: 'Lip',
-  3: 'Keyboard'
+    1: 'Breath',
+    2: 'Lip',
+    3: 'Keyboard'
 }
 
 CURVES = {
-  0: 'None',
-  1: 'Linear',
-  2: 'Emb1',
-  3: 'Emb2',
-  4: 'Emb3',
-  5: 'Emb4',
-  6: 'Emb5',
-  7: 'Emb6',
-  8: 'Emb7',
-  9: 'Emb8',
-  10: 'Emb9',
-  11: 'Emb10',
-  12: 'Emb11',
-  13: 'Emb12',
-  14: 'Emb13',
-  15: 'Emb14',
-  16: 'Emb15',
-  17: 'Emb16',
+    0: 'None',
+    1: 'Linear',
+    2: 'Emb1',
+    3: 'Emb2',
+    4: 'Emb3',
+    5: 'Emb4',
+    6: 'Emb5',
+    7: 'Emb6',
+    8: 'Emb7',
+    9: 'Emb8',
+    10: 'Emb9',
+    11: 'Emb10',
+    12: 'Emb11',
+    13: 'Emb12',
+    14: 'Emb13',
+    15: 'Emb14',
+    16: 'Emb15',
+    17: 'Emb16',
 }
 
 BUTTONS = {
-  1: 'Octave up/down',
-  2: 'Record',
-  3: 'Stop',
-  4: 'Play',
-  5: 'Disconnect'
+    1: 'Octave up/down',
+    2: 'Record',
+    3: 'Stop',
+    4: 'Play',
+    5: 'Disconnect'
 }
 
 PREFIX = bytes.fromhex('f0002f7f0001')
@@ -56,19 +56,22 @@ SUFFIX = bytes.fromhex('f7')
 class Re_corderException(Exception):
   pass
 
+
 class NoMatchingPortException(Re_corderException):
   pass
+
 
 class NoSysexResponseException(Re_corderException):
   pass
 
+
 class FailedRequestException(Re_corderException):
-  def __init__(self, message, data = ''):
+  def __init__(self, message, data=''):
     Exception.__init__(self, message)
     self.data = data
 
 
-def re_corder_ports(port_name = 're.corder'):
+def re_corder_ports(port_name='re.corder'):
   midi_in = rtmidi.MidiIn()
   try:
     for i, p in enumerate(midi_in.get_ports()):
@@ -76,7 +79,7 @@ def re_corder_ports(port_name = 're.corder'):
         midi_out = rtmidi.MidiOut()
         midi_out.open_port(midi_out.get_ports().index(p))
         midi_in.open_port(i)
-        midi_in.ignore_types(sysex = False)
+        midi_in.ignore_types(sysex=False)
         return (midi_in, midi_out)
   except:
     pass
@@ -90,21 +93,21 @@ class Re_corderReceiver(object):
   def unhandled(self, data):
     print('Unhandled:', data.hex())
 
-  def handle_midi(self, event, data = None):
+  def handle_midi(self, event, data=None):
     b = bytes(event[0])
     if (b[0] & 0xe0) == 0x80:
       print('MIDI:', b.hex())
 
 
 class Re_corder(object):
-  def __init__(self, receiver = Re_corderReceiver(),
-               port_name = 're.corder', midi_ports = None):
+  def __init__(self, receiver=Re_corderReceiver(),
+               port_name='re.corder', midi_ports=None):
     self.queue = queue.Queue()
     self.receiver = receiver
     self.midi_in, self.midi_out = midi_ports or re_corder_ports(port_name)
     self.midi_in.set_callback(self)
 
-  def __call__(self, event, data = None):
+  def __call__(self, event, data=None):
     b = bytes(event[0])
     if b.startswith(PREFIX):
       c, d = b[len(PREFIX)], b[len(PREFIX) + 1:-1]
@@ -119,13 +122,13 @@ class Re_corder(object):
     else:
       self.receiver.handle_midi(event, data)
 
-  def _run(self, cmd, data = bytes()):
+  def _run(self, cmd, data=bytes()):
     while not self.queue.empty():
       logging.warning(f'Dangling response in queue: {self.queue.get()}')
     cmd = bytes(cmd)
     self.midi_out.send_message(PREFIX + cmd + bytes(data) + SUFFIX)
     try:
-      status, resp = self.queue.get(timeout = 0.25)
+      status, resp = self.queue.get(timeout=0.25)
     except queue.Empty as e:
       raise NoSysexResponseException() from e
     if not status:
@@ -193,7 +196,7 @@ class Re_corder(object):
   # ..., 'Emb16').
   def set_controller_config(self, ctrls):
     data = bytearray.fromhex(
-      '0100000000007f01007f007f02007f007f03007f007f04007f007f')
+        '0100000000007f01007f007f02007f007f03007f007f04007f007f')
     for i in range(1, 5):
       ctrl, curve = ctrls[i]
       ctrl = int(ctrl)
@@ -214,7 +217,7 @@ class Re_corder(object):
   def set_fingering_chart(self, chart):
     if len(chart) < 1 or len(chart) > 62:
       raise ValueError('Bad fingering chart.')
-    data = bytearray.fromhex('0000');
+    data = bytearray.fromhex('0000')
     for f in chart:
       b = bytes.fromhex(f)
       n = int.from_bytes(b, 'big')

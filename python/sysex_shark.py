@@ -24,16 +24,16 @@ import re_corder
 
 
 class SysexShark(object):
-  def __init__(self, phone_name, log_all = False, device = None, app = None):
+  def __init__(self, phone_name, log_all=False, device=None, app=None):
     self.log_all = log_all
     self.device = device or re_corder.re_corder_ports()
     self.app = app or re_corder.re_corder_ports(phone_name)
     self.device[0].set_callback(
-      functools.partial(self._receive, 'Dev:', self.app[1]))
+        functools.partial(self._receive, 'Dev:', self.app[1]))
     self.app[0].set_callback(
-      functools.partial(self._receive, 'App:', self.device[1]))
+        functools.partial(self._receive, 'App:', self.device[1]))
 
-  def _receive(self, tag, port, event, data = None):
+  def _receive(self, tag, port, event, data=None):
     b = bytes(event[0])
     port.send_message(b)
     if self.log_all or b[0] == 0xf0:
@@ -54,4 +54,3 @@ if __name__ == '__main__':
   shark = SysexShark(phone_name, log_all)
   while True:
     time.sleep(1)
-

@@ -36,40 +36,42 @@ import sys
 
 
 NOTES = (
-  'C', 'C', 'C#', 'Db', 'D', 'D', 'D#', 'Eb', 'E', 'E', 'F', 'F',
-  'F#', 'Gb', 'G', 'G', 'G#', 'Ab', 'A', 'A', 'A#', 'Bb', 'B', 'B',
+    'C', 'C', 'C#', 'Db', 'D', 'D', 'D#', 'Eb', 'E', 'E', 'F', 'F',
+    'F#', 'Gb', 'G', 'G', 'G#', 'Ab', 'A', 'A', 'A#', 'Bb', 'B', 'B',
 )
 
 RECORDER_ENCODING = (
-#    Full    Partial
-  (0x0003, 0x0002),   # Left thumb
-  (0x0004, 0x0004),   # Left index finger
-  (0x0008, 0x0008),   # Left middle finger
-  (0x0010, 0x0010),   # Left ring finger
-  (0x0020, 0x0020),   # Right index finger
-  (0x0040, 0x0040),   # Right middle finger
-  (0x0300, 0x0100),   # Right ring finger
-  (0x0c00, 0x0400),   # Right pinkie
+    #    Full    Partial
+    (0x0003, 0x0002),   # Left thumb
+    (0x0004, 0x0004),   # Left index finger
+    (0x0008, 0x0008),   # Left middle finger
+    (0x0010, 0x0010),   # Left ring finger
+    (0x0020, 0x0020),   # Right index finger
+    (0x0040, 0x0040),   # Right middle finger
+    (0x0300, 0x0100),   # Right ring finger
+    (0x0c00, 0x0400),   # Right pinkie
 )
 
 KEYBOARD_ENCODING = (
-  0x0002,   # Leftmost hole (_not_ thumb)
-  0x0004,
-  0x0008,
-  0x0010,
-  0x0020,
-  0x0040,
-  0x0100,
-  0x0200,
-  0x0400,
+    0x0002,   # Leftmost hole (_not_ thumb)
+    0x0004,
+    0x0008,
+    0x0010,
+    0x0020,
+    0x0040,
+    0x0100,
+    0x0200,
+    0x0400,
 )
 
 
 def to_midi_note(note):
   return 12 * int(note[-1], 10) + NOTES.index(note[:-1]) // 2
 
+
 def from_midi_note(note):
   return NOTES[(note % 12) * 2] + str(note // 12)
+
 
 def decode_fingering(fingering):
   f = int(fingering, 16)
@@ -86,8 +88,10 @@ def decode_fingering(fingering):
   note = f >> 16
   return (NOTES[(note % 12) * 2] + str(note // 12), s)
 
+
 def decode_chart(chart):
   return [decode_fingering(f) for f in sorted(chart)]
+
 
 def encode_fingering(note, fingering):
   s = fingering.replace('.', '')
@@ -103,14 +107,17 @@ def encode_fingering(note, fingering):
       raise ValueError(f'Bad fingering: {fingering}')
   return bytes((to_midi_note(note), f >> 8, f & 0x7f)).hex()
 
+
 def encode_chart(chart):
   return sorted([encode_fingering(n, f) for n, f in chart])
 
+
 def decode_keyboard_chart(chart):
-  d = { int(s[2:], 16): from_midi_note(int(s[:2], 16)) for s in chart }
+  d = {int(s[2:], 16): from_midi_note(int(s[:2], 16)) for s in chart}
   if len(d) != len(KEYBOARD_ENCODING):
     raise ValueError(f'Bad keyboard chart: {chart}')
   return [d[e] for e in KEYBOARD_ENCODING]
+
 
 def encode_keyboard_chart(notes):
   if len(notes) != len(KEYBOARD_ENCODING):
@@ -134,5 +141,4 @@ if __name__ == '__main__':
       raise ValueError(f'Bad fingering chart: {chart}')
     chart = [chart[i:i + 6] for i in range(0, len(chart), 6)]
     decoded = decode_keyboard_chart(chart) if keyboard else decode_chart(chart)
-    json.dump(decoded, open(name + '.json', 'w'), sort_keys = True, indent = 2)
-
+    json.dump(decoded, open(name + '.json', 'w'), sort_keys=True, indent=2)

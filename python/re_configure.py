@@ -72,12 +72,12 @@ def updated_config(old_config, new_config):
   ctrls.update(n.get(CONTROLLERS, {}))
   c.update(n)
   if ctrls:
-    c[CONTROLLERS] = { i : ctrls[str(i)] for i in range(1, 5)
+    c[CONTROLLERS] = {i: ctrls[str(i)] for i in range(1, 5)
                       if str(i) in ctrls}
   return c
 
 
-def update_settings(r, new_conf = {}, chart = None):
+def update_settings(r, new_conf={}, chart=None):
   conf = {}
   conf[USER_MODE] = r.get_user_mode()
   conf[MIDI_CHANNEL] = r.get_midi_channel()
@@ -101,9 +101,9 @@ def update_settings(r, new_conf = {}, chart = None):
   if chart:
     print('Setting fingering chart.')
     r.set_fingering_chart(
-      re_corder_charts.encode_chart(chart)
-      if re_corder.USER_MODES[3] != conf[USER_MODE]
-      else re_corder_charts.encode_keyboard_chart(chart))
+        re_corder_charts.encode_chart(chart)
+        if re_corder.USER_MODES[3] != conf[USER_MODE]
+        else re_corder_charts.encode_keyboard_chart(chart))
 
   return conf
 
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     elif key in ('-f', '--factory_reset'):
       factory_reset = True
 
-  r = re_corder.Re_corder(port_name = port_name)
+  r = re_corder.Re_corder(port_name=port_name)
   if factory_reset:
     print('Performing factory reset.')
     r.factory_reset()
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     print('Restoring default settings.')
     r.restore_default_settings()
   conf = update_settings(r, updated_config(json_conf, cli_conf), chart)
-  print(json.dumps(conf, sort_keys = True, indent = 2))
+  print(json.dumps(conf, sort_keys=True, indent=2))
 
   while wait_for_messages:
     time.sleep(1)
