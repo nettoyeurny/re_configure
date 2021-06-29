@@ -118,9 +118,11 @@ if __name__ == '__main__':
     if extra:
       raise getopt.GetoptError('Extraneous args.')
   except getopt.GetoptError:
-    print('usage: python re_configure.py [-p port] [-f] [-r] '
-          '[-u user_mode] [-m midi_channel] [-t threshold] [-v velocity] '
-          '[-s settings_file] [-c chart_file] [-w]')
+    print(
+        'usage: python re_configure.py [-p port] [-f] [-r] '
+        '[-u user_mode] [-m midi_channel] [-t threshold] [-v velocity] '
+        '[-s settings_file] [-c chart_file] [-w]'
+    )
     sys.exit(1)
 
   cli_conf = {}
