@@ -110,9 +110,11 @@ def update_settings(r, new_conf={}, chart=None):
 
 if __name__ == '__main__':
   try:
-    args, extra = getopt.getopt(sys.argv[1:], 'p:u:m:t:v:s:c:wrf',
-                                [s + '=' for s in [USER_MODE, MIDI_CHANNEL, THRESHOLD, VELOCITY]] +
-                                ['port=', 'settings=', 'chart=', 'wait', 'restore', 'factory_reset'])
+    args, extra = getopt.getopt(
+        sys.argv[1:], 'p:u:m:t:v:s:c:wrf',
+        [s + '=' for s in [USER_MODE, MIDI_CHANNEL, THRESHOLD, VELOCITY]] +
+        ['port=', 'settings=', 'chart=', 'wait', 'restore', 'factory_reset']
+    )
     if extra:
       raise getopt.GetoptError('Extraneous args.')
   except getopt.GetoptError:

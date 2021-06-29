@@ -188,8 +188,10 @@ class Re_corder(object):
       raise ValueError('Bad threshold value.')
     if velocity < 0 or velocity > 0x7f:
       raise ValueError('Bad velocity value.')
-    self._run([0x30],
-              [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity])
+    self._run(
+        [0x30],
+        [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
+    )
 
   # ctrls is a dictonary that maps controller indices (1-4) to pairs of integers
   # specifying the MIDI controller (0-127) and curve ('None', 'Linear', 'Emb1',
