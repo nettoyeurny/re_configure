@@ -49,9 +49,6 @@ BUTTONS = {
     5: 'Disconnect'
 }
 
-PREFIX = bytes.fromhex('f0002f7f0001')
-SUFFIX = bytes.fromhex('f7')
-
 
 class Re_corderException(Exception):
   pass
@@ -100,6 +97,9 @@ class Re_corderReceiver(object):
 
 
 class Re_corder(object):
+  _PREFIX = bytes.fromhex('f0002f7f0001')
+  _SUFFIX = bytes.fromhex('f7')
+
   def __init__(self, receiver=Re_corderReceiver(),
                port_name='re.corder', midi_ports=None):
     self.queue = queue.Queue()
@@ -109,8 +109,8 @@ class Re_corder(object):
 
   def __call__(self, event, data=None):
     b = bytes(event[0])
-    if b.startswith(PREFIX):
-      c, d = b[len(PREFIX)], b[len(PREFIX) + 1:-1]
+    if b.startswith(self._PREFIX):
+      c, d = b[len(self._PREFIX)], b[len(self._PREFIX) + 1:-1]
       if c == 0x01:
         self.queue.put((True, d))
       elif c == 0x02:
@@ -126,7 +126,7 @@ class Re_corder(object):
     while not self.queue.empty():
       logging.warning(f'Dangling response in queue: {self.queue.get()}')
     cmd = bytes(cmd)
-    self.midi_out.send_message(PREFIX + cmd + bytes(data) + SUFFIX)
+    self.midi_out.send_message(self._PREFIX + cmd + bytes(data) + self._SUFFIX)
     try:
       status, resp = self.queue.get(timeout=0.25)
     except queue.Empty as e:
