@@ -118,7 +118,7 @@ class Re_corder(object):
       elif c == 0x34:
         self.receiver.handle_button(*d)
       else:
-        self.receiver.unhandled(d)
+        self.receiver.unhandled(b)
     else:
       self.receiver.handle_midi(event, data)
 
