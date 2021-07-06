@@ -199,7 +199,7 @@ class Re_corder(object):
         [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
     )
 
-  # ctrls is a dictonary that maps controller labels ('Pressure', 'AccX',
+  # ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
   # 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
   # and curve ('None', 'Linear', 'Emb1', ..., 'Emb16').
   def set_controller_config(self, ctrls):
