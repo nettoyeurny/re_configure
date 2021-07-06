@@ -1,8 +1,8 @@
 {
   "controllers": {
-    "1": [ 11, "None" ],
-    "2": [ 1, "None" ],
-    "3": [ 52, "None" ],
-    "4": [ 53, "None" ]
+    "Pressure": [ 11, "None" ],
+    "AccX": [ 1, "None" ],
+    "AccY": [ 52, "None" ],
+    "AccZ": [ 53, "None" ]
   }
 }

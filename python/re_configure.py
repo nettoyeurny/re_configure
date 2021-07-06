@@ -72,8 +72,8 @@ def updated_config(old_config, new_config):
   ctrls.update(n.get(CONTROLLERS, {}))
   c.update(n)
   if ctrls:
-    c[CONTROLLERS] = {i: ctrls[str(i)] for i in range(1, 5)
-                      if str(i) in ctrls}
+    c[CONTROLLERS] = {k: ctrls[k]
+                      for k in re_corder.CONTROLLERS.values() if k in ctrls}
   return c
 
 

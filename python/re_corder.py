@@ -20,6 +20,13 @@ USER_MODES = {
     3: 'Keyboard'
 }
 
+CONTROLLERS = {
+    1: "Pressure",
+    2: "AccX",
+    3: "AccY",
+    4: "AccZ"
+}
+
 CURVES = {
     0: 'None',
     1: 'Linear',
@@ -150,7 +157,7 @@ class Re_corder(object):
     data = self._run([0x31, 0x01], [0x01])[1:]
     ctrls = {}
     for i in range(1, 5):
-      ctrls[i] = (data[5 * i + 1], CURVES[data[5 * i + 3]])
+      ctrls[CONTROLLERS[i]] = (data[5 * i + 1], CURVES[data[5 * i + 3]])
     return ctrls
 
   def factory_reset(self):
@@ -192,14 +199,14 @@ class Re_corder(object):
         [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
     )
 
-  # ctrls is a dictonary that maps controller indices (1-4) to pairs of integers
-  # specifying the MIDI controller (0-127) and curve ('None', 'Linear', 'Emb1',
-  # ..., 'Emb16').
+  # ctrls is a dictonary that maps controller labels ('Pressure', 'AccX',
+  # 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
+  # and curve ('None', 'Linear', 'Emb1', ..., 'Emb16').
   def set_controller_config(self, ctrls):
     data = bytearray.fromhex(
         '0100000000007f01007f007f02007f007f03007f007f04007f007f')
     for i in range(1, 5):
-      ctrl, curve = ctrls[i]
+      ctrl, curve = ctrls[CONTROLLERS[i]]
       ctrl = int(ctrl)
       if ctrl < 0 or ctrl > 127:
         raise ValueError('Bad CC controller.')
