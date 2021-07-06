@@ -155,9 +155,10 @@ class Re_corder(object):
 
   def get_controller_config(self):
     data = self._run([0x31, 0x01], [0x01])[1:]
-    ctrls = {}
-    for i in range(1, 5):
-      ctrls[CONTROLLERS[i]] = (data[5 * i + 1], CURVES[data[5 * i + 3]])
+    ctrls = {
+        CONTROLLERS[i]: (data[5 * i + 1], CURVES[data[5 * i + 3]])
+        for i in range(1, 5)
+    }
     return ctrls
 
   def factory_reset(self):
