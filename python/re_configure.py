@@ -116,7 +116,7 @@ if __name__ == '__main__':
     if extra:
       raise getopt.GetoptError('Extraneous args.')
   except getopt.GetoptError:
-    print(__doc__)
+    print(__doc__, file=sys.stderr)
     sys.exit(1)
 
   cli_conf = {}
