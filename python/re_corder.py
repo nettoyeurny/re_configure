@@ -109,16 +109,14 @@ class Re_corder(object):
 
   def __call__(self, event, data=None):
     b = bytes(event[0])
-    if b.startswith(self._PREFIX):
-      c, d = b[len(self._PREFIX)], b[len(self._PREFIX) + 1:-1]
-      if c == 0x01:
-        self.queue.put((True, d))
-      elif c == 0x02:
-        self.queue.put((False, d))
-      elif c == 0x34:
-        self.receiver.handle_button(*d)
+    if b.startswith(self._PREFIX) and b.endswith(self._SUFFIX):
+      payload = b[len(self._PREFIX):-len(self._SUFFIX)]
+      if payload[0] == 0x01 or payload[0] == 0x02:
+        self.queue.put(payload)
+      elif payload[0] == 0x34:
+        self.receiver.handle_button(payload[1], payload[2])
       else:
-        self.receiver.unhandled(b)
+        self.receiver.unhandled(payload)
     else:
       self.receiver.handle_midi(event, data)
 
@@ -128,14 +126,15 @@ class Re_corder(object):
     cmd = bytes(cmd)
     self.midi_out.send_message(self._PREFIX + cmd + bytes(data) + self._SUFFIX)
     try:
-      status, resp = self.queue.get(timeout=0.25)
+      payload = self.queue.get(timeout=0.25)
     except queue.Empty as e:
       raise NoSysexResponseException() from e
-    if not status:
-      raise FailedRequestException('Try holding Record, perhaps?', resp)
-    if resp.startswith(cmd):
-      return resp[len(cmd):]
-    raise FailedRequestException(f'Unexpected response: {resp.hex()}', resp)
+    if payload[0] != 0x01:
+      raise FailedRequestException('Try holding Record, perhaps?', payload)
+    if payload[1:].startswith(cmd):
+      return payload[len(cmd) + 1:]
+    raise FailedRequestException(
+        f'Unexpected response: {payload.hex()}', payload)
 
   def get_user_mode(self):
     return USER_MODES[self._run([0x22, 0x05], [])[0]]
