@@ -65,16 +65,13 @@ VELOCITY = 'velocity'
 CONTROLLERS = 'controllers'
 
 
-def updated_config(old_config, new_config):
-  c = json.loads(json.dumps(old_config))
-  n = json.loads(json.dumps(new_config))
-  ctrls = c.get(CONTROLLERS, {})
-  ctrls.update(n.get(CONTROLLERS, {}))
-  c.update(n)
+def updated_config(config, new_config):
+  ctrls = config.get(CONTROLLERS, {})
+  ctrls.update(new_config.get(CONTROLLERS, {}))
+  config.update(new_config)
   if ctrls:
-    c[CONTROLLERS] = {k: ctrls[k]
-                      for k in re_corder.CONTROLLERS.values() if k in ctrls}
-  return c
+    config[CONTROLLERS] = ctrls
+  return config
 
 
 def update_settings(r, new_conf={}, chart=None):
