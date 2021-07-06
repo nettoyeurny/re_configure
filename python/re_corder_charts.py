@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 -u
+#!/usr/bin/env python -u
 
 '''
 Custom fingering charts for re.corder.
@@ -127,11 +127,14 @@ def encode_keyboard_chart(notes):
 
 
 if __name__ == '__main__':
-  args, _ = getopt.getopt(sys.argv[1:], 'k')
+  args, _ = getopt.getopt(sys.argv[1:], 'h', 'k')
   keyboard = False
   for k, _ in args:
     if k == '-k':
       keyboard = True
+    elif k == '-h':
+      print(__doc__)
+      sys.exit(0)
 
   PREFIX = 'f0002f7f0001300000'
   for line in sys.stdin:

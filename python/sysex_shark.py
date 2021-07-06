@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 -u
+#!/usr/bin/env python -u
 
 '''
 Sysex monitoring tool.
@@ -41,7 +41,7 @@ class SysexShark(object):
 
 
 if __name__ == '__main__':
-  args, extra = getopt.getopt(sys.argv[1:], 'p:a')
+  args, extra = getopt.getopt(sys.argv[1:], 'p:ah')
 
   phone_name = 'Pixel'
   log_all = False
@@ -50,6 +50,9 @@ if __name__ == '__main__':
       phone_name = v
     elif k == '-a':
       log_all = True
+    elif k == '-h':
+      print(__doc__)
+      sys.exit(0)
 
   shark = SysexShark(phone_name, log_all)
   while True:

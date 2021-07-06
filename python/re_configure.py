@@ -1,17 +1,16 @@
-#!/usr/bin/env python3 -u
+#!/usr/bin/env python -u
 
 '''
 re.corder configuration tool.
 
 SYNOPSIS
-  re_configure.py \
-          [-p port] [-f] [-r] [-u user_mode] [-m midi_channel] [-t threshold] \
-          [-v velocity] [-s settings_file] [-c chart_file] [-w]
+  re_configure.py [-p port] [-f] [-r] [-u user_mode] [-m midi_channel] [-t threshold] [-v velocity] [-s settings_file] [-c chart_file] [-w] [-h]
 
 DESCRIPTION
-  This utility changes the configuration of re.corder according to the command
-  line arguments. If no arguments are given, it will read and print the
-  current configuration in json format.
+  This utility is an _unofficial_ tool for configuring the re.corder by
+  Artinoise; use at your own risk. It changes the configuration of re.corder
+  according to command line arguments. If no arguments are given, it will read
+  and print the current configuration in json format.
 
   -p, --port
     Identifying substring of the name of the desired MIDI port; defaults to
@@ -35,12 +34,13 @@ DESCRIPTION
     Fingering chart in json format.
   -w, --wait
     Wait for MIDI messages.
+  -h, --help
+    Print help message and exit.
 
   Command line arguments override settings in the settings file.
 
   Sample invocation:
-    python3 python/re_configure.py -u Breath -m 5 -t 2000 -v 0 \
-        -s configs/all_sensors_off.json -c configs/tin_whistle_d.json
+    python python/re_configure.py -u Breath -m 5 -t 2000 -v 0 -s configs/all_sensors_off.json -c configs/tin_whistle_d.json
 
 Copyright (c) 2021 Peter Brinkmann <peter.brinkmann@gmail.com>
 
@@ -111,18 +111,15 @@ def update_settings(r, new_conf={}, chart=None):
 if __name__ == '__main__':
   try:
     args, extra = getopt.getopt(
-        sys.argv[1:], 'p:u:m:t:v:s:c:wrf',
+        sys.argv[1:], 'p:u:m:t:v:s:c:wrfh',
         [s + '=' for s in [USER_MODE, MIDI_CHANNEL, THRESHOLD, VELOCITY]] +
-        ['port=', 'settings=', 'chart=', 'wait', 'restore', 'factory_reset']
+        ['port=', 'settings=', 'chart=', 'wait',
+         'restore', 'factory_reset', 'help']
     )
     if extra:
       raise getopt.GetoptError('Extraneous args.')
   except getopt.GetoptError:
-    print(
-        'usage: python re_configure.py [-p port] [-f] [-r] '
-        '[-u user_mode] [-m midi_channel] [-t threshold] [-v velocity] '
-        '[-s settings_file] [-c chart_file] [-w]'
-    )
+    print(__doc__)
     sys.exit(1)
 
   cli_conf = {}
@@ -153,6 +150,9 @@ if __name__ == '__main__':
       restore = True
     elif key in ('-f', '--factory_reset'):
       factory_reset = True
+    elif key in ('-h', '--help'):
+      print(__doc__)
+      sys.exit(0)
 
   r = re_corder.Re_corder(port_name=port_name)
   if factory_reset:

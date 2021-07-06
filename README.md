@@ -1,45 +1,45 @@
-# re_configure
+# re\_configure
 
-Command line configuration tools for
-[Artinoise re.corder](http://www.artinoise.com/).
+Unofficial command line configuration tools for
+[Artinoise re.corder](http://www.artinoise.com/) --- use at your own risk!
 
-```
-SYNOPSIS
-  re_configure.py \
-          [-p port] [-f] [-r] [-u user_mode] [-m midi_channel] [-t threshold] \
-          [-v velocity] [-s settings_file] [-c chart_file] [-w]
+## Setup
 
-DESCRIPTION
-  This utility changes the configuration of re.corder according to the command
-  line arguments. If no arguments are given, it will read and print the
-  current configuration in json format.
+The Python version requires Python 3 (I have tried 3.6.3 and 3.9.6, but earlier
+versions might work as well). Python version management can be a bit gnarly;
+[pyenv](https://github.com/pyenv/pyenv) helps.
 
-  -p, --port
-    Identifying substring of the name of the desired MIDI port; defaults to
-    're.corder'.
-  -f, --factory_reset
-    Factory reset; closes the Bluetooth connection.
-  -r, --restore
-    Restore default settings.
-  -u, --user_mode
-    User mode; possible values are Breath, Lip, Keyboard.
-  -m, --midi_channel
-    MIDI channel 1-16.
-  -t, --threshold
-    Breath pressure threshold value, ranging from 601 to 16383. Default is 3000;
-    the low setting in the re_corder app is 6000; the high setting is 1000.
-  -v, --velocity
-    Note on velocity 0-127; 0 means dynamic velocity.
-  -s, --settings
-    Configuration file in json format.
-  -c, --chart
-    Fingering chart in json format.
-  -w, --wait
-    Wait for MIDI messages.
+The only dependency besides Python 3 is RtMidi. Confusingly, there are multiple
+libraries that offer RtMidi bindings for Python. We use
+[`python-rtmidi`](https://pypi.org/project/python-rtmidi/):
 
-  Command line arguments override settings in the settings file.
+    python -m pip install python-rtmidi
 
-  Sample invocation:
-    python3 python/re_configure.py -u Breath -m 5 -t 2000 -v 0 \
-        -s configs/all_sensors_off.json -c configs/tin_whistle_d.json
-```
+## Usage
+
+Connect your re.corder to your computer and run `python/re_configure.py`. The
+`-h` command line option will print a help message:
+
+    python/re_configure.py -h
+
+The configuration tool reads controller settings and fingering charts in json
+format. For example, my preferred controller settings are in
+`configs/pb_settings.json` and my preferred fingering chart is in
+`configs/pb_english.json`.
+
+## Fingering chart format
+
+A fingering chart is a json file that contains a list of the form
+
+    [
+      ...
+      [ "G5",  "*.***.oooo" ],
+      [ "G#5", "*.**o.**@o" ],
+      [ "A5",  "*.**o.oooo" ],
+      ...
+    ]
+
+where each item specifies a note and a string representing a fingering to be
+read from left to right (left thumb to right pinkie), where `o/*/@` stands for
+an open/closed/partially closed hole, with optional dots for readability.
+

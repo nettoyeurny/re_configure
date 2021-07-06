@@ -1,7 +1,13 @@
 re.corder sysex format
 
+This is an _unofficial_ stab at document the sysex format for configuring
+the re.corder by Artinoise, based on my observation of the communication
+between the re.corder and the re.corder Android app; use at your own risk.
+Please [let me know](mailto:peter.brinkmann@gmail.com) if I missed or
+misinterpreted something.
+
 Transport buttons:
-  f0002f7f0001 34 nn mm f7
+  Sent by re.corder: f0002f7f0001 34 nn mm f7
 
   nn: { 01: "Shift octave", 02: "Record", 03: "Stop", 04: "Play",
         05: "Disconnect" }
@@ -79,7 +85,7 @@ Controllers: Pressure, Acc_X, Acc_Y, Acc_Z:
         03 nn 7f mm 7f    # Acc_Y
         04 nn 7f mm 7f    # Acc_Z
         f7
-  Resp: f0002f7f0001 0130 f7
+  Resp: f0002f7f0001 01 30 f7
 
   ww: current user mode
   nn: MIDI channel 1-16
@@ -93,7 +99,7 @@ Fingering
         xx yyzz
         ...      # Up to 62 entries altogether.
         f7
-  Resp: f0002f7f0001 0130 f7
+  Resp: f0002f7f0001 01 30 f7
 
   xx: MIDI note
   yyzz:
