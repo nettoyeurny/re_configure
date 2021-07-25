@@ -75,7 +75,7 @@ class FailedRequestException(Re_corderException):
     self.data = data
 
 
-class list_ports():
+def list_ports():
   midi_in = rtmidi.MidiIn()
   for i, p in enumerate(midi_in.get_ports()):
     print(i, p)
