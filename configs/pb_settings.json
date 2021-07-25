@@ -1,9 +1,9 @@
 {
   "controllers": {
-    "Pressure": [ 11, "Emb11" ],
-    "AccX": [ 1, "Linear" ],
-    "AccY": [ 52, "Linear" ],
-    "AccZ": [ 53, "Linear" ]
+    "Pressure": [ 1, "Emb11" ],
+    "AccX": [ 2, "Linear" ],
+    "AccY": [ 4, "Linear" ],
+    "AccZ": [ 7, "Linear" ]
   },
   "midi_channel": 11,
   "threshold": 2000,
