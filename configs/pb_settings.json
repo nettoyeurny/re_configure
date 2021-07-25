@@ -5,7 +5,7 @@
     "AccY": [ 4, "Linear" ],
     "AccZ": [ 7, "Linear" ]
   },
-  "midi_channel": 11,
+  "midi_channel": 1,
   "threshold": 2000,
   "user_mode": "Breath",
   "velocity": 0

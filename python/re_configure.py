@@ -12,6 +12,8 @@ DESCRIPTION
   according to command line arguments. If no arguments are given, it will read
   and print the current configuration in json format.
 
+  -l, --list
+    List available MIDI ports.
   -p, --port
     Identifying substring of the name of the desired MIDI port; defaults to
     're.corder'.
@@ -108,10 +110,10 @@ def update_settings(r, new_conf={}, chart=None):
 if __name__ == '__main__':
   try:
     args, extra = getopt.getopt(
-        sys.argv[1:], 'p:u:m:t:v:s:c:wrfh',
+        sys.argv[1:], 'p:u:m:t:v:s:c:wrfhl',
         [s + '=' for s in [USER_MODE, MIDI_CHANNEL, THRESHOLD, VELOCITY]] +
         ['port=', 'settings=', 'chart=', 'wait',
-         'restore', 'factory_reset', 'help']
+         'restore', 'factory_reset', 'help', 'list']
     )
     if extra:
       raise getopt.GetoptError('Extraneous args.')
@@ -147,6 +149,9 @@ if __name__ == '__main__':
       restore = True
     elif key in ('-f', '--factory_reset'):
       factory_reset = True
+    elif key in ('-l', '--list'):
+      re_corder.list_ports()
+      sys.exit(0)
     elif key in ('-h', '--help'):
       print(__doc__)
       sys.exit(0)
