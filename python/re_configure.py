@@ -4,7 +4,7 @@
 re.corder configuration tool.
 
 SYNOPSIS
-  re_configure.py [-p port] [-f] [-r] [-u user_mode] [-m midi_channel] [-t threshold] [-v velocity] [-s settings_file] [-c chart_file] [-w] [-h]
+  re_configure.py [-l] [-p port] [-f] [-r] [-u user_mode] [-m midi_channel] [-t threshold] [-v velocity] [-s settings_file] [-c chart_file] [-w] [-h]
 
 DESCRIPTION
   This utility is an _unofficial_ tool for configuring the re.corder by
