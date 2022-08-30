@@ -68,7 +68,7 @@ Sensitivity:
 
 Controllers: Pressure, Acc_X, Acc_Y, Acc_Z:
   Get:  f0002f7f0001    3101 01 f7
-  Resp: f0002f7f0001 01 3101
+  Resp: f0002f7f0001 01 3101 01
         ww
         00 7f 7f 00 7f   # Controller 0?!?
         01 nn 7f mm 7f   # Pressure
