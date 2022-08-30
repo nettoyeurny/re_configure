@@ -1,12 +1,26 @@
 {
   "controllers": {
-    "Pressure": [ 11, "Emb11" ],
-    "AccX": [ 1, "Linear" ],
-    "AccY": [ 52, "Linear" ],
-    "AccZ": [ 53, "Linear" ]
+    "AccX": [
+      1,
+      "Linear"
+    ],
+    "AccY": [
+      52,
+      "Linear"
+    ],
+    "AccZ": [
+      53,
+      "Linear"
+    ],
+    "Pressure": [
+      11,
+      "Emb11"
+    ]
   },
-  "easy_connect": "On",
+  "easy_connect": false,
+  "maintain_note": true,
   "midi_channel": 11,
+  "smooth_acc": false,
   "threshold": 2000,
   "user_mode": "Breath",
   "velocity": 0

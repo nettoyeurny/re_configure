@@ -25,13 +25,17 @@ DESCRIPTION
     User mode; possible values are Breath, Lip, Keyboard.
   -m, --midi_channel
     MIDI channel 1-16.
+  -n, --maintain_note
+    Maintain note flag, 0 or 1
+  -a, --smooth_acc
+    Smooth accelerometer flag, 0 or 1
   -t, --threshold
     Breath pressure threshold value, ranging from 601 to 16383. Default is 3000;
     the low setting in the re_corder app is 6000; the high setting is 1000.
   -v, --velocity
     Note on velocity 0-127; 0 means dynamic velocity.
   -e, --easy_connect
-    Set EasyConnect status On/Off.
+    Set EasyConnect flag, 0 or 1
   -s, --settings
     Configuration file in json format.
   -c, --chart
@@ -68,8 +72,8 @@ THRESHOLD = 'threshold'
 VELOCITY = 'velocity'
 CONTROLLERS = 'controllers'
 EASY_CONNECT = 'easy_connect'
-MAINTAIN = 'maintain_note'
-SMOOTH = 'smooth_acc'
+MAINTAIN_NOTE = 'maintain_note'
+SMOOTH_ACC = 'smooth_acc'
 
 
 def updated_config(config, new_config):
@@ -88,7 +92,7 @@ def update_settings(r, new_conf={}, chart=None):
   conf[THRESHOLD], conf[VELOCITY] = r.get_sensitivity()
   conf[CONTROLLERS] = r.get_controller_config()
   conf[EASY_CONNECT] = r.get_easy_connect_status()
-  conf[MAINTAIN], conf[SMOOTH] = r.get_maintain_note()
+  conf[MAINTAIN_NOTE], conf[SMOOTH_ACC] = r.get_maintain_note()
 
   conf = updated_config(conf, new_conf)
   if USER_MODE in new_conf:
@@ -106,9 +110,9 @@ def update_settings(r, new_conf={}, chart=None):
   if EASY_CONNECT in new_conf:
     print('Setting EasyConnect status.')
     r.set_easy_connect_status(conf[EASY_CONNECT])
-  if MAINTAIN in new_conf or SMOOTH in new_conf:
-    print('Setting maintain note status.')
-    r.set_maintain_note(conf[MAINTAIN], conf[SMOOTH])
+  if MAINTAIN_NOTE in new_conf or SMOOTH_ACC in new_conf:
+    print('Setting maintain note/smooth accelerometer status.')
+    r.set_maintain_note(conf[MAINTAIN_NOTE], conf[SMOOTH_ACC])
 
   if chart:
     print('Setting fingering chart.')
@@ -123,7 +127,7 @@ def update_settings(r, new_conf={}, chart=None):
 if __name__ == '__main__':
   try:
     args, extra = getopt.getopt(
-        sys.argv[1:], 'p:u:m:t:v:s:c:e:wrfhl',
+        sys.argv[1:], 'a:n:p:u:m:t:v:s:c:e:wrfhl',
         [s + '=' for s in [USER_MODE, MIDI_CHANNEL, THRESHOLD, VELOCITY]] +
         ['port=', 'settings=', 'chart=', 'easy_connect=', 'wait',
          'restore', 'factory_reset', 'help', 'list']
@@ -151,7 +155,11 @@ if __name__ == '__main__':
     elif key in ('-v', '--' + VELOCITY):
       cli_conf[VELOCITY] = int(val, 10)
     elif key in ('-e', '--' + EASY_CONNECT):
-      cli_conf[EASY_CONNECT] = val in ['On', 'on']
+      cli_conf[EASY_CONNECT] = int(val, 10)
+    elif key in ('-n', '--' + MAINTAIN_NOTE):
+      cli_conf[MAINTAIN_NOTE] = bool(int(val, 10))
+    elif key in ('-a', '--' + SMOOTH_ACC):
+      cli_conf[SMOOTH_ACC] = bool(int(val, 10))
     elif key in ('-p', '--port'):
       port_name = val
     elif key in ('-s', '--settings'):
