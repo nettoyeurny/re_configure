@@ -20,7 +20,7 @@
   "easy_connect": false,
   "maintain_note": true,
   "midi_channel": 11,
-  "smooth_acc": true,
+  "smooth_acc": false,
   "threshold": 2000,
   "user_mode": "Breath",
   "velocity": 0
