@@ -68,6 +68,8 @@ THRESHOLD = 'threshold'
 VELOCITY = 'velocity'
 CONTROLLERS = 'controllers'
 EASY_CONNECT = 'easy_connect'
+MAINTAIN = 'maintain_note'
+SMOOTH = 'smooth_acc'
 
 
 def updated_config(config, new_config):
@@ -86,6 +88,7 @@ def update_settings(r, new_conf={}, chart=None):
   conf[THRESHOLD], conf[VELOCITY] = r.get_sensitivity()
   conf[CONTROLLERS] = r.get_controller_config()
   conf[EASY_CONNECT] = r.get_easy_connect_status()
+  conf[MAINTAIN], conf[SMOOTH] = r.get_maintain_note()
 
   conf = updated_config(conf, new_conf)
   if USER_MODE in new_conf:
@@ -103,6 +106,9 @@ def update_settings(r, new_conf={}, chart=None):
   if EASY_CONNECT in new_conf:
     print('Setting EasyConnect status.')
     r.set_easy_connect_status(conf[EASY_CONNECT])
+  if MAINTAIN in new_conf or SMOOTH in new_conf:
+    print('Setting maintain note status.')
+    r.set_maintain_note(conf[MAINTAIN], conf[SMOOTH])
 
   if chart:
     print('Setting fingering chart.')

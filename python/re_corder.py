@@ -162,6 +162,10 @@ class Re_corder(object):
   def get_easy_connect_status(self):
     return not self._run([0x22, 0x01], [])[0]
 
+  def get_maintain_note(self):
+    _, _, maintain, _, smooth = self._run([0x31, 0x08], [0x01])
+    return bool(maintain), bool(smooth)
+
   def get_sensitivity(self):
     _, _, hi, lo, _, v = self._run([0x31, 0x07], [0x01])
     return ((hi << 7) | lo, v)
@@ -215,6 +219,14 @@ class Re_corder(object):
     self._run(
         [0x30],
         [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
+    )
+
+  def set_maintain_note(self, maintain, smooth):
+    maintain = 1 if maintain else 0
+    smooth = 1 if smooth else 0
+    self._run(
+        [0x30],
+        [0x08, 0x02, 0x03, maintain, 0x04, smooth]
     )
 
   # ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',

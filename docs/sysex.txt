@@ -65,6 +65,17 @@ EasyConnect:
   mm: Error code
 
 
+Maintain note/Smooth accelerometers:
+  Get:  f0002f7f0001    3108 01             f7
+  Resp: f0002f7f0001 01 3108 01 03 xx 04 yy f7
+
+  Set:  f0002f7f0001    3008 02 03 xx 04 yy f7
+  Resp: f0002f7f0001 01 30                  f7
+
+  xx: maintain note flag
+  yy: smooth accelerator flag
+
+
 Sensitivity:
   Get:  f0002f7f0001    3107 01               f7
   Resp: f0002f7f0001 01 3107 ww 00 xxyy 01 zz f7
