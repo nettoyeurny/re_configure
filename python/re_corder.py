@@ -159,6 +159,9 @@ class Re_corder(object):
   def get_midi_channel(self):
     return self._run([0x22, 0x03], [])[0]
 
+  def get_easy_connect_status(self):
+    return not self._run([0x22, 0x01], [])[0]
+
   def get_sensitivity(self):
     _, _, hi, lo, _, v = self._run([0x31, 0x07], [0x01])
     return ((hi << 7) | lo, v)
@@ -197,6 +200,10 @@ class Re_corder(object):
     if ch < 1 or ch > 16:
       raise ValueError('Bad MIDI channel.')
     self._run([0x21], [0x03, ch])
+
+  def set_easy_connect_status(self, on):
+    status = 0 if on else 1
+    self._run([0x21], [0x01, status])
 
   def set_sensitivity(self, threshold, velocity):
     threshold = int(threshold)

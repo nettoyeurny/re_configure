@@ -53,6 +53,18 @@ MIDI channel:
   mm: Error code
 
 
+EasyConnect:
+  Get:  f0002f7f0001    2201    f7
+  Resp: f0002f7f0001 01 2201 nn f7
+
+  Set:  f0002f7f0001    2101 nn f7
+  Resp: f0002f7f0001 01 21      f7   # Success.
+        f0002f7f0001 02 21   mm f7   # Failure.
+
+  nn: EasyConnect On 00, Off 01 (yes, this appears to be inverted)
+  mm: Error code
+
+
 Sensitivity:
   Get:  f0002f7f0001    3107 01               f7
   Resp: f0002f7f0001 01 3107 ww 00 xxyy 01 zz f7

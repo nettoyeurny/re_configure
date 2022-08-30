@@ -5,6 +5,7 @@
     "AccY": [ 52, "Linear" ],
     "AccZ": [ 53, "Linear" ]
   },
+  "easy_connect": "On",
   "midi_channel": 11,
   "threshold": 2000,
   "user_mode": "Breath",

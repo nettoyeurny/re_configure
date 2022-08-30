@@ -30,6 +30,8 @@ DESCRIPTION
     the low setting in the re_corder app is 6000; the high setting is 1000.
   -v, --velocity
     Note on velocity 0-127; 0 means dynamic velocity.
+  -e, --easy_connect
+    Set EasyConnect status On/Off.
   -s, --settings
     Configuration file in json format.
   -c, --chart
@@ -65,6 +67,7 @@ MIDI_CHANNEL = 'midi_channel'
 THRESHOLD = 'threshold'
 VELOCITY = 'velocity'
 CONTROLLERS = 'controllers'
+EASY_CONNECT = 'easy_connect'
 
 
 def updated_config(config, new_config):
@@ -82,6 +85,7 @@ def update_settings(r, new_conf={}, chart=None):
   conf[MIDI_CHANNEL] = r.get_midi_channel()
   conf[THRESHOLD], conf[VELOCITY] = r.get_sensitivity()
   conf[CONTROLLERS] = r.get_controller_config()
+  conf[EASY_CONNECT] = r.get_easy_connect_status()
 
   conf = updated_config(conf, new_conf)
   if USER_MODE in new_conf:
@@ -96,6 +100,9 @@ def update_settings(r, new_conf={}, chart=None):
   if CONTROLLERS in new_conf:
     print('Setting controllers.')
     r.set_controller_config(conf[CONTROLLERS])
+  if EASY_CONNECT in new_conf:
+    print('Setting EasyConnect status.')
+    r.set_easy_connect_status(conf[EASY_CONNECT])
 
   if chart:
     print('Setting fingering chart.')
@@ -110,9 +117,9 @@ def update_settings(r, new_conf={}, chart=None):
 if __name__ == '__main__':
   try:
     args, extra = getopt.getopt(
-        sys.argv[1:], 'p:u:m:t:v:s:c:wrfhl',
+        sys.argv[1:], 'p:u:m:t:v:s:c:e:wrfhl',
         [s + '=' for s in [USER_MODE, MIDI_CHANNEL, THRESHOLD, VELOCITY]] +
-        ['port=', 'settings=', 'chart=', 'wait',
+        ['port=', 'settings=', 'chart=', 'easy_connect=', 'wait',
          'restore', 'factory_reset', 'help', 'list']
     )
     if extra:
@@ -137,6 +144,8 @@ if __name__ == '__main__':
       cli_conf[THRESHOLD] = int(val, 10)
     elif key in ('-v', '--' + VELOCITY):
       cli_conf[VELOCITY] = int(val, 10)
+    elif key in ('-e', '--' + EASY_CONNECT):
+      cli_conf[EASY_CONNECT] = val in ['On', 'on']
     elif key in ('-p', '--port'):
       port_name = val
     elif key in ('-s', '--settings'):
