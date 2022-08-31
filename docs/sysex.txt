@@ -1,4 +1,4 @@
-re.corder sysex format
+re.corder sysex format, fw 00.07.06
 
 This is an _unofficial_ stab at document the sysex format for configuring
 the re.corder by Artinoise, based on my observation of the communication
@@ -147,3 +147,12 @@ Fingering
   C major keyboard chart:
     3c0002 3e0004 400008 410010 430020 450040 470100 480200 4a0400
 
+
+Request re.corder state
+
+  Get:  f0002f7f0001    3a 010204 f7
+  Resp: f0002f7f0001 01 3a 00 01 pppppppp 00 xxxx 60 02 cccc 00 04 bbbbbb f7
+                                 ^^^^^^^^    ^^^^       ^^^^       ^^^^^^
+                                 Pressure    ?          Battery?   Buttons
+
+The request can also contain an additional data byte, 0x03, which will add lots of raw capacitive sensor data to the response.

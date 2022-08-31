@@ -191,4 +191,5 @@ if __name__ == '__main__':
   print(json.dumps(conf, sort_keys=True, indent=2))
 
   while wait_for_messages:
-    time.sleep(1)
+    input('Press Enter to request re.corder state.')
+    print(r.get_recorder_state([0x01, 0x02, 0x04]).hex())
