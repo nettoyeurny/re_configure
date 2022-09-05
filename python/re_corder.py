@@ -178,11 +178,9 @@ class Re_corder(object):
     }
     return ctrls
 
-  def get_recorder_state(self, channels):
-    for ch in channels:
-      if not ch in (0x01, 0x02, 0x03, 0x04):
-        raise ValueError(f'Invalid channel {ch}')
-    return self._run([0x3a], channels)
+  def get_battery_state(self):
+    _, _, hi, lo = self._run([0x3a], [0x02])
+    return (hi << 7) | lo
 
   def factory_reset(self):
     try:

@@ -150,9 +150,40 @@ Fingering
 
 Request re.corder state
 
-  Get:  f0002f7f0001    3a 010204 f7
-  Resp: f0002f7f0001 01 3a 00 01 pppppppp 00 xxxx 60 02 cccc 00 04 bbbbbb f7
-                                 ^^^^^^^^    ^^^^       ^^^^       ^^^^^^
-                                 Pressure    ?          Battery?   Buttons
+  Get:  f0002f7f0001    3a nn* f7
+  Resp: f0002f7f0001 01 3a (mm nn zz*)* f7
 
-The request can also contain an additional data byte, 0x03, which will add lots of raw capacitive sensor data to the response.
+  nn: Channel, 01-04
+
+  mm: 60 if nn is 02, otherwise 00; not sure what this means.
+
+  zz*: Depends on nn
+
+    nn == 01: Some encoding of air pressure(?).
+      WARNING: Requesting this channel by itself puts the re.corder in a strange
+      state where it emits intermittent MIDI note messages (requesting some
+      channel seems to take it out of that state), followed by a large sysex
+      response when leaving this state.
+
+    nn == 02: Battery state encoded as xxyy: (xx << 7) | yy
+
+    nn == 03: Raw sensor data
+
+    nn == 04: Button state
+
+      000001: Play
+      000002: Lip
+      000100: 5
+      000200: 6
+      000400: 6(small)
+      000800: 7
+      001000: 7(small)
+      002000: Record
+      004000: Stop
+      020000: Upper thumb
+      040000: Lower thumb
+      080000: 1
+      100000: 2
+      200000: 3
+      400000: 4
+

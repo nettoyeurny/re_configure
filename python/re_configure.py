@@ -189,7 +189,7 @@ if __name__ == '__main__':
     r.restore_default_settings()
   conf = update_settings(r, updated_config(json_conf, cli_conf), chart)
   print(json.dumps(conf, sort_keys=True, indent=2))
+  print('Battery state:', r.get_battery_state())
 
   while wait_for_messages:
-    input('Press Enter to request re.corder state.')
-    print(r.get_recorder_state([0x01, 0x02, 0x04]).hex())
+    time.sleep(10)
