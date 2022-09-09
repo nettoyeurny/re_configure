@@ -155,7 +155,7 @@ if __name__ == '__main__':
     elif key in ('-v', '--' + VELOCITY):
       cli_conf[VELOCITY] = int(val, 10)
     elif key in ('-e', '--' + EASY_CONNECT):
-      cli_conf[EASY_CONNECT] = int(val, 10)
+      cli_conf[EASY_CONNECT] = bool(int(val, 10))
     elif key in ('-n', '--' + MAINTAIN_NOTE):
       cli_conf[MAINTAIN_NOTE] = bool(int(val, 10))
     elif key in ('-a', '--' + SMOOTH_ACC):

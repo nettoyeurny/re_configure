@@ -17,7 +17,7 @@
       "Emb11"
     ]
   },
-  "easy_connect": false,
+  "easy_connect": true,
   "maintain_note": true,
   "midi_channel": 11,
   "smooth_acc": false,
