@@ -41,5 +41,6 @@ A fingering chart is a json file that contains a list of the form
 
 where each item specifies a note and a string representing a fingering to be
 read from left to right (left thumb to right pinkie), where `o/*/@` stands for
-an open/closed/partially closed hole, with optional dots for readability.
-
+an open/closed/partially closed hole, with optional dots for readability. In
+addition, the letter e specifies a partially closed hole in the opposite way
+(e.g., for left-handed fingerings).

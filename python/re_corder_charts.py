@@ -12,8 +12,10 @@ A fingering chart is a list of the form
   ...
 ]
 where each item specifies a note and a string representing a fingering to be
-read from left to right (left thumb to right pinkie), where o/*/@ stands for
-an open/closed/partially closed hole, with optional dots for readability.
+read from left to right (left thumb to right pinkie), where o/*/@ stands for an
+open/closed/partially closed hole, with optional dots for readability. In
+addition, the letter e specifies a partially closed hole in the opposite way
+(e.g., for left-handed fingerings).
 
 When run as a main routine, it reads name-sysex pairs from stdin, decodes the
 sysex message, and writes a human-readable chart to {name}.json. The -k command
@@ -81,8 +83,10 @@ def decode_fingering(fingering):
       s += '.'
     if f & full == full:
       s += '*'
-    elif f & full:
+    elif f & partial:
       s += '@'
+    elif f & full:
+      s += 'e'
     else:
       s += 'o'
   note = f >> 16
@@ -103,6 +107,8 @@ def encode_fingering(note, fingering):
       f |= bits[0]
     elif c == '@' and bits[0] != bits[1]:
       f |= bits[1]
+    elif c == 'e' and bits[0] != bits[1]:
+      f |= (bits[0] ^ bits[1])
     elif c != 'o':
       raise ValueError(f'Bad fingering: {fingering}')
   return bytes((to_midi_note(note), f >> 8, f & 0x7f)).hex()
