@@ -1,6 +1,6 @@
 re.corder sysex format, fw 00.07.06
 
-This is an _unofficial_ stab at document the sysex format for configuring
+This is an _unofficial_ stab at documenting the sysex format for configuring
 the re.corder by Artinoise, based on my observation of the communication
 between the re.corder and the re.corder Android app; use at your own risk.
 Please [let me know](mailto:peter.brinkmann@gmail.com) if I missed or
