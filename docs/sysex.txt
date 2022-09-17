@@ -165,7 +165,8 @@ Request re.corder state
       channel seems to take it out of that state), followed by a large sysex
       response when leaving this state.
 
-    nn == 02: Battery state encoded as xxyy: (xx << 7) | yy
+    nn == 02: Battery level encoded as xxyy: (xx << 7) | yy
+      So far, I've observed battery levels ranging from 3529 to 4051.
 
     nn == 03: Raw sensor data
 
