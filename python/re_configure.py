@@ -127,9 +127,9 @@ def update_settings(r, new_conf={}, chart=None):
 if __name__ == '__main__':
   try:
     args, extra = getopt.getopt(
-        sys.argv[1:], 'a:n:p:u:m:t:v:s:c:e:wrfhl',
+        sys.argv[1:], 'a:x:n:p:u:m:t:v:s:c:e:wrfhl',
         [s + '=' for s in [USER_MODE, MIDI_CHANNEL, THRESHOLD, VELOCITY]] +
-        ['port=', 'settings=', 'chart=', 'easy_connect=', 'wait',
+        ['port=', 'settings=', 'chart=', 'easy_connect=', 'export=', 'wait',
          'restore', 'factory_reset', 'help', 'list']
     )
     if extra:
@@ -145,6 +145,7 @@ if __name__ == '__main__':
   wait_for_messages = False
   restore = False
   factory_reset = False
+  export_file = None
   for key, val in args:
     if key in ('-u', '--' + USER_MODE):
       cli_conf[USER_MODE] = val
@@ -172,6 +173,8 @@ if __name__ == '__main__':
       restore = True
     elif key in ('-f', '--factory_reset'):
       factory_reset = True
+    elif key in ('-x', '--export'):
+      export_file = val
     elif key in ('-l', '--list'):
       re_corder.list_ports()
       sys.exit(0)
@@ -188,6 +191,9 @@ if __name__ == '__main__':
     print('Restoring default settings.')
     r.restore_default_settings()
   conf = update_settings(r, updated_config(json_conf, cli_conf), chart)
+  if export_file:
+    with open(export_file, 'w') as f:
+      json.dump(conf, f, sort_keys=True, indent=2)
   print(json.dumps(conf, sort_keys=True, indent=2))
   print('Battery state:', r.get_battery_state())
 
