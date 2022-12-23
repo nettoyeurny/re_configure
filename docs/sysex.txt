@@ -69,7 +69,7 @@ Controllers: Pressure, Acc_X, Acc_Y, Acc_Z:
   Get:  f0002f7f0001    3101 01 f7
   Resp: f0002f7f0001 01 3101 01
         ww
-        00 7f 7f 00 7f   # Controller 0?!?
+        00 7f 7f pp 7f   # Controller 0?!?
         01 nn 7f mm 7f   # Pressure
         02 nn 7f mm 7f   # Acc_X
         03 nn 7f mm 7f   # Acc_Y
@@ -78,7 +78,7 @@ Controllers: Pressure, Acc_X, Acc_Y, Acc_Z:
         f7
 
   Set:  f0002f7f0001 3001 00
-        00 00 00 00 7f
+        00 00 00 pp 7f
         01 nn 7f mm 7f    # Pressure
         02 nn 7f mm 7f    # Acc_X
         03 nn 7f mm 7f    # Acc_Y
@@ -86,9 +86,10 @@ Controllers: Pressure, Acc_X, Acc_Y, Acc_Z:
         f7
   Resp: f0002f7f0001 01 30 f7
 
+  pp: aftertouch curve { 00: "None", 01: "Linear", 02: "Embedded1", ... }
   ww: current user mode
   nn: MIDI channel 1-16
-  mm: { 00: "None", 01: "Linear", 02: "Embedded1", ... }
+  mm: controller curve { 00: "None", 01: "Linear", 02: "Embedded1", ... }
 
   Apparently there are controllers 00 and 41?!?
 
