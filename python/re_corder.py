@@ -62,15 +62,15 @@ BUTTONS = {
 
 
 class Re_corderException(Exception):
-  pass
+  ...
 
 
 class NoMatchingPortException(Re_corderException):
-  pass
+  ...
 
 
 class NoSysexResponseException(Re_corderException):
-  pass
+  ...
 
 
 class FailedRequestException(Re_corderException):
@@ -79,13 +79,11 @@ class FailedRequestException(Re_corderException):
     self.data = data
 
 
-def list_ports():
-  midi_in = rtmidi.MidiIn()
-  for p in midi_in.get_ports():
-    print(p)
+def get_ports():
+  return rtmidi.MidiIn().get_ports()
 
 
-def re_corder_ports(port_name='re.corder'):
+def open_re_corder_ports(port_name='re.corder'):
   midi_in = rtmidi.MidiIn()
   try:
     for i, p in enumerate(midi_in.get_ports()):
@@ -121,7 +119,7 @@ class Re_corder(object):
                port_name='re.corder', midi_ports=None):
     self.queue = queue.Queue()
     self.receiver = receiver
-    self.midi_in, self.midi_out = midi_ports or re_corder_ports(port_name)
+    self.midi_in, self.midi_out = midi_ports or open_re_corder_ports(port_name)
     self.midi_in.set_callback(self)
 
   def __call__(self, event, data=None):

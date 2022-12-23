@@ -177,7 +177,8 @@ if __name__ == '__main__':
     elif key in ('-x', '--export'):
       export_file = val
     elif key in ('-l', '--list'):
-      re_corder.list_ports()
+      for p in re_corder.get_ports():
+        print(p)
       sys.exit(0)
     elif key in ('-h', '--help'):
       print(__doc__)
