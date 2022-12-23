@@ -164,7 +164,7 @@ class Re_corder(object):
 
   def get_maintain_note(self):
     _, _, maintain, _, smooth = self._run([0x31, 0x08], [0x01])
-    return bool(maintain), bool(smooth)
+    return bool(maintain), smooth
 
   def get_sensitivity(self):
     _, _, hi, lo, _, v = self._run([0x31, 0x07], [0x01])
@@ -228,7 +228,8 @@ class Re_corder(object):
 
   def set_maintain_note(self, maintain, smooth):
     maintain = 1 if maintain else 0
-    smooth = 1 if smooth else 0
+    if smooth < 0 or smooth > 4:
+      raise ValueError('Bad accelerator smoothing value value.')
     self._run(
         [0x30],
         [0x08, 0x02, 0x03, maintain, 0x04, smooth]

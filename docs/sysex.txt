@@ -115,7 +115,7 @@ Maintain note/Smooth accelerometers:
   Resp: f0002f7f0001 01 30                  f7
 
   xx: maintain note flag
-  yy: smooth accelerator flag
+  yy: smooth accelerator value, 0 (no smoothing) - 4 (aggressive smoothing)
 
 
 Fingering

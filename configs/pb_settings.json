@@ -15,13 +15,13 @@
     ],
     "Pressure": [
       11,
-      "Emb11"
+      "None"
     ]
   },
   "easy_connect": true,
   "maintain_note": true,
   "midi_channel": 11,
-  "smooth_acc": false,
+  "smooth_acc": 0,
   "threshold": 2000,
   "user_mode": "Breath",
   "velocity": 0

@@ -161,7 +161,7 @@ if __name__ == '__main__':
     elif key in ('-n', '--' + MAINTAIN_NOTE):
       cli_conf[MAINTAIN_NOTE] = bool(int(val, 10))
     elif key in ('-a', '--' + SMOOTH_ACC):
-      cli_conf[SMOOTH_ACC] = bool(int(val, 10))
+      cli_conf[SMOOTH_ACC] = int(val, 10)
     elif key in ('-p', '--port'):
       port_name = val
     elif key in ('-s', '--settings'):
