@@ -70,6 +70,7 @@ USER_MODE = 'user_mode'
 MIDI_CHANNEL = 'midi_channel'
 THRESHOLD = 'threshold'
 VELOCITY = 'velocity'
+AFTERTOUCH = 'aftertouch'
 CONTROLLERS = 'controllers'
 EASY_CONNECT = 'easy_connect'
 MAINTAIN_NOTE = 'maintain_note'
@@ -90,7 +91,7 @@ def update_settings(r, new_conf={}, chart=None):
   conf[USER_MODE] = r.get_user_mode()
   conf[MIDI_CHANNEL] = r.get_midi_channel()
   conf[THRESHOLD], conf[VELOCITY] = r.get_sensitivity()
-  conf[CONTROLLERS] = r.get_controller_config()
+  conf[AFTERTOUCH], conf[CONTROLLERS] = r.get_controller_config()
   conf[EASY_CONNECT] = r.get_easy_connect_status()
   conf[MAINTAIN_NOTE], conf[SMOOTH_ACC] = r.get_maintain_note()
 

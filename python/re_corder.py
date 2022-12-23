@@ -172,11 +172,12 @@ class Re_corder(object):
 
   def get_controller_config(self):
     data = self._run([0x31, 0x01], [0x01])[1:]
+    aftertouch = CURVES[data[3]]
     ctrls = {
         CONTROLLERS[i]: (data[5 * i + 1], CURVES[data[5 * i + 3]])
         for i in range(1, 5)
     }
-    return ctrls
+    return (aftertouch, ctrls)
 
   def get_battery_state(self):
     _, _, hi, lo = self._run([0x3a], [0x02])
