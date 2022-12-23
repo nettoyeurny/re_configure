@@ -236,10 +236,16 @@ class Re_corder(object):
 
   # ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
   # 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
-  # and curve ('None', 'Linear', 'Emb1', ..., 'Emb16').
-  def set_controller_config(self, ctrls):
+  # and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting is
+  # also given by a curve.
+  def set_controller_config(self, aftertouch, ctrls):
     data = bytearray.fromhex(
         '0100000000007f01007f007f02007f007f03007f007f04007f007f')
+    try:
+      aftertouch = next(k for k, v in CURVES.items() if v == aftertouch)
+    except StopIteration:
+      raise ValueError(f'Bad curve: {curve}')
+    data[5] = aftertouch
     for i in range(1, 5):
       ctrl, curve = ctrls[CONTROLLERS[i]]
       ctrl = int(ctrl)
@@ -251,6 +257,8 @@ class Re_corder(object):
         raise ValueError(f'Bad curve: {curve}')
       data[5 * i + 3] = ctrl
       data[5 * i + 5] = curve
+    if aftertouch:
+      data[10] = 0  # Aftertouch replaces pressure controller.
     self._run([0x30], data)
 
   # chart is a list of strings representing six-digit hex values xxyyzz, where

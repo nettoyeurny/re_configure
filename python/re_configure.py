@@ -105,9 +105,9 @@ def update_settings(r, new_conf={}, chart=None):
   if THRESHOLD in new_conf or VELOCITY in new_conf:
     print('Setting sensitivity.')
     r.set_sensitivity(conf[THRESHOLD], conf[VELOCITY])
-  if CONTROLLERS in new_conf:
-    print('Setting controllers.')
-    r.set_controller_config(conf[CONTROLLERS])
+  if AFTERTOUCH in new_conf or CONTROLLERS in new_conf:
+    print('Setting aftertouch and controllers.')
+    r.set_controller_config(conf[AFTERTOUCH], conf[CONTROLLERS])
   if EASY_CONNECT in new_conf:
     print('Setting EasyConnect status.')
     r.set_easy_connect_status(conf[EASY_CONNECT])
