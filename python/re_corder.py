@@ -152,13 +152,13 @@ class Re_corder(object):
         f'Unexpected response: {payload.hex()}', payload)
 
   def get_user_mode(self):
-    return USER_MODES[self._run([0x22, 0x05], [])[0]]
+    return USER_MODES[self._run([0x22, 0x05])[0]]
 
   def get_midi_channel(self):
-    return self._run([0x22, 0x03], [])[0]
+    return self._run([0x22, 0x03])[0]
 
   def get_easy_connect_status(self):
-    return not self._run([0x22, 0x01], [])[0]
+    return not self._run([0x22, 0x01])[0]
 
   def get_maintain_note(self):
     _, _, maintain, _, smooth = self._run([0x31, 0x08], [0x01])
