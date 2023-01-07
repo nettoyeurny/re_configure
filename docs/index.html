@@ -78,6 +78,23 @@
       user_modes.selectedIndex = find_key(USER_MODES, mode);
     }
 
+    function log_config() {
+      re_corder.get_user_mode()
+        .then(m => console.log(`user mode: ${m}`));
+      re_corder.get_midi_channel()
+        .then(ch => console.log(`midi channel: ${ch}`));
+      re_corder.get_easy_connect_status()
+        .then(s => console.log(`easy connect: ${s}`));
+      re_corder.get_smoothing()
+        .then(s => console.log(s));
+      re_corder.get_sensitivity()
+        .then(s => console.log(s));
+      re_corder.get_controller_config()
+        .then(c => console.log(c));
+      re_corder.get_battery_state()
+        .then(b => console.log(`battery: ${b}`));
+    }
+
     window.addEventListener('load', () => {
       navigator.requestMIDIAccess({sysex: true, software: true})
         .then(midi_access => midi_setup(midi_access));
@@ -97,6 +114,9 @@
   <p>
   <button onclick="re_corder.get_user_mode().then(mode => select_user_mode(mode)).catch(err => alert(err));">Get User Mode</button>
     <select id="user-mode-selector"></select>
+  </p>
+  <p>
+  <button onclick="log_config();">Log Config</button>
   </p>
 </body>
 </html>

@@ -12,7 +12,39 @@ const USER_MODES = {
   1: 'Breath',
   2: 'Lip',
   3: 'Keyboard'
-}
+};
+
+const CONTROLLERS = {
+    1: 'Pressure',
+    2: 'AccX',
+    3: 'AccY',
+    4: 'AccZ'
+};
+
+const CURVES = {
+    0: 'None',
+    1: 'Linear',
+    2: 'Emb1',
+    3: 'Emb2',
+    4: 'Emb3',
+    5: 'Emb4',
+    6: 'Emb5',
+    7: 'Emb6',
+    8: 'Emb7',
+    9: 'Emb8',
+    10: 'Emb9',
+    11: 'Emb10',
+    12: 'Emb11',
+    13: 'Emb12',
+    14: 'Emb13',
+    15: 'Emb14',
+    16: 'Emb15',
+    17: 'Emb16',
+    18: 'Emb17',
+    19: 'Emb18',
+    20: 'Emb19',
+    21: 'Emb20'
+};
 
 const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
 
@@ -107,6 +139,34 @@ class ReCorder {
 
   async get_easy_connect_status() {
     return !(await this._run([0x22, 0x01]))[0];
+  }
+
+  async get_smoothing() {
+    const data = await this._run([0x31, 0x08], [0x01]);
+    return { maintain_note: Boolean(data[2]), smoothing: data[4] };
+  }
+
+  async get_sensitivity() {
+    const data = await this._run([0x31, 0x07], [0x01]);
+    return { threshold: (data[2] << 7) | data[3], velocity: data[5] };
+  }
+
+  async get_controller_config() {
+    const data = await this._run([0x31, 0x01], [0x01]);
+    const ctrls = {};
+    ctrls.aftertouch = CURVES[data[4]];
+    for (let i = 1; i < 5; ++i) {
+      ctrls[CONTROLLERS[i]] = {
+        ctrl: data[5 * i + 2],
+        curve: CURVES[data[5 * i + 4]]
+      };
+    }
+    return ctrls;
+  }
+
+  async get_battery_state() {
+    const data = await this._run([0x3a], [0x02]);
+    return (data[2] << 7) | data[3];
   }
 
   async set_user_mode(mode) {
