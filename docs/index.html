@@ -95,11 +95,11 @@
     MIDI Port <select id="input-port-selector"></select>
   </p>
   <p>
-  <button onclick="re_corder.get_midi_channel().then(ch => select_channel(ch));">Get MIDI Channel</button>
+  <button onclick="re_corder.get_midi_channel().then(ch => select_channel(ch)).catch(err => alert(err));">Get MIDI Channel</button>
     <select id="midi-channel-selector"></select>
   </p>
   <p>
-    <button onclick="re_corder.get_user_mode().then(mode => select_user_mode(mode));">Get User Mode</button>
+  <button onclick="re_corder.get_user_mode().then(mode => select_user_mode(mode)).catch(err => alert(err));">Get User Mode</button>
     <select id="user-mode-selector"></select>
   </p>
 </body>

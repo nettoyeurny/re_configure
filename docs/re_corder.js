@@ -91,6 +91,9 @@ class ReCorder {
   }
 
   async set_midi_channel(ch) {
+    if (ch < 1 || ch > 16) {
+      throw new Error(`Invalid MIDI channel:  ${ch}`);
+    }
     await this._run([0x21], [0x03, ch]);
   }
 }
