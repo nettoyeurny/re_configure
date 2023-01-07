@@ -54,15 +54,39 @@
           .catch(() => alert('Request failed! Try holding Record, perhaps?')));
     }
 
-    function select_channel(c) {
+    function user_mode_setup() {
+      const user_modes = document.querySelector('#user-mode-selector');
+      const option = document.createElement('option');
+      option.value = 0;
+      option.text = '--';
+      user_modes.appendChild(option);
+      for (const [key, value] of Object.entries(USER_MODES)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.text = value;
+        user_modes.appendChild(option);
+      }
+      user_modes.addEventListener('change', e => {
+        re_corder.set_user_mode(USER_MODES[e.target.selectedIndex])
+          .then(() => alert('Success!'))
+          .catch(() => alert('Request failed! Try holding Record, perhaps?'));});
+    }
+
+    function select_channel(ch) {
       const channels = document.querySelector('#midi-channel-selector');
-      channels.selectedIndex = c;
+      channels.selectedIndex = ch;
+    }
+
+    function select_user_mode(mode) {
+      const user_modes = document.querySelector('#user-mode-selector');
+      user_modes.selectedIndex = find_key(USER_MODES, mode);
     }
 
     window.addEventListener('load', () => {
       navigator.requestMIDIAccess({sysex: true, software: true})
         .then(midi_access => midi_setup(midi_access));
       channel_setup();
+      user_mode_setup();
     });
   </script>
 </head>
@@ -72,9 +96,12 @@
     <select id="input-port-selector"></select>
   </p>
   <p>
-  <button onclick="re_corder.get_midi_channel().then(c => select_channel(c));">Get MIDI Channel</button>
+  <button onclick="re_corder.get_midi_channel().then(ch => select_channel(ch));">Get MIDI Channel</button>
     <select id="midi-channel-selector"></select>
   </p>
-  <button onclick="re_corder.get_user_mode().then(m => console.log(`User Mode: ${m}`));">User Mode</button>
+  <p>
+    <button onclick="re_corder.get_user_mode().then(mode => select_user_mode(mode));">Get User Mode</button>
+    <select id="user-mode-selector"></select>
+  </p>
 </body>
 </html>
