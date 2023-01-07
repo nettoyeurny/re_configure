@@ -48,10 +48,9 @@ class ReCorder {
       var n = 0;
       const interval = setInterval(() => {
         n += 1;
-        const item = this._queue.shift();
-        if (item) {
+        if (this._queue.length > 0) {
           clearInterval(interval);
-          resolve(item);
+          resolve(this._queue.shift());
         } else if (n > n_max) {
           clearInterval(interval);
           reject(new Error('Timeout'));
