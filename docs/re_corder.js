@@ -14,13 +14,18 @@ const USER_MODES = {
 
 class ReCorder {
   constructor(input, output) {
-    this.input = input;
-    this.output = output;
+    this._input = input;
+    this._output = output;
     this.queue = [];
   
-    input.onmidimessage = this._handle_midi.bind(this);
+    this._input.onmidimessage = this._handle_midi.bind(this);
   }
   
+  close() {
+    this._input.close();
+    this._output.close();
+  }
+
   _handle_midi(event) {
     const suffix_start = event.data.length - SUFFIX.length;
     if (PREFIX.every((v, i) => v === event.data[i]) &&
@@ -56,7 +61,7 @@ class ReCorder {
     while (this.queue.shift()) {
       console.warn('Dangling payload!');
     }
-    this.output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
+    this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
     const payload = await this._poll();
     if (payload[0] != 0x01) {
       throw new Error('Failed request --- try holding Record, perhaps? ' + from_bytes(payload));

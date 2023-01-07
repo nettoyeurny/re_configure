@@ -19,7 +19,10 @@
           selector.appendChild(option);
         });
         selector.addEventListener('change', event => {
-          re_corder = null;
+          if (re_corder != null) {
+            re_corder.close();
+            re_corder = null;
+          }
           if (event.target.selectedIndex > 0) {
             const input_id = event.target.value;
             const input = midi_access.inputs.get(input_id);
