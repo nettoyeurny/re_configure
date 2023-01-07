@@ -160,7 +160,7 @@ class Re_corder(object):
   def get_easy_connect_status(self):
     return not self._run([0x22, 0x01])[0]
 
-  def get_maintain_note(self):
+  def get_smoothing(self):
     _, _, maintain, _, smooth = self._run([0x31, 0x08], [0x01])
     return bool(maintain), smooth
 
@@ -224,7 +224,7 @@ class Re_corder(object):
         [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
     )
 
-  def set_maintain_note(self, maintain, smooth):
+  def set_smoothing(self, maintain, smooth):
     maintain = 1 if maintain else 0
     if smooth < 0 or smooth > 4:
       raise ValueError('Bad accelerator smoothing value value.')
