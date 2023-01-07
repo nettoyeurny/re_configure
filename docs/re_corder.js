@@ -16,7 +16,7 @@ class ReCorder {
   constructor(input, output) {
     this._input = input;
     this._output = output;
-    this.queue = [];
+    this._queue = [];
   
     this._input.onmidimessage = this._handle_midi.bind(this);
   }
@@ -32,7 +32,7 @@ class ReCorder {
         SUFFIX.every((v, i) => v === event.data[i + suffix_start])) {
       const payload = event.data.slice(PREFIX.length, suffix_start);
       if (payload[0] === 0x01 || payload[0] === 0x02) {
-        this.queue.push(payload);
+        this._queue.push(payload);
       } else if (payload[0] === 0x34) {
         console.log('Button: ' + from_bytes(payload));
       } else {
@@ -46,7 +46,7 @@ class ReCorder {
       var n = 0;
       const interval = setInterval(() => {
         n += 1;
-        const item = this.queue.shift();
+        const item = this._queue.shift();
         if (item) {
           clearInterval(interval);
           resolve(item);
@@ -58,7 +58,7 @@ class ReCorder {
   }
 
   async _run(cmd, data=[]) {
-    while (this.queue.shift()) {
+    while (this._queue.shift()) {
       console.warn('Dangling payload!');
     }
     this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
