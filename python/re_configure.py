@@ -93,7 +93,7 @@ def update_settings(r, new_conf={}, chart=None):
   conf[THRESHOLD], conf[VELOCITY] = r.get_sensitivity()
   conf[AFTERTOUCH], conf[CONTROLLERS] = r.get_controller_config()
   conf[EASY_CONNECT] = r.get_easy_connect_status()
-  conf[MAINTAIN_NOTE], conf[SMOOTH_ACC] = r.get_maintain_note()
+  conf[MAINTAIN_NOTE], conf[SMOOTH_ACC] = r.get_smoothing()
 
   conf = updated_config(conf, new_conf)
   if USER_MODE in new_conf:
@@ -113,7 +113,7 @@ def update_settings(r, new_conf={}, chart=None):
     r.set_easy_connect_status(conf[EASY_CONNECT])
   if MAINTAIN_NOTE in new_conf or SMOOTH_ACC in new_conf:
     print('Setting maintain note/smooth accelerometer status.')
-    r.set_maintain_note(conf[MAINTAIN_NOTE], conf[SMOOTH_ACC])
+    r.set_smoothing(conf[MAINTAIN_NOTE], conf[SMOOTH_ACC])
 
   if chart:
     print('Setting fingering chart.')
