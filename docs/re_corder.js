@@ -12,32 +12,16 @@ const USER_MODES = {
   3: 'Keyboard'
 }
 
-function poll_queue(queue, n_max, dt) {
-  return new Promise((resolve, reject) => {
-    var n = 0;
-    const interval = setInterval(() => {
-      n += 1;
-      const item = queue.shift();
-      if (item) {
-        clearInterval(interval);
-        resolve(item);
-      } else if (n > n_max) {
-        reject(new Error('Timeout'));
-      }
-    }, dt);
-  });
-}
-
 class ReCorder {
   constructor(input, output) {
     this.input = input;
     this.output = output;
     this.queue = [];
   
-    input.onmidimessage = this.handle_midi.bind(this);
+    input.onmidimessage = this._handle_midi.bind(this);
   }
   
-  handle_midi(event) {
+  _handle_midi(event) {
     const suffix_start = event.data.length - SUFFIX.length;
     if (PREFIX.every((v, i) => v === event.data[i]) &&
         SUFFIX.every((v, i) => v === event.data[i + suffix_start])) {
@@ -52,12 +36,28 @@ class ReCorder {
     }
   }
   
+  _poll(n_max = 5, dt = 50) {
+    return new Promise((resolve, reject) => {
+      var n = 0;
+      const interval = setInterval(() => {
+        n += 1;
+        const item = this.queue.shift();
+        if (item) {
+          clearInterval(interval);
+          resolve(item);
+        } else if (n > n_max) {
+          reject(new Error('Timeout'));
+        }
+      }, dt);
+    });
+  }
+
   async _run(cmd, data=[]) {
     while (this.queue.shift()) {
       console.warn('Dangling payload!');
     }
     this.output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
-    const payload = await poll_queue(this.queue, 5, 50);
+    const payload = await this._poll();
     if (payload[0] != 0x01) {
       throw new Error('Failed request --- try holding Record, perhaps? ' + from_bytes(payload));
     }
