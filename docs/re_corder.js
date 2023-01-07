@@ -53,6 +53,7 @@ class ReCorder {
           clearInterval(interval);
           resolve(item);
         } else if (n > n_max) {
+          clearInterval(interval);
           reject(new Error('Timeout'));
         }
       }, dt);
