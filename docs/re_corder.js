@@ -79,7 +79,7 @@ class ReCorder {
   async get_midi_channel() {
     return (await this._run([0x22, 0x03]))[0];
   }
-  
+
   async set_midi_channel(ch) {
     await this._run([0x21], [0x03, ch]);
   }
