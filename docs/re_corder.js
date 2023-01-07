@@ -12,6 +12,8 @@ const USER_MODES = {
   3: 'Keyboard'
 }
 
+const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
+
 class ReCorder {
   constructor(input, output) {
     this._input = input;
@@ -78,6 +80,14 @@ class ReCorder {
   
   async get_midi_channel() {
     return (await this._run([0x22, 0x03]))[0];
+  }
+
+  async set_user_mode(mode) {
+    const m = find_key(USER_MODES, mode);
+    if (!m) {
+      throw new Error(`Unknown user mode:  ${mode}`);
+    }
+    await this._run([0x21], [0x05, m]);
   }
 
   async set_midi_channel(ch) {
