@@ -1,7 +1,9 @@
 'use strict';
 
-const to_bytes = s => new Uint8Array(s.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-const from_bytes = a => Array.prototype.map.call(a, b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+const to_bytes = s => new Uint8Array(s.match(/.{1,2}/g)
+  .map(byte => parseInt(byte, 16)));
+const from_bytes = a => Array.prototype.map.call(a, b => ('0' + (b & 0xFF)
+  .toString(16)).slice(-2)).join('');
 
 const PREFIX = to_bytes('f0002f7f0001');
 const SUFFIX = to_bytes('f7');
@@ -85,14 +87,14 @@ class ReCorder {
   async set_user_mode(mode) {
     const m = find_key(USER_MODES, mode);
     if (!m) {
-      throw new Error(`Unknown user mode:  ${mode}`);
+      throw new Error(`Unknown user mode: ${mode}`);
     }
     await this._run([0x21], [0x05, m]);
   }
 
   async set_midi_channel(ch) {
     if (ch < 1 || ch > 16) {
-      throw new Error(`Invalid MIDI channel:  ${ch}`);
+      throw new Error(`Invalid MIDI channel: ${ch}`);
     }
     await this._run([0x21], [0x03, ch]);
   }
