@@ -4,27 +4,31 @@
   <title>re_corder</title>
   <script src="re_corder.js"></script>
   <script>
-    var re_corder = null;
+    var re_corder = undefined;
 
-    function midi_setup(midi_access) {
+    async function midi_setup(midi_access) {
       const selector = document.querySelector('#input-port-selector');
       const none_option = document.createElement('option');
       none_option.textContent = 'None';
       selector.appendChild(none_option);
       midi_access.inputs.forEach(input => {
         const option = document.createElement('option');
-        option.value = input.id;
+        option.value = input.name;
         option.textContent = input.name;
         selector.appendChild(option);
       });
       selector.addEventListener('change', event => {
-        if (re_corder != null) {
+        if (re_corder) {
           re_corder.close();
-          re_corder = null;
+          re_corder = undefined;
         }
         if (event.target.selectedIndex > 0) {
-          const input_id = event.target.value;
-          re_corder = create_re_corder(midi_access, input_id);
+          const input_name = event.target.value;
+          create_re_corder(midi_access, input_name)
+            .then(r => {
+              re_corder = r;
+              console.log('Created ReCorder instance.');
+            });
         }
       });
     }

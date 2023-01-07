@@ -16,11 +16,15 @@ const USER_MODES = {
 
 const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
 
-const create_re_corder = (midi_access, input_id) => {
-  const input = midi_access.inputs.get(input_id);
-  for (const output of midi_access.outputs.values()) {
-    if (output.name === input.name) {
-      return new ReCorder(input, output);
+const create_re_corder = async (midi_access, port_name) => {
+  for (const input of midi_access.inputs.values()) {
+    if (input.name.includes(port_name)) {
+      for (const output of midi_access.outputs.values()) {
+        if (output.name.includes(port_name)) {
+          await Promise.all([input.open(), output.open()]);
+          return new ReCorder(input, output);
+        }
+      }
     }
   }
   throw new Error('No matching port found');
@@ -94,6 +98,10 @@ class ReCorder {
     return (await this._run([0x22, 0x03]))[0];
   }
 
+  async get_easy_connect_status() {
+    return !(await this._run([0x22, 0x01]))[0];
+  }
+
   async set_user_mode(mode) {
     const m = find_key(USER_MODES, mode);
     if (!m) {
@@ -107,5 +115,10 @@ class ReCorder {
       throw new Error(`Invalid MIDI channel: ${ch}`);
     }
     await this._run([0x21], [0x03, ch]);
+  }
+
+  async set_easy_connect_status(on) {
+    const s = on ? 0 : 1;
+    await this._run([0x21], [0x01, s]);
   }
 }
