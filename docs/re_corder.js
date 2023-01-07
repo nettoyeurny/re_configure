@@ -34,9 +34,9 @@ class ReCorder {
       if (payload[0] === 0x01 || payload[0] === 0x02) {
         this._queue.push(payload);
       } else if (payload[0] === 0x34) {
-        console.log('Button: ' + from_bytes(payload));
+        console.log(`Button: ${from_bytes(payload)}`);
       } else {
-        console.warn('Unexpected payload: ' + from_bytes(payload));
+        console.warn(`Unexpected payload: ${from_bytes(payload)}`);
       }
     }
   }
@@ -64,10 +64,10 @@ class ReCorder {
     this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
     const payload = await this._poll();
     if (payload[0] != 0x01) {
-      throw new Error('Failed request --- try holding Record, perhaps? ' + from_bytes(payload));
+      throw new Error(`Try holding Record, perhaps? ${from_bytes(payload)}`);
     }
     if (!cmd.every((v, i) => v === payload[i + 1])) {
-      throw new Error('Unexpected payload: ' + from_bytes(payload));
+      throw new Error(`Unexpected payload: ${from_bytes(payload)}`);
     }
     return payload.slice(cmd.length + 1);
   }
