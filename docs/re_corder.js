@@ -49,8 +49,6 @@ class ReCorder {
       } else {
         console.warn('Unexpected payload: ' + from_bytes(payload));
       }
-    } else {
-      console.log('MIDI event: ' + from_bytes(event.data));
     }
   }
   
