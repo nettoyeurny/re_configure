@@ -16,12 +16,11 @@ const USER_MODES = {
 
 const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
 
-const create_re_corder = async (midi_access, port_name) => {
+const create_re_corder = (midi_access, port_name) => {
   for (const input of midi_access.inputs.values()) {
     if (input.name.includes(port_name)) {
       for (const output of midi_access.outputs.values()) {
         if (output.name.includes(port_name)) {
-          await Promise.all([input.open(), output.open()]);
           return new ReCorder(input, output);
         }
       }
@@ -35,11 +34,15 @@ class ReCorder {
     this._input = input;
     this._output = output;
     this._queue = [];
-  
+
     this._input.onmidimessage = this._handle_midi.bind(this);
+    Promise.all([this._input.open(), this._output.open()])
+      .then(() => console.log('ReCorder ports are open.'))
+      .catch(err => console.error(err));
   }
   
   close() {
+    this._input.onmidimessage = null;
     this._input.close();
     this._output.close();
   }

@@ -24,11 +24,8 @@
         }
         if (event.target.selectedIndex > 0) {
           const input_name = event.target.value;
-          create_re_corder(midi_access, input_name)
-            .then(r => {
-              re_corder = r;
-              console.log('Created ReCorder instance.');
-            });
+          re_corder = create_re_corder(midi_access, input_name);
+          console.log(`Created ReCorder instance on Port ${input_name}.`);
         }
       });
     }
