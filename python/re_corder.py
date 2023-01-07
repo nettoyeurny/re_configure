@@ -21,10 +21,10 @@ USER_MODES = {
 }
 
 CONTROLLERS = {
-    1: "Pressure",
-    2: "AccX",
-    3: "AccY",
-    4: "AccZ"
+    1: 'Pressure',
+    2: 'AccX',
+    3: 'AccY',
+    4: 'AccZ'
 }
 
 CURVES = {
