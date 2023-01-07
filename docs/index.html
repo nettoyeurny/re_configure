@@ -6,45 +6,75 @@
   <script>
     var re_corder = null;
 
-    window.addEventListener('load', () => {
-      navigator.requestMIDIAccess({sysex: true, software: true}).then(midi_access => {
-        const selector = document.getElementById('input-port-selector');
-        const none_option = document.createElement('option');
-        none_option.textContent = 'None';
-        selector.appendChild(none_option);
-        midi_access.inputs.forEach(input => {
-          const option = document.createElement('option');
-          option.value = input.id;
-          option.textContent = input.name;
-          selector.appendChild(option);
-        });
-        selector.addEventListener('change', event => {
-          if (re_corder != null) {
-            re_corder.close();
-            re_corder = null;
-          }
-          if (event.target.selectedIndex > 0) {
-            const input_id = event.target.value;
-            const input = midi_access.inputs.get(input_id);
-            const input_name = input.name;
-            for (const output of midi_access.outputs.values()) {
-              if (output.name === input_name) {
-                re_corder = new ReCorder(input, output);
-                break;
-              }
+    function midi_setup(midi_access) {
+      const selector = document.querySelector('#input-port-selector');
+      const none_option = document.createElement('option');
+      none_option.textContent = 'None';
+      selector.appendChild(none_option);
+      midi_access.inputs.forEach(input => {
+        const option = document.createElement('option');
+        option.value = input.id;
+        option.textContent = input.name;
+        selector.appendChild(option);
+      });
+      selector.addEventListener('change', event => {
+        if (re_corder != null) {
+          re_corder.close();
+          re_corder = null;
+        }
+        if (event.target.selectedIndex > 0) {
+          const input_id = event.target.value;
+          const input = midi_access.inputs.get(input_id);
+          const input_name = input.name;
+          for (const output of midi_access.outputs.values()) {
+            if (output.name === input_name) {
+              re_corder = new ReCorder(input, output);
+              break;
             }
           }
-          console.log("re_corder: " + re_corder);
-        });
+        }
       });
+    }
+
+    function channel_setup() {
+      const channels = document.querySelector('#midi-channel-selector');
+      const option = document.createElement('option');
+      option.value = 0;
+      option.text = '--';
+      channels.appendChild(option);
+      for (let i = 1; i <= 16; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        channels.appendChild(option);
+      }
+      channels.addEventListener('change', e =>
+        re_corder.set_midi_channel(e.target.selectedIndex)
+          .then(() => alert('Success!'))
+          .catch(() => alert('Fail!')));
+    }
+
+    function select_channel(c) {
+      const channels = document.querySelector('#midi-channel-selector');
+      channels.selectedIndex = c;
+    }
+
+    window.addEventListener('load', () => {
+      navigator.requestMIDIAccess({sysex: true, software: true})
+        .then(midi_access => midi_setup(midi_access));
+      channel_setup();
     });
   </script>
 </head>
 <body>
   <h1>Select a Port:</h1>
-  <select id="input-port-selector"></select>
-  <br>
-  <button onclick="re_corder.get_user_mode().then(m => console.log('User Mode: ' + m))">User Mode</button>
-  <button onclick="re_corder.get_midi_channel().then(c => console.log('MIDI Channel: ' + c))">MIDI Channel</button>
+  <p>
+    <select id="input-port-selector"></select>
+  </p>
+  <p>
+  <button onclick="re_corder.get_midi_channel().then(c => select_channel(c));">Get MIDI Channel</button>
+    <select id="midi-channel-selector"></select>
+  </p>
+  <button onclick="re_corder.get_user_mode().then(m => console.log(`User Mode: ${m}`));">User Mode</button>
 </body>
 </html>

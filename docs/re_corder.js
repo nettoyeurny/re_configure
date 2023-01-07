@@ -73,10 +73,14 @@ class ReCorder {
   }
   
   async get_user_mode() {
-    return USER_MODES[(await this._run([0x22, 0x05]))[0]]
+    return USER_MODES[(await this._run([0x22, 0x05]))[0]];
   }
   
   async get_midi_channel() {
-    return (await this._run([0x22, 0x03]))[0]
+    return (await this._run([0x22, 0x03]))[0];
+  }
+  
+  async set_midi_channel(ch) {
+    await this._run([0x21], [0x03, ch]);
   }
 }
