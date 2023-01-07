@@ -64,7 +64,7 @@ class ReCorder {
     this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
     const payload = await this._poll();
     if (payload[0] != 0x01) {
-      throw new Error(`Try holding Record, perhaps? ${from_bytes(payload)}`);
+      throw new Error(`Request failed: ${from_bytes(payload)}`);
     }
     if (!cmd.every((v, i) => v === payload[i + 1])) {
       throw new Error(`Unexpected payload: ${from_bytes(payload)}`);

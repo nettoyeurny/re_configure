@@ -51,7 +51,7 @@
       channels.addEventListener('change', e =>
         re_corder.set_midi_channel(e.target.selectedIndex)
           .then(() => alert('Success!'))
-          .catch(() => alert('Fail!')));
+          .catch(() => alert('Request failed! Try holding Record, perhaps?')));
     }
 
     function select_channel(c) {
