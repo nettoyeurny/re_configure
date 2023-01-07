@@ -47,6 +47,10 @@ class ReCorder {
     this._output.close();
   }
 
+  toString() {
+    return `ReCorder(${this._input.name}, ${this._output.name})`;
+  }
+
   _handle_midi(event) {
     const suffix_start = event.data.length - SUFFIX.length;
     if (PREFIX.every((v, i) => v === event.data[i]) &&
