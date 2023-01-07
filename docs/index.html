@@ -24,14 +24,7 @@
         }
         if (event.target.selectedIndex > 0) {
           const input_id = event.target.value;
-          const input = midi_access.inputs.get(input_id);
-          const input_name = input.name;
-          for (const output of midi_access.outputs.values()) {
-            if (output.name === input_name) {
-              re_corder = new ReCorder(input, output);
-              break;
-            }
-          }
+          re_corder = create_re_corder(midi_access, input_id);
         }
       });
     }
@@ -51,7 +44,8 @@
       channels.addEventListener('change', e =>
         re_corder.set_midi_channel(e.target.selectedIndex)
           .then(() => alert('Success!'))
-          .catch(() => alert('Request failed! Try holding Record, perhaps?')));
+          .catch(() => alert('Request failed! Try holding Record, perhaps?'))
+      );
     }
 
     function user_mode_setup() {
@@ -66,10 +60,11 @@
         option.text = value;
         user_modes.appendChild(option);
       }
-      user_modes.addEventListener('change', e => {
+      user_modes.addEventListener('change', e =>
         re_corder.set_user_mode(USER_MODES[e.target.selectedIndex])
           .then(() => alert('Success!'))
-          .catch(() => alert('Request failed! Try holding Record, perhaps?'));});
+          .catch(() => alert('Request failed! Try holding Record, perhaps?'))
+      );
     }
 
     function select_channel(ch) {

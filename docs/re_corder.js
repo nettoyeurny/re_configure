@@ -16,6 +16,16 @@ const USER_MODES = {
 
 const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
 
+const create_re_corder = (midi_access, input_id) => {
+  const input = midi_access.inputs.get(input_id);
+  for (const output of midi_access.outputs.values()) {
+    if (output.name === input.name) {
+      return new ReCorder(input, output);
+    }
+  }
+  throw new Error('No matching port found');
+}
+
 class ReCorder {
   constructor(input, output) {
     this._input = input;
