@@ -224,33 +224,29 @@ class ReCorder {
     );
   }
  
-// ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
-// 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
-// and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
-// is also given by a curve.
-// def set_controller_config(self, aftertouch, ctrls):
-//    data = bytearray.fromhex(
-//        '0100000000007f01007f007f02007f007f03007f007f04007f007f')
-//    try:
-//      aftertouch = next(k for k, v in CURVES.items() if v == aftertouch)
-//    except StopIteration:
-//      raise ValueError(f'Bad curve: {curve}')
-//    data[5] = aftertouch
-//    for i in range(1, 5):
-//      ctrl, curve = ctrls[CONTROLLERS[i]]
-//      ctrl = int(ctrl)
-//      if ctrl < 0 or ctrl > 127:
-//        raise ValueError('Bad CC controller.')
-//      try:
-//        curve = next(k for k, v in CURVES.items() if v == curve)
-//      except StopIteration:
-//        raise ValueError(f'Bad curve: {curve}')
-//      data[5 * i + 3] = ctrl
-//      data[5 * i + 5] = curve
-//    if aftertouch:
-//      data[10] = 0  # Aftertouch replaces pressure controller.
-//    self._run([0x30], data)
-// 
+  // ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
+  // 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
+  // and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
+  // is also given by a curve.
+  async set_controller_config(aftertouch, ctrls) {
+    const data = to_bytes('0100000000007f01007f007f02007f007f03007f007f04007f007f');
+    for (let i = 1; i < 5; ++i) {
+      const ctrl = ctrls[CONTROLLERS[i]]['ctrl'];
+      const curve = find_key(CURVES, ctrls[CONTROLLERS[i]]['curve']);
+      if (ctrl < 0 || ctrl > 127) {
+        throw new Error('Bad CC controller.');
+      }
+      data[5 * i + 3] = ctrl;
+      data[5 * i + 5] = curve;
+    }
+    const a = find_key(CURVES, aftertouch);
+    if (a) {
+      data[5] = a;
+      data[10] = 0;  // Aftertouch replaces pressure controller.
+    }
+    await this._run([0x30], data);
+  }
+
 // chart is a list of strings representing six-digit hex values xxyyzz, where
 // xx is a MIDI note value and yyzz represents an 11-bit number, yy < 7 | zz,
 // whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
