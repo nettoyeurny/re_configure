@@ -169,6 +169,16 @@ class ReCorder {
     return (data[2] << 7) | data[3];
   }
 
+  async factory_reset() {
+    this._run([0x10])
+      .then(() => throw new Error('Still connected after reset?!?'))
+      .catch(() => {});
+  }
+
+  async restore_default_settings() {
+    await this._run([0x2f]);
+  }
+
   async set_user_mode(mode) {
     const m = find_key(USER_MODES, mode);
     if (!m) {
