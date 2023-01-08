@@ -200,4 +200,70 @@ class ReCorder {
     const s = on ? 0 : 1;
     await this._run([0x21], [0x01, s]);
   }
+
+  async set_sensitivity(threshold, velocity) {
+    if (threshold < 601 || threshold > 0x3fff) {
+      throw new Error('Bad threshold value.');
+    }
+    if (velocity < 0 || velocity > 0x7f) {
+      throw new Error('Bad velocity value.');
+    }
+    await this._run(
+        [0x30],
+        [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
+    )
+  }
+
+  async set_smoothing(maintain, smooth) {
+    if (smooth < 0 || smooth > 4) {
+      throw new Error('Bad accelerator smoothing value value.');
+    }
+    await this._run(
+        [0x30],
+        [0x08, 0x02, 0x03, maintain ? 1 : 0, 0x04, smooth]
+    );
+  }
+ 
+//  # ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
+//  # 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
+//  # and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting is
+//  # also given by a curve.
+//  def set_controller_config(self, aftertouch, ctrls):
+//    data = bytearray.fromhex(
+//        '0100000000007f01007f007f02007f007f03007f007f04007f007f')
+//    try:
+//      aftertouch = next(k for k, v in CURVES.items() if v == aftertouch)
+//    except StopIteration:
+//      raise ValueError(f'Bad curve: {curve}')
+//    data[5] = aftertouch
+//    for i in range(1, 5):
+//      ctrl, curve = ctrls[CONTROLLERS[i]]
+//      ctrl = int(ctrl)
+//      if ctrl < 0 or ctrl > 127:
+//        raise ValueError('Bad CC controller.')
+//      try:
+//        curve = next(k for k, v in CURVES.items() if v == curve)
+//      except StopIteration:
+//        raise ValueError(f'Bad curve: {curve}')
+//      data[5 * i + 3] = ctrl
+//      data[5 * i + 5] = curve
+//    if aftertouch:
+//      data[10] = 0  # Aftertouch replaces pressure controller.
+//    self._run([0x30], data)
+// 
+//  # chart is a list of strings representing six-digit hex values xxyyzz, where
+//  # xx is a MIDI note value and yyzz represents an 11-bit number, yy < 7 | zz,
+//  # whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
+//  # represents D#5.
+//  def set_fingering_chart(self, chart):
+//    if len(chart) < 1 or len(chart) > 62:
+//      raise ValueError('Bad fingering chart.')
+//    data = bytearray.fromhex('0000')
+//    for f in chart:
+//      b = bytes.fromhex(f)
+//      n = int.from_bytes(b, 'big')
+//      if len(b) != 3 or n & 0x7f0f7f != n:
+//        raise ValueError(f'Bad fingering: {f}')
+//      data.extend(b)
+//    self._run([0x30], data)
 }
