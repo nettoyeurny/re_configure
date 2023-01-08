@@ -171,7 +171,9 @@ class ReCorder {
 
   async factory_reset() {
     this._run([0x10])
-      .then(() => throw new Error('Still connected after reset?!?'))
+      .then(() => {
+        throw new Error('Still connected after reset?!?');
+      })
       .catch(() => {});
   }
 
