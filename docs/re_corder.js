@@ -224,11 +224,11 @@ class ReCorder {
     );
   }
  
-//  # ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
-//  # 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
-//  # and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting is
-//  # also given by a curve.
-//  def set_controller_config(self, aftertouch, ctrls):
+// ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
+// 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
+// and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
+// is also given by a curve.
+// def set_controller_config(self, aftertouch, ctrls):
 //    data = bytearray.fromhex(
 //        '0100000000007f01007f007f02007f007f03007f007f04007f007f')
 //    try:
@@ -251,11 +251,11 @@ class ReCorder {
 //      data[10] = 0  # Aftertouch replaces pressure controller.
 //    self._run([0x30], data)
 // 
-//  # chart is a list of strings representing six-digit hex values xxyyzz, where
-//  # xx is a MIDI note value and yyzz represents an 11-bit number, yy < 7 | zz,
-//  # whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
-//  # represents D#5.
-//  def set_fingering_chart(self, chart):
+// chart is a list of strings representing six-digit hex values xxyyzz, where
+// xx is a MIDI note value and yyzz represents an 11-bit number, yy < 7 | zz,
+// whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
+// represents D#5.
+// def set_fingering_chart(self, chart):
 //    if len(chart) < 1 or len(chart) > 62:
 //      raise ValueError('Bad fingering chart.')
 //    data = bytearray.fromhex('0000')
