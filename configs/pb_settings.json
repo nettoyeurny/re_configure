@@ -1,22 +1,22 @@
 {
   "aftertouch": "Emb11",
   "controllers": {
-    "AccX": [
-      1,
-      "Linear"
-    ],
-    "AccY": [
-      52,
-      "Linear"
-    ],
-    "AccZ": [
-      53,
-      "Linear"
-    ],
-    "Pressure": [
-      11,
-      "None"
-    ]
+    "AccX": {
+      "ctrl": 1,
+      "curve": "Linear"
+    },
+    "AccY": {
+      "ctrl": 52,
+      "curve": "Linear"
+    },
+    "AccZ": {
+      "ctrl": 53,
+      "curve": "Linear"
+    },
+    "Pressure": {
+      "ctrl": 11,
+      "curve": "None"
+    }
   },
   "easy_connect": true,
   "maintain_note": true,

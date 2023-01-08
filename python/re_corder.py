@@ -172,8 +172,10 @@ class Re_corder(object):
     data = self._run([0x31, 0x01], [0x01])[1:]
     aftertouch = CURVES[data[3]]
     ctrls = {
-        CONTROLLERS[i]: (data[5 * i + 1], CURVES[data[5 * i + 3]])
-        for i in range(1, 5)
+        CONTROLLERS[i]: {
+          'ctrl': data[5 * i + 1],
+          'curve': CURVES[data[5 * i + 3]]
+        } for i in range(1, 5)
     }
     return (aftertouch, ctrls)
 
@@ -234,9 +236,9 @@ class Re_corder(object):
     )
 
   # ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
-  # 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
-  # and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting is
-  # also given by a curve.
+  # 'AccY', 'AccZ') to dicts specifying the MIDI controller (0-127) and
+  # curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
+  # is also given by a curve.
   def set_controller_config(self, aftertouch, ctrls):
     data = bytearray.fromhex(
         '0100000000007f01007f007f02007f007f03007f007f04007f007f')
@@ -246,7 +248,8 @@ class Re_corder(object):
       raise ValueError(f'Bad curve: {curve}')
     data[5] = aftertouch
     for i in range(1, 5):
-      ctrl, curve = ctrls[CONTROLLERS[i]]
+      ctrl = ctrls[CONTROLLERS[i]]['ctrl']
+      curve = ctrls[CONTROLLERS[i]]['curve']
       ctrl = int(ctrl)
       if ctrl < 0 or ctrl > 127:
         raise ValueError('Bad CC controller.')
