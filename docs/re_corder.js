@@ -2,8 +2,11 @@
 
 const from_hex = s => new Uint8Array(s.match(/.{1,2}/g)
   .map(byte => parseInt(byte, 16)));
+
 const to_hex = a => Array.prototype.map.call(a, b => ('0' + (b & 0xFF)
   .toString(16)).slice(-2)).join('');
+
+const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
 
 const PREFIX = from_hex('f0002f7f0001');
 const SUFFIX = from_hex('f7');
@@ -45,8 +48,6 @@ const CURVES = {
     20: 'Emb19',
     21: 'Emb20'
 };
-
-const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
 
 const create_re_corder = (midi_access, port_name) => {
   for (const input of midi_access.inputs.values()) {
@@ -142,7 +143,7 @@ class ReCorder {
 
   async get_smoothing() {
     const data = await this._run([0x31, 0x08], [0x01]);
-    return { maintain_note: Boolean(data[2]), smoothing: data[4] };
+    return { maintain_note: Boolean(data[2]), smooth_acc: data[4] };
   }
 
   async get_sensitivity() {
@@ -228,7 +229,8 @@ class ReCorder {
   // and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
   // is also given by a curve.
   async set_controller_config(aftertouch, ctrls) {
-    const data = from_hex('0100000000007f01007f007f02007f007f03007f007f04007f007f');
+    const data = from_hex(
+      '0100000000007f01007f007f02007f007f03007f007f04007f007f');
     for (let i = 1; i < 5; ++i) {
       const ctrl = ctrls[CONTROLLERS[i]].ctrl;
       const curve = find_key(CURVES, ctrls[CONTROLLERS[i]].curve);
@@ -265,4 +267,53 @@ class ReCorder {
     }
     await this._run([0x30], data);
   }
+}
+
+const get_config = async r => {
+  const user_mode = await r.get_user_mode();
+  const midi_channel = await r.get_midi_channel();
+  const easy_connect = await r.get_easy_connect_status();
+  const smoothing = await r.get_smoothing();
+  const sensitivity = await r.get_sensitivity();
+  const controllers = await r.get_controller_config();
+  return JSON.stringify({
+    user_mode: user_mode,
+    midi_channel: midi_channel,
+    threshold: sensitivity.threshold,
+    velocity: sensitivity.velocity,
+    aftertouch: controllers.aftertouch,
+    controllers: controllers,
+    easy_connect: easy_connect,
+    maintain_note: smoothing.maintain_note,
+    smooth_acc: smoothing.smooth_acc
+  }, null, 2);
+}
+
+const deep_update = (obj1, obj2) => {
+  for (const key in obj2) {
+    if (obj2[key] instanceof Object) {
+      deep_update(obj1[key], obj2[key]);
+    } else {
+      obj1[key] = obj2[key];
+    }
+  }
+}
+
+const set_config = async (r, new_conf) => {
+  const conf = JSON.parse(await get_config(r));
+  const old_user_mode = conf.user_mode;
+  const old_midi_channel = conf.midi_channel;
+  deep_update(conf, JSON.parse(new_conf));
+  if (conf.user_mode !== old_user_mode) {
+    await r.set_user_mode(conf.user_mode);
+  }
+  if (conf.midi_channel !== old_midi_channel) {
+    await r.set_midi_channel(conf.midi_channel);
+  }
+  await r.set_easy_connect_status(conf.easy_connect);
+  await r.set_sensitivity(conf.threshold, conf.velocity);
+  await r.set_smoothing(conf.maintain_note, conf.smooth_acc);
+  await r.set_controller_config(conf.aftertouch,
+    conf.controllers);
+  return JSON.stringify(conf, null, 2);
 }
