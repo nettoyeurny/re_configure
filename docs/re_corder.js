@@ -72,7 +72,7 @@ class ReCorder {
     Promise.all([this._input.open(), this._output.open()])
       .then(() => console.log('ReCorder ports are open.'));
   }
-  
+
   close() {
     this._input.onmidimessage = null;
     this._input.close();
@@ -97,7 +97,7 @@ class ReCorder {
       }
     }
   }
-  
+
   _poll(n_max = 5, dt = 50) {
     return new Promise((resolve, reject) => {
       var n = 0;
@@ -128,11 +128,11 @@ class ReCorder {
     }
     return payload.slice(cmd.length + 1);
   }
-  
+
   async get_user_mode() {
     return USER_MODES[(await this._run([0x22, 0x05]))[0]];
   }
-  
+
   async get_midi_channel() {
     return (await this._run([0x22, 0x03]))[0];
   }
@@ -223,7 +223,7 @@ class ReCorder {
         [0x08, 0x02, 0x03, maintain ? 1 : 0, 0x04, smooth]
     );
   }
- 
+
   // ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
   // 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
   // and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
