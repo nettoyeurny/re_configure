@@ -60,6 +60,9 @@ BUTTONS = {
     5: 'Disconnect'
 }
 
+CTRL = 'ctrl'
+CURVE = 'curve'
+
 
 class Re_corderException(Exception):
   ...
@@ -173,8 +176,8 @@ class Re_corder(object):
     aftertouch = CURVES[data[3]]
     ctrls = {
         CONTROLLERS[i]: {
-          'ctrl': data[5 * i + 1],
-          'curve': CURVES[data[5 * i + 3]]
+          CTRL: data[5 * i + 1],
+          CURVE: CURVES[data[5 * i + 3]]
         } for i in range(1, 5)
     }
     return (aftertouch, ctrls)
@@ -243,8 +246,8 @@ class Re_corder(object):
     data = bytearray.fromhex(
         '0100000000007f01007f007f02007f007f03007f007f04007f007f')
     for i in range(1, 5):
-      ctrl = ctrls[CONTROLLERS[i]]['ctrl']
-      curve = ctrls[CONTROLLERS[i]]['curve']
+      ctrl = ctrls[CONTROLLERS[i]][CTRL]
+      curve = ctrls[CONTROLLERS[i]][CURVE]
       ctrl = int(ctrl)
       if ctrl < 0 or ctrl > 127:
         raise ValueError('Bad CC controller.')
