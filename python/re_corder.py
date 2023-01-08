@@ -264,7 +264,7 @@ class Re_corder(object):
     self._run([0x30], data)
 
   # chart is a list of strings representing six-digit hex values xxyyzz, where
-  # xx is a MIDI note value and yyzz represents an 11-bit number, yy < 7 | zz,
+  # xx is a MIDI note value and yyzz represents an 11-bit number, yy << 7 | zz,
   # whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
   # represents D#5.
   def set_fingering_chart(self, chart):
