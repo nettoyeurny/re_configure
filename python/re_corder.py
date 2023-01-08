@@ -242,11 +242,6 @@ class Re_corder(object):
   def set_controller_config(self, aftertouch, ctrls):
     data = bytearray.fromhex(
         '0100000000007f01007f007f02007f007f03007f007f04007f007f')
-    try:
-      aftertouch = next(k for k, v in CURVES.items() if v == aftertouch)
-    except StopIteration:
-      raise ValueError(f'Bad curve: {curve}')
-    data[5] = aftertouch
     for i in range(1, 5):
       ctrl = ctrls[CONTROLLERS[i]]['ctrl']
       curve = ctrls[CONTROLLERS[i]]['curve']
@@ -259,7 +254,12 @@ class Re_corder(object):
         raise ValueError(f'Bad curve: {curve}')
       data[5 * i + 3] = ctrl
       data[5 * i + 5] = curve
+    try:
+      aftertouch = next(k for k, v in CURVES.items() if v == aftertouch)
+    except StopIteration:
+      raise ValueError(f'Bad curve: {curve}')
     if aftertouch:
+      data[5] = aftertouch
       data[10] = 0  # Aftertouch replaces pressure controller.
     self._run([0x30], data)
 
