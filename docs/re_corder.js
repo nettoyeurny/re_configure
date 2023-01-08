@@ -230,8 +230,8 @@ class ReCorder {
   async set_controller_config(aftertouch, ctrls) {
     const data = from_hex('0100000000007f01007f007f02007f007f03007f007f04007f007f');
     for (let i = 1; i < 5; ++i) {
-      const ctrl = ctrls[CONTROLLERS[i]]['ctrl'];
-      const curve = find_key(CURVES, ctrls[CONTROLLERS[i]]['curve']);
+      const ctrl = ctrls[CONTROLLERS[i]].ctrl;
+      const curve = find_key(CURVES, ctrls[CONTROLLERS[i]].curve);
       if (ctrl < 0 || ctrl > 127) {
         throw new Error('Bad CC controller.');
       }
