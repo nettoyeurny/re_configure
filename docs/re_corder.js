@@ -69,8 +69,7 @@ class ReCorder {
 
     this._input.onmidimessage = this._handle_midi.bind(this);
     Promise.all([this._input.open(), this._output.open()])
-      .then(() => console.log('ReCorder ports are open.'))
-      .catch(err => console.error(err));
+      .then(() => console.log('ReCorder ports are open.'));
   }
   
   close() {
