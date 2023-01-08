@@ -1,12 +1,12 @@
 'use strict';
 
-const to_bytes = s => new Uint8Array(s.match(/.{1,2}/g)
+const from_hex = s => new Uint8Array(s.match(/.{1,2}/g)
   .map(byte => parseInt(byte, 16)));
-const from_bytes = a => Array.prototype.map.call(a, b => ('0' + (b & 0xFF)
+const to_hex = a => Array.prototype.map.call(a, b => ('0' + (b & 0xFF)
   .toString(16)).slice(-2)).join('');
 
-const PREFIX = to_bytes('f0002f7f0001');
-const SUFFIX = to_bytes('f7');
+const PREFIX = from_hex('f0002f7f0001');
+const SUFFIX = from_hex('f7');
 
 const USER_MODES = {
   1: 'Breath',
@@ -91,9 +91,9 @@ class ReCorder {
       if (payload[0] === 0x01 || payload[0] === 0x02) {
         this._queue.push(payload);
       } else if (payload[0] === 0x34) {
-        console.log(`Button: ${from_bytes(payload)}`);
+        console.log(`Button: ${to_hex(payload)}`);
       } else {
-        console.warn(`Unexpected payload: ${from_bytes(payload)}`);
+        console.warn(`Unexpected payload: ${to_hex(payload)}`);
       }
     }
   }
@@ -121,10 +121,10 @@ class ReCorder {
     this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
     const payload = await this._poll();
     if (payload[0] != 0x01) {
-      throw new Error(`Request failed: ${from_bytes(payload)}`);
+      throw new Error(`Request failed: ${to_hex(payload)}`);
     }
     if (!cmd.every((v, i) => v === payload[i + 1])) {
-      throw new Error(`Unexpected payload: ${from_bytes(payload)}`);
+      throw new Error(`Unexpected payload: ${to_hex(payload)}`);
     }
     return payload.slice(cmd.length + 1);
   }
@@ -229,7 +229,7 @@ class ReCorder {
   // and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
   // is also given by a curve.
   async set_controller_config(aftertouch, ctrls) {
-    const data = to_bytes('0100000000007f01007f007f02007f007f03007f007f04007f007f');
+    const data = from_hex('0100000000007f01007f007f02007f007f03007f007f04007f007f');
     for (let i = 1; i < 5; ++i) {
       const ctrl = ctrls[CONTROLLERS[i]]['ctrl'];
       const curve = find_key(CURVES, ctrls[CONTROLLERS[i]]['curve']);
@@ -247,19 +247,23 @@ class ReCorder {
     await this._run([0x30], data);
   }
 
-// chart is a list of strings representing six-digit hex values xxyyzz, where
-// xx is a MIDI note value and yyzz represents an 11-bit number, yy < 7 | zz,
-// whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
-// represents D#5.
-// def set_fingering_chart(self, chart):
-//    if len(chart) < 1 or len(chart) > 62:
-//      raise ValueError('Bad fingering chart.')
-//    data = bytearray.fromhex('0000')
-//    for f in chart:
-//      b = bytes.fromhex(f)
-//      n = int.from_bytes(b, 'big')
-//      if len(b) != 3 or n & 0x7f0f7f != n:
-//        raise ValueError(f'Bad fingering: {f}')
-//      data.extend(b)
-//    self._run([0x30], data)
+  // chart is a list of strings representing six-digit hex values xxyyzz, where
+  // xx is a MIDI note value and yyzz represents an 11-bit number, yy << 7 | zz,
+  // whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
+  // represents D#5.
+  async set_fingering_chart(chart) {
+    if (chart.length < 1 || chart.length > 62) {
+      throw new Error('Bad fingering chart.');
+    }
+    const data = new UInt8Array(2 + 3 * chart.length);
+    data.set(from_hex('0000'), 0);
+    for (let i = 0; i < chart.length; ++i) {
+      const b = from_hex(f);
+      if (b.length != 3 || b[0] & 0x80 || b[1] & 0xf0 || b[2] & 0x80) {
+        throw new Error(`Bad fingering: ${f}`);
+      }
+      data.set(b, 2 + 3 * i);
+    }
+    await this._run([0x30], data);
+  }
 }
