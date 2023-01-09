@@ -13,6 +13,10 @@
       }
     }
 
+    const log_button = (data) => {
+      console.log(`Re.corder button: ${data}`);
+    }
+
     const log_note_event = e => {
       const data = e.data;
       if (!(data[0] & 0x60)) {
@@ -39,7 +43,8 @@
         }
         if (event.target.selectedIndex > 0) {
           const input_name = event.target.value;
-          create_re_corder(midi_access, input_name, log_note_event)
+          create_re_corder(
+              midi_access, input_name, log_button, log_note_event)
             .then(r => {
               re_corder = r;
               return r.get_battery_state();
