@@ -1,3 +1,10 @@
+// Sysex configuration library for re.corder.
+//
+// Copyright (c) 2023 Peter Brinkmann <peter.brinkmann@gmail.com>
+//
+// BSD 3-Clause License
+// For information on usage and redistribution, and for a DISCLAIMER OF ALL
+// WARRANTIES, see the file LICENSE in this distribution.
 'use strict';
 
 const from_hex = s => new Uint8Array(s.match(/.{1,2}/g)
