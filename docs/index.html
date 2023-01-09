@@ -6,6 +6,13 @@
   <script>
     var re_corder = undefined;
 
+    const enable_buttons = enabled => {
+      const buttons = document.querySelectorAll('button');
+      for (const button of buttons) {
+        button.disabled = !enabled;
+      }
+    }
+
     const midi_setup = async (midi_access) => {
       const selector = document.querySelector('#input-port-selector');
       const none_option = document.createElement('option');
@@ -25,7 +32,10 @@
         if (event.target.selectedIndex > 0) {
           const input_name = event.target.value;
           re_corder = create_re_corder(midi_access, input_name);
+          enable_buttons(true);
           alert(`Created re_corder access at ${input_name}.`);
+        } else {
+          enable_buttons(false);
         }
       });
     }
@@ -53,6 +63,7 @@
     }
 
     window.addEventListener('load', () => {
+      enable_buttons(false);
       navigator.requestMIDIAccess({sysex: true, software: true})
         .then(midi_access => midi_setup(midi_access))
         .catch(_ => alert('Failed to get MIDI access!'));
@@ -60,7 +71,7 @@
   </script>
 </head>
 <body>
-
+  <h1>Online Re.corder Configuration Tools</h1>
   <p>
     Re.corder Port <select id="input-port-selector"></select>
   </p>
