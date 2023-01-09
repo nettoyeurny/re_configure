@@ -360,6 +360,10 @@ const encode_fingering = (note, fingering) => {
 }
 
 const set_re_corder_fingerings = async (r, fingerings) => {
+  const user_mode = await r.get_user_mode();
+  if (user_mode === 'Keyboard') {
+    throw new Error('Keyboard fingerings are currently unsupported :(');
+  }
   const f = JSON.parse(fingerings);
   const chart = f.map(a => encode_fingering(a[0], a[1]));
   await r.set_fingering_chart(chart);
