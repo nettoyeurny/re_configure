@@ -69,7 +69,26 @@
     <textarea id="re_corder-config" rows="28" cols="32"></textarea>
   </p>
   <p>
-  <button onclick="set_fingerings();">Set Fingerings</button>
+    <h2>Fingering Chart Format</h2>
+
+    A fingering chart is a json file that contains a list of the form
+    <pre>
+        [
+          ...
+          [ "G5",  "*.***.oooo" ],
+          [ "G#5", "*.**o.**@o" ],
+          [ "A5",  "*.**o.oooo" ],
+          ...
+        ]
+    </pre>
+    where each item specifies a note and a string representing a fingering to be
+    read from left to right (left thumb to right pinkie), where `o/*/@` stands
+    for an open/closed/partially closed hole, with optional dots for
+    readability. In addition, the letter `e` specifies a partially closed hole
+    in the opposite way (e.g., for left-handed fingerings).
+  </p>
+  <p>
+    <button onclick="set_fingerings();">Set Fingerings</button>
     <br>
     <textarea id="re_corder-fingerings" rows="28" cols="32">
 [
