@@ -56,13 +56,13 @@ const CURVES = {
     21: 'Emb20'
 };
 
-const create_re_corder = async (midi_access, port_name) => {
+const create_re_corder = async (midi_access, port_name, on_midi_msg) => {
   for (const input of midi_access.inputs.values()) {
     if (input.name.includes(port_name)) {
       for (const output of midi_access.outputs.values()) {
         if (output.name.includes(port_name)) {
           await Promise.all([input.open(), output.open()]);
-          return new ReCorder(input, output);
+          return new ReCorder(input, output, on_midi_msg);
         }
       }
     }
@@ -71,9 +71,10 @@ const create_re_corder = async (midi_access, port_name) => {
 }
 
 class ReCorder {
-  constructor(input, output) {
+  constructor(input, output, on_midi_msg) {
     this._input = input;
     this._output = output;
+    this._on_midi_msg = on_midi_msg;
     this._queue = [];
 
     this._input.onmidimessage = this._handle_midi.bind(this);
@@ -101,6 +102,8 @@ class ReCorder {
       } else {
         console.warn(`Unexpected payload: ${to_hex(payload)}`);
       }
+    } else {
+      this._on_midi_msg(event);
     }
   }
 

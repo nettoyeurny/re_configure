@@ -13,6 +13,13 @@
       }
     }
 
+    const log_note_event = e => {
+      const data = e.data;
+      if (!(data[0] & 0x60)) {
+        console.log(`MIDI note event: ${to_hex(data)}`);
+      }
+    }
+
     const midi_setup = async (midi_access) => {
       const selector = document.querySelector('#input-port-selector');
       const none_option = document.createElement('option');
@@ -32,7 +39,7 @@
         }
         if (event.target.selectedIndex > 0) {
           const input_name = event.target.value;
-          create_re_corder(midi_access, input_name)
+          create_re_corder(midi_access, input_name, log_note_event)
             .then(r => {
               re_corder = r;
               return r.get_battery_state();
