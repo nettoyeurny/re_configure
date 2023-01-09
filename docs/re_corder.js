@@ -269,7 +269,7 @@ class ReCorder {
   }
 }
 
-const get_config = async r => {
+const get_re_corder_config = async r => {
   const user_mode = await r.get_user_mode();
   const midi_channel = await r.get_midi_channel();
   const easy_connect = await r.get_easy_connect_status();
@@ -298,8 +298,8 @@ const deep_update = (obj1, obj2) => {
   }
 }
 
-const set_config = async (r, new_conf) => {
-  const conf = JSON.parse(await get_config(r));
+const set_re_corder_config = async (r, new_conf) => {
+  const conf = JSON.parse(await get_re_corder_config(r));
   const old_user_mode = conf.user_mode;
   const old_midi_channel = conf.midi_channel;
   deep_update(conf, JSON.parse(new_conf));

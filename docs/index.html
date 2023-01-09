@@ -32,12 +32,12 @@
 
     const get_cfg = async () => {
       const text_area = document.getElementById('re_corder-config');
-      text_area.value = await get_config(re_corder);
+      text_area.value = await get_re_corder_config(re_corder);
     }
 
     const set_cfg = async () => {
       const text_area = document.getElementById('re_corder-config');
-      text_area.value = await set_config(re_corder, text_area.value);
+      text_area.value = await set_re_corder_config(re_corder, text_area.value);
     }
 
     window.addEventListener('load', () => {
@@ -51,10 +51,12 @@
     Re.corder Port <select id="input-port-selector"></select>
   </p>
   <p>
-  <button onclick="get_cfg().catch(err => alert(err));">Get Config</button>
-  <button onclick="set_cfg().then(() => alert('Success!')).catch(err => alert(`${err} --- Try holding Record, perhaps?`));">Set Config</button>
-  <br>
-  <textarea id="re_corder-config" rows="30" cols="50"></textarea>
+    <button onclick="get_cfg().catch(err => alert(err));">Get Config</button>
+    <button onclick="set_cfg().then(() => alert('Success!')).catch(err => alert(`${err} --- Try holding Record, perhaps?`));">Set Config</button>
+    <br>
+    <textarea id="re_corder-config" rows="30" cols="50"></textarea>
+  </p>
+  <p>
   </p>
 </body>
 </html>
