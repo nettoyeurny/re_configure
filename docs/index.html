@@ -61,30 +61,34 @@
     const get_config = () => {
       const text_area = document.getElementById('re_corder-config');
       get_re_corder_config(re_corder)
-        .then(s => text_area.value = s)
+        .then(conf => text_area.value = JSON.stringify(conf, null, 2))
         .catch(err => alert(err));
     }
 
     const set_config = () => {
       const text_area = document.getElementById('re_corder-config');
-      set_re_corder_config(re_corder, text_area.value)
-        .then(s => text_area.value = s)
+      set_re_corder_config(re_corder, JSON.parse(text_area.value))
+        .then(conf => text_area.value = JSON.stringify(conf, null, 2))
         .then(() => alert('Success!'))
         .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
     }
 
     const set_fingerings = () => {
       const text_area = document.getElementById('re_corder-fingerings');
-      set_re_corder_fingerings(re_corder, text_area.value)
+      set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
         .then(() => alert('Success!'))
         .catch(err => alert(err));
     }
 
     window.addEventListener('load', () => {
       enable_buttons(false);
-      navigator.requestMIDIAccess({sysex: true, software: true})
-        .then(midi_access => midi_setup(midi_access))
-        .catch(_ => alert('Failed to get MIDI access!'));
+      if (navigator.requestMIDIAccess) {
+        navigator.requestMIDIAccess({sysex: true, software: true})
+          .then(midi_access => midi_setup(midi_access))
+          .catch(_ => alert('Failed to get MIDI access!'));
+      } else {
+        alert('This browser does not support Web MIDI!');
+      }
     });
   </script>
 </head>

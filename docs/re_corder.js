@@ -287,7 +287,7 @@ const get_re_corder_config = async r => {
   const smoothing = await r.get_smoothing();
   const sensitivity = await r.get_sensitivity();
   const controllers = await r.get_controller_config();
-  return JSON.stringify({
+  return {
     user_mode: user_mode,
     midi_channel: midi_channel,
     threshold: sensitivity.threshold,
@@ -296,7 +296,7 @@ const get_re_corder_config = async r => {
     easy_connect: easy_connect,
     maintain_note: smoothing.maintain_note,
     smooth_acc: smoothing.smooth_acc
-  }, null, 2);
+  };
 }
 
 const deep_update = (obj1, obj2) => {
@@ -310,10 +310,10 @@ const deep_update = (obj1, obj2) => {
 }
 
 const set_re_corder_config = async (r, new_conf) => {
-  const conf = JSON.parse(await get_re_corder_config(r));
+  const conf = await get_re_corder_config(r);
   const old_user_mode = conf.user_mode;
   const old_midi_channel = conf.midi_channel;
-  deep_update(conf, JSON.parse(new_conf));
+  deep_update(conf, new_conf);
   if (conf.user_mode !== old_user_mode) {
     await r.set_user_mode(conf.user_mode);
   }
@@ -324,7 +324,7 @@ const set_re_corder_config = async (r, new_conf) => {
   await r.set_sensitivity(conf.threshold, conf.velocity);
   await r.set_smoothing(conf.maintain_note, conf.smooth_acc);
   await r.set_controller_config(conf.controllers);
-  return JSON.stringify(conf, null, 2);
+  return conf;
 }
 
 const NOTES = [
@@ -376,7 +376,6 @@ const set_re_corder_fingerings = async (r, fingerings) => {
   if (user_mode === 'Keyboard') {
     throw new Error('Keyboard fingerings are currently unsupported :(');
   }
-  const f = JSON.parse(fingerings);
-  const chart = f.map(a => encode_fingering(a[0], a[1]));
+  const chart = fingerings.map(a => encode_fingering(a[0], a[1]));
   await r.set_fingering_chart(chart);
 }
