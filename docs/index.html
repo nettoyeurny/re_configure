@@ -25,7 +25,7 @@
         if (event.target.selectedIndex > 0) {
           const input_name = event.target.value;
           re_corder = create_re_corder(midi_access, input_name);
-          console.log(`Created ${re_corder}.`);
+          alert(`Created re_corder access at ${input_name}.`);
         }
       });
     }
@@ -54,23 +54,25 @@
 
     window.addEventListener('load', () => {
       navigator.requestMIDIAccess({sysex: true, software: true})
-        .then(midi_access => midi_setup(midi_access));
+        .then(midi_access => midi_setup(midi_access))
+        .catch(_ => alert('Failed to get MIDI access!'));
     });
   </script>
 </head>
 <body>
+
   <p>
     Re.corder Port <select id="input-port-selector"></select>
   </p>
+  <h2>Re.corder Configuration</h2>
   <p>
     <button onclick="get_config();">Get Config</button>
     <button onclick="set_config();">Set Config</button>
     <br>
     <textarea id="re_corder-config" rows="28" cols="32"></textarea>
   </p>
+  <h2>Fingering Chart Format</h2>
   <p>
-    <h2>Fingering Chart Format</h2>
-
     A fingering chart is a json file that contains a list of the form
     <pre>
         [
