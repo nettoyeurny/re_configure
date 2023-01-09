@@ -240,7 +240,7 @@ class ReCorder {
       data[5 * i + 3] = ctrl;
       data[5 * i + 5] = curve;
     }
-    const a = find_key(CURVES, ctrl.aftertouch);
+    const a = find_key(CURVES, ctrls.aftertouch);
     if (a) {
       data[5] = a;
       data[10] = 0;  // Aftertouch replaces pressure controller.
