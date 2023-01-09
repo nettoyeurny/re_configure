@@ -315,3 +315,7 @@ const set_re_corder_config = async (r, new_conf) => {
   await r.set_controller_config(conf.controllers);
   return JSON.stringify(conf, null, 2);
 }
+
+const set_re_corder_fingering = async (r, fingering) => {
+  throw new Error('Not implemented yet!');
+}

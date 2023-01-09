@@ -30,14 +30,26 @@
       });
     }
 
-    const get_config = async () => {
+    const get_config = () => {
       const text_area = document.getElementById('re_corder-config');
-      text_area.value = await get_re_corder_config(re_corder);
+      get_re_corder_config(re_corder)
+        .then(s => text_area.value = s)
+        .catch(err => alert(err));
     }
 
-    const set_config = async () => {
+    const set_config = () => {
       const text_area = document.getElementById('re_corder-config');
-      text_area.value = await set_re_corder_config(re_corder, text_area.value);
+      set_re_corder_config(re_corder, text_area.value)
+        .then(s => text_area.value = s)
+        .then(() => alert('Success!'))
+        .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
+    }
+
+    const set_fingering = () => {
+      const text_area = document.getElementById('re_corder-fingering');
+      set_re_corder_fingering(re_corder, text_area.value)
+        .then(() => alert('Success!'))
+        .catch(err => alert(err));
     }
 
     window.addEventListener('load', () => {
@@ -51,12 +63,72 @@
     Re.corder Port <select id="input-port-selector"></select>
   </p>
   <p>
-    <button onclick="get_config().catch(err => alert(err));">Get Config</button>
-    <button onclick="set_config().then(() => alert('Success!')).catch(err => alert(`${err} --- Try holding Record, perhaps?`));">Set Config</button>
+    <button onclick="get_config();">Get Config</button>
+    <button onclick="set_config();">Set Config</button>
     <br>
-    <textarea id="re_corder-config" rows="30" cols="50"></textarea>
+    <textarea id="re_corder-config" rows="28" cols="50"></textarea>
   </p>
   <p>
+  <button onclick="set_fingering();">Set Fingering</button>
+    <br>
+    <textarea id="re_corder-fingering" rows="28" cols="50">
+[
+  [ "C5",  "*.***.****" ],
+  [ "C#5", "*.***.***@" ],
+  [ "D5",  "*.***.***o" ],
+  [ "D#5", "*.***.**@o" ],
+  [ "E5",  "*.***.**oo" ],
+  [ "F5",  "*.***.*o*o" ],
+  [ "F5",  "*.***.*o**" ],
+  [ "F5",  "*.***.*o*@" ],
+  [ "F#5", "*.***.o**o" ],
+  [ "F#5", "*.***.o**@" ],
+  [ "F#5", "*.***.o*oo" ],
+  [ "G5",  "*.***.oooo" ],
+  [ "G#5", "*.**o.***o" ],
+  [ "G#5", "*.**o.**oo" ],
+  [ "G#5", "*.**o.**@o" ],
+  [ "A5",  "*.**o.oooo" ],
+  [ "A#5", "*.*o*.*ooo" ],
+  [ "A#5", "*.o**.*ooo" ],
+  [ "A#5", "*.*o*.oooo" ],
+  [ "A#5", "*.*o*.o**o" ],
+  [ "B5",  "*.*oo.oooo" ],
+  [ "B5",  "*.o**.oooo" ],
+  [ "C6",  "*.o*o.oooo" ],
+  [ "C6",  "o.***.oooo" ],
+  [ "C#6", "o.**o.oooo" ],
+  [ "C#6", "*.ooo.oooo" ],
+  [ "D6",  "o.o*o.oooo" ],
+  [ "D6",  "o.***.****" ],
+  [ "D#6", "o.o**.***o" ],
+  [ "D#6", "@.***.**@o" ],
+  [ "D#6", "o.***.***o" ],
+  [ "E6",  "@.***.**oo" ],
+  [ "E6",  "o.***.**oo" ],
+  [ "E6",  "o.o**.**oo" ],
+  [ "F6",  "@.***.*o*o" ],
+  [ "F6",  "@.***.*o@o" ],
+  [ "F6",  "o.o**.*o@o" ],
+  [ "F#6", "@.***.o*oo" ],
+  [ "G6",  "@.***.oooo" ],
+  [ "G#6", "@.**o.*ooo" ],
+  [ "G#6", "@.***.oo**" ],
+  [ "A6",  "@.**o.oooo" ],
+  [ "A#6", "@.**o.***o" ],
+  [ "A#6", "@.**o.o**o" ],
+  [ "B6",  "@.**o.**oo" ],
+  [ "C7",  "@.*oo.**oo" ],
+  [ "C#7", "@.*o*.*oo*" ],
+  [ "C#7", "@.*o*.**o*" ],
+  [ "C#7", "@.*o*.****" ],
+  [ "D7",  "@.*o*.*o*o" ],
+  [ "D7",  "@.*o*.*o**" ],
+  [ "D7",  "@.*o*.*o*@" ],
+  [ "D7",  "@.*oo.*o**" ],
+  [ "D7",  "@.*oo.*oo*" ]
+]
+    </textarea>
   </p>
 </body>
 </html>
