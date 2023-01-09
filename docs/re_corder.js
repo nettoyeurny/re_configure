@@ -256,12 +256,12 @@ class ReCorder {
     if (chart.length < 1 || chart.length > 62) {
       throw new Error('Bad fingering chart.');
     }
-    const data = new UInt8Array(2 + 3 * chart.length);
+    const data = new Uint8Array(2 + 3 * chart.length);
     data.set(from_hex('0000'), 0);
     for (let i = 0; i < chart.length; ++i) {
-      const b = from_hex(f);
+      const b = from_hex(chart[i]);
       if (b.length != 3 || b[0] & 0x80 || b[1] & 0xf0 || b[2] & 0x80) {
-        throw new Error(`Bad fingering: ${f}`);
+        throw new Error(`Bad fingering: ${chart[i]}`);
       }
       data.set(b, 2 + 3 * i);
     }
@@ -316,6 +316,52 @@ const set_re_corder_config = async (r, new_conf) => {
   return JSON.stringify(conf, null, 2);
 }
 
-const set_re_corder_fingering = async (r, fingering) => {
-  throw new Error('Not implemented yet!');
+const NOTES = [
+    'C', 'C', 'C#', 'Db', 'D', 'D', 'D#', 'Eb', 'E', 'E', 'F', 'F',
+    'F#', 'Gb', 'G', 'G', 'G#', 'Ab', 'A', 'A', 'A#', 'Bb', 'B', 'B'
+];
+
+const RECORDER_ENCODING = [
+// Full    Partial
+  [0x0003, 0x0002],   // Left thumb
+  [0x0004, 0x0004],   // Left index finger
+  [0x0008, 0x0008],   // Left middle finger
+  [0x0010, 0x0010],   // Left ring finger
+  [0x0020, 0x0020],   // Right index finger
+  [0x0040, 0x0040],   // Right middle finger
+  [0x0300, 0x0100],   // Right ring finger
+  [0x0c00, 0x0400]    // Right pinkie
+]
+
+const to_midi_note = note => {
+  return +note[note.length - 1] * 12 +
+    (NOTES.indexOf(note.substring(0, note.length - 1)) >> 1);
+}
+
+const encode_fingering = (note, fingering) => {
+  const s = fingering.replace(/\./g, '');
+  if (RECORDER_ENCODING.length < s.length) {
+    throw new Error(`Bad fingering: ${fingering}`);
+  }
+  var f = 0;
+  for (let i = 0; i < s.length; ++i) {
+    const c = s[i];
+    const bits = RECORDER_ENCODING[i];
+    if (c === '*') {
+      f |= bits[0];
+    } else if (c === '@' && bits[0] !== bits[1]) {
+      f |= bits[1];
+    } else if (c === 'e' && bits[0] !== bits[1]) {
+      f |= (bits[0] ^ bits[1]);
+    } else if (c !== 'o') {
+      throw new Error(`Bad fingering: ${fingering}`);
+    }
+  }
+  return to_hex([to_midi_note(note), f >> 8, f & 0x7f]);
+}
+
+const set_re_corder_fingerings = async (r, fingerings) => {
+  const f = JSON.parse(fingerings);
+  const chart = f.map(a => encode_fingering(a[0], a[1]));
+  await r.set_fingering_chart(chart);
 }

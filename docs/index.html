@@ -45,9 +45,9 @@
         .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
     }
 
-    const set_fingering = () => {
-      const text_area = document.getElementById('re_corder-fingering');
-      set_re_corder_fingering(re_corder, text_area.value)
+    const set_fingerings = () => {
+      const text_area = document.getElementById('re_corder-fingerings');
+      set_re_corder_fingerings(re_corder, text_area.value)
         .then(() => alert('Success!'))
         .catch(err => alert(err));
     }
@@ -66,12 +66,12 @@
     <button onclick="get_config();">Get Config</button>
     <button onclick="set_config();">Set Config</button>
     <br>
-    <textarea id="re_corder-config" rows="28" cols="50"></textarea>
+    <textarea id="re_corder-config" rows="28" cols="32"></textarea>
   </p>
   <p>
-  <button onclick="set_fingering();">Set Fingering</button>
+  <button onclick="set_fingerings();">Set Fingerings</button>
     <br>
-    <textarea id="re_corder-fingering" rows="28" cols="50">
+    <textarea id="re_corder-fingerings" rows="28" cols="32">
 [
   [ "C5",  "*.***.****" ],
   [ "C#5", "*.***.***@" ],
