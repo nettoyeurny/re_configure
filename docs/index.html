@@ -79,9 +79,22 @@
 <body>
   <h1>Online Re.corder Configuration Tools</h1>
   <p>
-    Re.corder Port <select id="input-port-selector"></select>
+    Re.corder Port: <select id="input-port-selector"></select>
   </p>
   <h2>Re.corder Configuration</h2>
+  <p>
+    <ul>
+      <li>user_mode: "Breath", "Lip", "Keyboard"</li>
+      <li>midi_channel: 1-16</li>
+      <li>threshold: 601-16383</li>
+      <li>velocity: 0-127</li>
+      <li>aftertouch, curve: "None", "Linear", "Emb1"-"Emb20"</li>
+      <li>ctrl: 0-127</li>
+      <li>easy_connect: true, false</li>
+      <li>maintain_note: true, false</li>
+      <li>smooth_acc: 0-4</li>
+    </ul>
+  </p>
   <p>
     <button onclick="get_config();">Get Config</button>
     <button onclick="set_config();">Set Config</button>
