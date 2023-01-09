@@ -1,6 +1,6 @@
 {
-  "aftertouch": "None",
   "controllers": {
+    "aftertouch": "None",
     "AccX": {
       "ctrl": 1,
       "curve": "None"

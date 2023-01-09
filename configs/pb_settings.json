@@ -1,6 +1,6 @@
 {
-  "aftertouch": "Emb11",
   "controllers": {
+    "aftertouch": "Emb11",
     "AccX": {
       "ctrl": 1,
       "curve": "Linear"

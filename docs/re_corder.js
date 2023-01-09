@@ -224,11 +224,11 @@ class ReCorder {
     );
   }
 
-  // ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
-  // 'AccY', 'AccZ') to pairs of integers specifying the MIDI controller (0-127)
-  // and curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
-  // is also given by a curve.
-  async set_controller_config(aftertouch, ctrls) {
+  // The ctrls dict maps controller labels ('Pressure', 'AccX', 'AccY', 'AccZ')
+  // to pairs of integers specifying the MIDI controller (0-127) and curve
+  // ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting is also
+  // given by a curve.
+  async set_controller_config(ctrls) {
     const data = from_hex(
       '0100000000007f01007f007f02007f007f03007f007f04007f007f');
     for (let i = 1; i < 5; ++i) {
@@ -240,7 +240,7 @@ class ReCorder {
       data[5 * i + 3] = ctrl;
       data[5 * i + 5] = curve;
     }
-    const a = find_key(CURVES, aftertouch);
+    const a = find_key(CURVES, ctrl.aftertouch);
     if (a) {
       data[5] = a;
       data[10] = 0;  // Aftertouch replaces pressure controller.
@@ -281,7 +281,6 @@ const get_config = async r => {
     midi_channel: midi_channel,
     threshold: sensitivity.threshold,
     velocity: sensitivity.velocity,
-    aftertouch: controllers.aftertouch,
     controllers: controllers,
     easy_connect: easy_connect,
     maintain_note: smoothing.maintain_note,
@@ -313,7 +312,6 @@ const set_config = async (r, new_conf) => {
   await r.set_easy_connect_status(conf.easy_connect);
   await r.set_sensitivity(conf.threshold, conf.velocity);
   await r.set_smoothing(conf.maintain_note, conf.smooth_acc);
-  await r.set_controller_config(conf.aftertouch,
-    conf.controllers);
+  await r.set_controller_config(conf.controllers);
   return JSON.stringify(conf, null, 2);
 }

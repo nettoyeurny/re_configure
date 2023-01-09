@@ -20,6 +20,8 @@ USER_MODES = {
     3: 'Keyboard'
 }
 
+AFTERTOUCH = 'aftertouch'
+
 CONTROLLERS = {
     1: 'Pressure',
     2: 'AccX',
@@ -173,14 +175,14 @@ class Re_corder(object):
 
   def get_controller_config(self):
     data = self._run([0x31, 0x01], [0x01])[1:]
-    aftertouch = CURVES[data[3]]
     ctrls = {
         CONTROLLERS[i]: {
           CTRL: data[5 * i + 1],
           CURVE: CURVES[data[5 * i + 3]]
         } for i in range(1, 5)
     }
-    return (aftertouch, ctrls)
+    ctrls[AFTERTOUCH] = CURVES[data[3]]
+    return ctrls
 
   def get_battery_state(self):
     _, _, hi, lo = self._run([0x3a], [0x02])
@@ -238,11 +240,11 @@ class Re_corder(object):
         [0x08, 0x02, 0x03, maintain, 0x04, smooth]
     )
 
-  # ctrls is a dictionary that maps controller labels ('Pressure', 'AccX',
-  # 'AccY', 'AccZ') to dicts specifying the MIDI controller (0-127) and
+  # The ctrls dict maps controller labels ('Pressure', 'AccX', 'AccY',
+  # 'AccZ') to dicts specifying the MIDI controller (0-127) and
   # curve ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting
   # is also given by a curve.
-  def set_controller_config(self, aftertouch, ctrls):
+  def set_controller_config(self, ctrls):
     data = bytearray.fromhex(
         '0100000000007f01007f007f02007f007f03007f007f04007f007f')
     for i in range(1, 5):
@@ -258,7 +260,7 @@ class Re_corder(object):
       data[5 * i + 3] = ctrl
       data[5 * i + 5] = curve
     try:
-      aftertouch = next(k for k, v in CURVES.items() if v == aftertouch)
+      aftertouch = next(k for k, v in CURVES.items() if v == ctrls[AFTERTOUCH])
     except StopIteration:
       raise ValueError(f'Bad curve: {curve}')
     if aftertouch:
