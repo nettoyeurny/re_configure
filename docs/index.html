@@ -26,16 +26,22 @@
       });
       selector.addEventListener('change', event => {
         if (re_corder) {
+          enable_buttons(false);
           re_corder.close();
           re_corder = undefined;
         }
         if (event.target.selectedIndex > 0) {
           const input_name = event.target.value;
-          re_corder = create_re_corder(midi_access, input_name);
-          enable_buttons(true);
-          alert(`Created re_corder access at ${input_name}.`);
-        } else {
-          enable_buttons(false);
+          create_re_corder(midi_access, input_name)
+            .then(r => {
+              re_corder = r;
+              return r.get_battery_state();
+            })
+            .then(b => {
+              enable_buttons(true);
+              alert(`Found re.corder with battery Level: ${b}`);
+            })
+            .catch(err => alert(`${err} --- Wrong port, perhaps?`));
         }
       });
     }
