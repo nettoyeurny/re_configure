@@ -73,6 +73,14 @@
         .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
     }
 
+    const restore_default = () => {
+      const text_area = document.getElementById('re_corder-config');
+      re_corder.restore_default_settings()
+        .then(() => get_re_corder_config(re_corder))
+        .then(conf => text_area.value = JSON.stringify(conf, null, 2))
+        .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
+    }
+
     const set_fingerings = () => {
       const text_area = document.getElementById('re_corder-fingerings');
       set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
@@ -114,6 +122,7 @@
   <p>
     <button onclick="get_config();">Get Config</button>
     <button onclick="set_config();">Set Config</button>
+    <button onclick="restore_default();">Restore Default</button>
     <br>
     <textarea id="re_corder-config" rows="28" cols="32"></textarea>
   </p>
