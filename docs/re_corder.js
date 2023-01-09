@@ -98,7 +98,7 @@ class ReCorder {
     }
   }
 
-  _poll(n_max = 5, dt = 50) {
+  _poll(n_max = 10, dt = 25) {
     return new Promise((resolve, reject) => {
       var n = 0;
       const interval = setInterval(() => {
