@@ -29,7 +29,8 @@
         const label = document.getElementById('re_corder-state');
         re_corder.get_battery_state()
           .then(b => label.innerText =
-            `Battery: ${Math.max(Math.min(Math.round((b - 3200) / 8), 100), 0)}%`)
+            `Battery: ${Math.max(Math.min(
+              Math.round((b - 3200) / 8), 100), 0)}%`)
           .catch(() => label.innerText = 'No connection.');
       }
     }
