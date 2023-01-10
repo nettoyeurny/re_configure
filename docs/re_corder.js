@@ -177,8 +177,11 @@ class ReCorder {
 
   async get_fingering_chart() {
     const data = await this._run([0x31, 0x00], [0x00]);
-    return Array.from({length: data.length / 3},
-      (_, i) => data.slice(i * 3 + 1, i * 3 + 3 + 1));
+    return {
+      mode: USER_MODES[data[0]],
+      notes: Array.from({length: data.length / 3},
+                             (_, i) => data.slice(i * 3 + 1, i * 3 + 3 + 1))
+    };
   }
 
   async get_battery_state() {
@@ -355,6 +358,29 @@ const to_midi_note = note => {
   return octave * 12 + (index >> 1);
 }
 
+const decode_fingering = fingering => {
+  const f = (fingering[1] << 8) | fingering[2];
+  var s = ''
+  for (let enc of RECORDER_ENCODING) {
+    const full = enc[0];
+    const partial = enc[1];
+    if (full === 0x04 || full === 0x20) {
+      s += '.';
+    }
+    if ((f & full) === full) {
+      s += '*';
+    } else if (f & partial) {
+      s += '@';
+    } else if (f & full) {
+      s += 'e';
+    } else {
+      s += 'o';
+    }
+  }
+  const note = fingering[0];
+  return [NOTES[(note % 12) * 2] + Math.floor(note / 12), s];
+}
+
 const encode_fingering = (note, fingering) => {
   const s = fingering.replace(/\./g, '');
   if (RECORDER_ENCODING.length < s.length) {
@@ -375,6 +401,14 @@ const encode_fingering = (note, fingering) => {
     }
   }
   return [to_midi_note(note), f >> 8, f & 0x7f];
+}
+
+const get_re_corder_fingerings = async (r) => {
+  const f = await r.get_fingering_chart();
+  if (f.mode === 'Keyboard') {
+    throw new Error(`Can't get fingering in user mode ${user_mode}.`);
+  }
+  return f.notes.map(n => decode_fingering(n));
 }
 
 const set_re_corder_fingerings = async (r, fingerings) => {
