@@ -39,7 +39,11 @@ DESCRIPTION
   -s, --settings
     Configuration file in json format.
   -c, --chart
-    Fingering chart in json format.
+    Loads fingering chart in json format.
+  -d, --dump
+    Dumps fingering chart in json format.
+  -x, --export
+    Exports the current config in json format.
   -w, --wait
     Wait for MIDI messages.
   -h, --help
