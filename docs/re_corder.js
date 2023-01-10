@@ -175,6 +175,12 @@ class ReCorder {
     return ctrls;
   }
 
+  async get_fingering_chart() {
+    const data = await this._run([0x31, 0x00], [0x00]);
+    return Array.from({length: data.length / 3},
+      (_, i) => data.slice(i * 3 + 1, i * 3 + 3 + 1));
+  }
+
   async get_battery_state() {
     const data = await this._run([0x3a], [0x02]);
     return (data[2] << 7) | data[3];
@@ -267,16 +273,12 @@ class ReCorder {
     if (chart.length < 1 || chart.length > 62) {
       throw new Error('Bad fingering chart.');
     }
-    const data = new Uint8Array(2 + 3 * chart.length);
-    data.set([0x00, 0x00], 0);
-    for (let i = 0; i < chart.length; ++i) {
-      const b = chart[i];
+    for (let b of chart) {
       if (b.length != 3 || b[0] & 0x80 || b[1] & 0xf0 || b[2] & 0x80) {
-        throw new Error(`Bad fingering: ${chart[i]}`);
+        throw new Error(`Bad fingering: ${b}`);
       }
-      data.set(b, 2 + 3 * i);
     }
-    await this._run([0x30], data);
+    await this._run([0x30], [0x00, 0x00, ...chart.flat()]);
   }
 }
 
