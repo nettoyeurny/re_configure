@@ -24,7 +24,7 @@
       }
     }
 
-    const midi_setup = async (midi_access) => {
+    const midi_setup = midi_access => {
       const selector = document.querySelector('#input-port-selector');
       const none_option = document.createElement('option');
       none_option.textContent = 'None';
