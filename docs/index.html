@@ -85,7 +85,6 @@
       const text_area = document.getElementById('re_corder-fingerings');
       get_re_corder_fingerings(re_corder)
         .then(f => text_area.value = JSON.stringify(f, null, 2))
-        .then(() => alert('Success!'))
         .catch(err => alert(err));
     }
 
@@ -93,6 +92,13 @@
       const text_area = document.getElementById('re_corder-fingerings');
       set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
         .then(() => alert('Success!'))
+        .catch(err => alert(err));
+    }
+
+    const get_keyboard_chart = () => {
+      const text_area = document.getElementById('re_corder-keyboard');
+      get_re_corder_keyboard(re_corder)
+        .then(k => text_area.value = JSON.stringify(k, null, 2))
         .catch(err => alert(err));
     }
 
@@ -174,6 +180,7 @@
     re.corder, sorted from left to right.
   </p>
   <p>
+    <button onclick="get_keyboard_chart();">Get Keyboard</button>
     <button onclick="set_keyboard_chart();">Set Keyboard</button>
     <br>
     <textarea id="re_corder-keyboard" rows="12" cols="32"></textarea>

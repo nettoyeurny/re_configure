@@ -358,6 +358,10 @@ const to_midi_note = note => {
   return octave * 12 + (index >> 1);
 }
 
+const from_midi_note = note => {
+  return NOTES[(note % 12) * 2] + Math.floor(note / 12);
+}
+
 const decode_fingering = fingering => {
   const f = (fingering[1] << 8) | fingering[2];
   var s = ''
@@ -378,7 +382,7 @@ const decode_fingering = fingering => {
     }
   }
   const note = fingering[0];
-  return [NOTES[(note % 12) * 2] + Math.floor(note / 12), s];
+  return [from_midi_note(note), s];
 }
 
 const encode_fingering = (note, fingering) => {
@@ -406,7 +410,7 @@ const encode_fingering = (note, fingering) => {
 const get_re_corder_fingerings = async (r) => {
   const f = await r.get_fingering_chart();
   if (f.mode === 'Keyboard') {
-    throw new Error(`Can't get fingering in user mode ${user_mode}.`);
+    throw new Error(`Can't get fingering chart in user mode ${f.mode}.`);
   }
   return f.notes.map(n => decode_fingering(n));
 }
@@ -414,10 +418,18 @@ const get_re_corder_fingerings = async (r) => {
 const set_re_corder_fingerings = async (r, fingerings) => {
   const user_mode = await r.get_user_mode();
   if (user_mode === 'Keyboard') {
-    throw new Error(`Can't set fingering in user mode ${user_mode}.`);
+    throw new Error(`Can't set fingering chart in user mode ${user_mode}.`);
   }
   const chart = fingerings.map(a => encode_fingering(a[0], a[1]));
   await r.set_fingering_chart(chart);
+}
+
+const get_re_corder_keyboard = async (r) => {
+  const f = await r.get_fingering_chart();
+  if (f.mode !== 'Keyboard') {
+    throw new Error(`Can't get keyboard chart in user mode ${f.mode}.`);
+  }
+  return f.notes.map(n => from_midi_note(n[0]));
 }
 
 const set_re_corder_keyboard = async (r, notes) => {
