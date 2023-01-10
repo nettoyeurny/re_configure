@@ -133,7 +133,7 @@ def encode_keyboard_chart(notes):
 
 
 if __name__ == '__main__':
-  args, _ = getopt.getopt(sys.argv[1:], 'h', 'k')
+  args, _ = getopt.getopt(sys.argv[1:], 'hk')
   keyboard = False
   for k, _ in args:
     if k == '-k':

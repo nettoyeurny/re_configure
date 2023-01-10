@@ -175,7 +175,7 @@ Request re.corder state
       response when leaving this state.
 
     nn == 02: Battery level encoded as xxyy: (xx << 7) | yy
-      So far, I've observed battery levels ranging from 3529 to 4051.
+      So far, I've observed battery levels ranging from 3186 to 4051.
 
     nn == 03: Raw sensor data
 
