@@ -25,35 +25,35 @@ const USER_MODES = {
 };
 
 const CONTROLLERS = {
-    1: 'Pressure',
-    2: 'AccX',
-    3: 'AccY',
-    4: 'AccZ'
+  1: 'Pressure',
+  2: 'AccX',
+  3: 'AccY',
+  4: 'AccZ'
 };
 
 const CURVES = {
-    0: 'None',
-    1: 'Linear',
-    2: 'Emb1',
-    3: 'Emb2',
-    4: 'Emb3',
-    5: 'Emb4',
-    6: 'Emb5',
-    7: 'Emb6',
-    8: 'Emb7',
-    9: 'Emb8',
-    10: 'Emb9',
-    11: 'Emb10',
-    12: 'Emb11',
-    13: 'Emb12',
-    14: 'Emb13',
-    15: 'Emb14',
-    16: 'Emb15',
-    17: 'Emb16',
-    18: 'Emb17',
-    19: 'Emb18',
-    20: 'Emb19',
-    21: 'Emb20'
+  0: 'None',
+  1: 'Linear',
+  2: 'Emb1',
+  3: 'Emb2',
+  4: 'Emb3',
+  5: 'Emb4',
+  6: 'Emb5',
+  7: 'Emb6',
+  8: 'Emb7',
+  9: 'Emb8',
+  10: 'Emb9',
+  11: 'Emb10',
+  12: 'Emb11',
+  13: 'Emb12',
+  14: 'Emb13',
+  15: 'Emb14',
+  16: 'Emb15',
+  17: 'Emb16',
+  18: 'Emb17',
+  19: 'Emb18',
+  20: 'Emb19',
+  21: 'Emb20'
 };
 
 const create_re_corder =
