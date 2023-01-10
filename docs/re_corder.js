@@ -98,7 +98,12 @@ class ReCorder {
         SUFFIX.every((v, i) => v === event.data[i + suffix_start])) {
       const payload = event.data.slice(PREFIX.length, suffix_start);
       if (payload[0] === 0x01 || payload[0] === 0x02) {
-        this._queue.push(payload);
+        const resolve = this._queue.shift();
+        if (resolve) {
+          resolve(payload);
+        } else {
+          console.warn(`Unhandled payload: ${to_hex(payload)}`);
+        }
       } else if (payload[0] === 0x34) {
         this._on_re_corder_button(payload.slice(1));
       } else {
@@ -109,28 +114,18 @@ class ReCorder {
     }
   }
 
-  _poll(n_max = 10, dt = 25) {
-    return new Promise((resolve, reject) => {
-      var n = 0;
-      const interval = setInterval(() => {
-        n += 1;
-        if (this._queue.length > 0) {
-          clearInterval(interval);
-          resolve(this._queue.shift());
-        } else if (n > n_max) {
-          clearInterval(interval);
+  async _run(cmd, data=[]) {
+    const payload = await new Promise((resolve, reject) => {
+      this._queue.push(resolve);
+      this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
+      setTimeout(() => {
+        const i = this._queue.indexOf(resolve);
+        if (i >= 0) {
+          this._queue.splice(i, 1);
           reject(new Error('Timeout'));
         }
-      }, dt);
+      }, 250);
     });
-  }
-
-  async _run(cmd, data=[]) {
-    while (this._queue.shift()) {
-      console.warn('Dangling payload!');
-    }
-    this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
-    const payload = await this._poll();
     if (payload[0] != 0x01) {
       throw new Error(`Request failed: ${to_hex(payload)}`);
     }
