@@ -184,6 +184,13 @@ class Re_corder(object):
     ctrls[AFTERTOUCH] = CURVES[data[3]]
     return ctrls
 
+  def get_fingering_chart(self):
+    data = self._run([0x31, 0x00], [0x00])
+    mode = USER_MODES[data[0]]
+    fingerings = data[1:].hex()
+    return (mode,
+            tuple(fingerings[i : i + 6] for i in range(0, len(fingerings), 6)))
+
   def get_battery_state(self):
     _, _, hi, lo = self._run([0x3a], [0x02])
     return (hi << 7) | lo
