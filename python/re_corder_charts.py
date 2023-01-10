@@ -128,7 +128,7 @@ def decode_keyboard_chart(chart):
 def encode_keyboard_chart(notes):
   if len(notes) != len(KEYBOARD_ENCODING):
     raise ValueError(f'Bad keyboard chart: {notes}')
-  return [bytes([to_midi_note(note), bit >> 7, bit & 0x7f]).hex()
+  return [bytes([to_midi_note(note), bit >> 8, bit & 0x7f]).hex()
           for note, bit in zip(notes, KEYBOARD_ENCODING)]
 
 

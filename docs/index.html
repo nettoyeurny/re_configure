@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Online Re.corder Configuration</title>
+  <title>Re.Configure</title>
   <script src="re_corder.js"></script>
   <script>
     var re_corder = undefined;
@@ -88,6 +88,13 @@
         .catch(err => alert(err));
     }
 
+    const set_keyboard_chart = () => {
+      const text_area = document.getElementById('re_corder-keyboard');
+      set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
+        .then(() => alert('Success!'))
+        .catch(err => alert(err));
+    }
+
     window.addEventListener('load', () => {
       enable_buttons(false);
       if (navigator.requestMIDIAccess) {
@@ -101,7 +108,7 @@
   </script>
 </head>
 <body>
-  <h1>Online Re.corder Configuration</h1>
+  <h1>Re.Configure</h1>
   <p>
     <a href="https://github.com/nettoyeurny/re_configure">Documentation and source code</a>
   </p>
@@ -206,6 +213,27 @@
   [ "D7",  "@.*o*.*o*@" ],
   [ "D7",  "@.*oo.*o**" ],
   [ "D7",  "@.*oo.*oo*" ]
+]
+    </textarea>
+  </p>
+  <p>
+    A keyboard chart is simply a list of notes corresponding to the holes on top of the
+    re.corder, sorted from left to right.
+  </p>
+  <p>
+    <button onclick="set_keyboard_chart();">Set Keyboard Chart</button>
+    <br>
+    <textarea id="re_corder-keyboard" rows="12" cols="32">
+[
+  "C5",
+  "D5",
+  "D#5",
+  "F5",
+  "G5",
+  "G#5",
+  "A#5",
+  "C6",
+  "D6"
 ]
     </textarea>
   </p>

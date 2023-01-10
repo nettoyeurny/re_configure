@@ -345,8 +345,12 @@ const RECORDER_ENCODING = [
 ]
 
 const to_midi_note = note => {
-  return +note[note.length - 1] * 12 +
-    (NOTES.indexOf(note.substring(0, note.length - 1)) >> 1);
+  const octave = +note.substring(note.length - 1);
+  const index = NOTES.indexOf(note.substring(0, note.length - 1));
+  if (octave < 0 || octave > 10 || index < 0) {
+    throw new Error(`Bad note: ${note}`);
+  }
+  return octave * 12 + (index >> 1);
 }
 
 const encode_fingering = (note, fingering) => {
@@ -374,8 +378,23 @@ const encode_fingering = (note, fingering) => {
 const set_re_corder_fingerings = async (r, fingerings) => {
   const user_mode = await r.get_user_mode();
   if (user_mode === 'Keyboard') {
-    throw new Error('Keyboard fingerings are currently unsupported :(');
+    throw new Error(`Can't set fingering in user mode ${user_mode}.`);
   }
   const chart = fingerings.map(a => encode_fingering(a[0], a[1]));
+  await r.set_fingering_chart(chart);
+}
+
+const set_re_corder_keyboard = async (r, notes) => {
+  if (notes.length !== 9) {
+    throw new Error(`Bad keyboard chart (expected nine notes): ${notes}`);
+  }
+  const user_mode = await r.get_user_mode();
+  if (user_mode !== 'Keyboard') {
+    throw new Error(`Can't set keyboard chart in user mode ${user_mode}.`);
+  }
+  const chart = notes.map((note, i) => {
+    const bit = 2 << i;
+    return to_hex([to_midi_note(note), bit >> 7, bit & 0x7f]);
+  });
   await r.set_fingering_chart(chart);
 }
