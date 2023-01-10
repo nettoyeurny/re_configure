@@ -17,14 +17,6 @@ open/closed/partially closed hole, with optional dots for readability. In
 addition, the letter e specifies a partially closed hole in the opposite way
 (e.g., for left-handed fingerings).
 
-When run as a main routine, it reads name-sysex pairs from stdin, decodes the
-sysex message, and writes a human-readable chart to {name}.json. The -k command
-line option emits keyboard charts rather than recorder fingering charts.
-
-Typical input lines:
-baroque f0002f7f00013000003c0f7f3d077f3e037f3f017f40007f410f3f41033f42035f42075f420f5f43001f44006f44016f44036f44002f45000f46001746003746007747000747001b48000b48001c48003349000c4900034900344a00084a00044a00304b03784b037c4b03704b03604c007e4c007c4c00784c007b4d033e4d033c4d033c4e005e4e003e4f001e4f031e50002e50004e51000e52036e52034e520f4e520f5652035653006e530006540066540026540036540076550c36560336560f36f7
-kb_c_maj f0002f7f00013000003c00023e00044000084100104300204500404701004802004a0400f7
-
 Copyright (c) 2021 Peter Brinkmann <peter.brinkmann@gmail.com>
 
 BSD 3-Clause License
@@ -130,24 +122,3 @@ def encode_keyboard_chart(notes):
     raise ValueError(f'Bad keyboard chart: {notes}')
   return [bytes([to_midi_note(note), bit >> 8, bit & 0x7f]).hex()
           for note, bit in zip(notes, KEYBOARD_ENCODING)]
-
-
-if __name__ == '__main__':
-  args, _ = getopt.getopt(sys.argv[1:], 'hk')
-  keyboard = False
-  for k, _ in args:
-    if k == '-k':
-      keyboard = True
-    elif k == '-h':
-      print(__doc__)
-      sys.exit(0)
-
-  PREFIX = 'f0002f7f0001300000'
-  for line in sys.stdin:
-    name, chart = line.split(' ')
-    chart = chart[len(PREFIX):-3]
-    if len(chart) % 6 != 0:
-      raise ValueError(f'Bad fingering chart: {chart}')
-    chart = [chart[i:i + 6] for i in range(0, len(chart), 6)]
-    decoded = decode_keyboard_chart(chart) if keyboard else decode_chart(chart)
-    json.dump(decoded, open(name + '.json', 'w'), sort_keys=True, indent=2)
