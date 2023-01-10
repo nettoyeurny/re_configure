@@ -120,7 +120,7 @@ Maintain note/Smooth accelerometers:
 
 Fingering
   Get:  f0002f7f0001    3100 00 f7
-  Resp: f0002f7f0001 01 3100 
+  Resp: f0002f7f0001 01 3100
         ww
         xx yyzz
         ...      # Up to 62 entries altogether.
