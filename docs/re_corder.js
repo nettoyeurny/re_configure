@@ -259,18 +259,18 @@ class ReCorder {
     await this._run([0x30], data);
   }
 
-  // chart is a list of strings representing six-digit hex values xxyyzz, where
-  // xx is a MIDI note value and yyzz represents an 11-bit number, yy << 7 | zz,
-  // whose bits correspond to tone holes on the re.corder. E.g., '3f017f'
+  // chart is a list of three-byte arrays [xx, yy, zz], where xx is a MIDI note
+  // value and yyzz represents an 11-bit number, yy << 7 | zz, whose bits
+  // correspond to tone holes on the re.corder. E.g., [0x3f, 0x01, 0x7f]
   // represents D#5.
   async set_fingering_chart(chart) {
     if (chart.length < 1 || chart.length > 62) {
       throw new Error('Bad fingering chart.');
     }
     const data = new Uint8Array(2 + 3 * chart.length);
-    data.set(from_hex('0000'), 0);
+    data.set([0x00, 0x00], 0);
     for (let i = 0; i < chart.length; ++i) {
-      const b = from_hex(chart[i]);
+      const b = chart[i];
       if (b.length != 3 || b[0] & 0x80 || b[1] & 0xf0 || b[2] & 0x80) {
         throw new Error(`Bad fingering: ${chart[i]}`);
       }
@@ -372,7 +372,7 @@ const encode_fingering = (note, fingering) => {
       throw new Error(`Bad fingering: ${fingering}`);
     }
   }
-  return to_hex([to_midi_note(note), f >> 8, f & 0x7f]);
+  return [to_midi_note(note), f >> 8, f & 0x7f];
 }
 
 const set_re_corder_fingerings = async (r, fingerings) => {
@@ -394,7 +394,7 @@ const set_re_corder_keyboard = async (r, notes) => {
   }
   const chart = notes.map((note, i) => {
     const bit = 2 << i;
-    return to_hex([to_midi_note(note), bit >> 7, bit & 0x7f]);
+    return [to_midi_note(note), bit >> 7, bit & 0x7f];
   });
   await r.set_fingering_chart(chart);
 }
