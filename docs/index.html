@@ -25,13 +25,15 @@
     }
 
     const monitor_connection = () => {
+      const label = document.getElementById('re_corder-state');
       if (re_corder) {
-        const label = document.getElementById('re_corder-state');
         re_corder.get_battery_state()
           .then(b => label.innerText =
             `Battery: ${Math.max(Math.min(
               Math.round((b - 3200) / 8), 100), 0)}%`)
           .catch(() => label.innerText = 'No connection.');
+      } else {
+        label.innerText = 'No connection.';
       }
     }
 
