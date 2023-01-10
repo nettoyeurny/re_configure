@@ -86,8 +86,8 @@ Controllers: Pressure, Acc_X, Acc_Y, Acc_Z:
         f7
   Resp: f0002f7f0001 01 30 f7
 
-  pp: aftertouch curve { 00: "None", 01: "Linear", 02: "Embedded1", ... }
   ww: current user mode
+  pp: aftertouch curve { 00: "None", 01: "Linear", 02: "Embedded1", ... }
   nn: MIDI channel 1-16
   mm: controller curve { 00: "None", 01: "Linear", 02: "Embedded1", ... }
 
@@ -119,15 +119,23 @@ Maintain note/Smooth accelerometers:
 
 
 Fingering
-  Set:  f0002f7f0001 300000
+  Get:  f0002f7f0001    3100 00 f7
+  Resp: f0002f7f0001 01 3100 
+        ww
+        xx yyzz
+        ...      # Up to 62 entries altogether.
+        f7
+
+  Set:  f0002f7f0001 30 0000
         xx yyzz
         ...      # Up to 62 entries altogether.
         f7
   Resp: f0002f7f0001 01 30 f7
 
+  ww: current user mode
   xx: MIDI note
   yyzz:
-    Breath or lip sensor mode:
+    Breath or Lip sensor mode:
       yyzz is an 11-bit fingering code whose bits correspond to holes in order;
       left thumb is LSB, right pinkie MSB; yy = f >> 7, zz = f & 0x7f. For
       example, E6 is 0b1111110, and D6 is 0b1000.
