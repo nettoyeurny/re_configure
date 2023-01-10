@@ -4,7 +4,7 @@
   <title>Re.Configure</title>
   <script src="re_corder.js"></script>
   <script>
-    var re_corder = undefined;
+    var re_corder = null;
 
     const enable_buttons = enabled => {
       const buttons = document.querySelectorAll('button');
@@ -13,7 +13,7 @@
       }
     }
 
-    const log_button = (data) => {
+    const log_button = data => {
       console.log(`Re.corder button: ${data}`);
     }
 
@@ -21,6 +21,16 @@
       const data = e.data;
       if (!(data[0] & 0x60)) {
         console.log(`MIDI note event: ${to_hex(data)}`);
+      }
+    }
+
+    const monitor_connection = () => {
+      if (re_corder) {
+        const label = document.getElementById('re_corder-state');
+        re_corder.get_battery_state()
+          .then(b => label.innerText =
+            `Battery: ${Math.max(Math.min(Math.round((b - 3200) / 8), 100), 0)}%`)
+          .catch(() => label.innerText = 'No connection.');
       }
     }
 
@@ -39,7 +49,7 @@
         if (re_corder) {
           enable_buttons(false);
           re_corder.close();
-          re_corder = undefined;
+          re_corder = null;
         }
         if (event.target.selectedIndex > 0) {
           const input_name = event.target.value;
@@ -47,12 +57,9 @@
               midi_access, input_name, log_button, log_note_event)
             .then(r => {
               re_corder = r;
-              return r.get_battery_state();
+              return r.get_midi_channel();
             })
-            .then(b => {
-              enable_buttons(true);
-              alert(`Found re.corder. Battery level: ${b}`);
-            })
+            .then(() => enable_buttons(true))
             .catch(err => alert(`${err} --- Wrong port, perhaps?`));
         }
       });
@@ -111,10 +118,11 @@
 
     window.addEventListener('load', () => {
       enable_buttons(false);
+      setInterval(() => monitor_connection(), 1000);
       if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess({sysex: true, software: true})
           .then(midi_access => midi_setup(midi_access))
-          .catch(_ => alert('Failed to get MIDI access!'));
+          .catch(() => alert('Failed to get MIDI access!'));
       } else {
         alert('This browser does not support Web MIDI!');
       }
@@ -129,6 +137,7 @@
   </p>
   <p>
     Re.corder Port: <select id="input-port-selector"></select>
+    <label id="re_corder-state"></label>
   </p>
   <h2>Re.corder Configuration</h2>
   <p>
