@@ -149,7 +149,7 @@
       await w.close();
     }
 
-    const load_contents = (id, fn) => {
+    const load_contents = (id) => {
       const text_area = document.getElementById(id);
       const opts = {types: TYPES};
       window.showOpenFilePicker(opts)
