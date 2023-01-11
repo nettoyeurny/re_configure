@@ -77,10 +77,14 @@
 
     const set_config = () => {
       const text_area = document.getElementById('re_corder-config');
-      set_re_corder_config(re_corder, JSON.parse(text_area.value))
-        .then(conf => text_area.value = JSON.stringify(conf, null, 2))
-        .then(() => alert('Success!'))
-        .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
+      try {
+        set_re_corder_config(re_corder, JSON.parse(text_area.value))
+          .then(conf => text_area.value = JSON.stringify(conf, null, 2))
+          .then(() => alert('Success!'))
+          .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
+      } catch(err) {
+        alert(err);
+      }
     }
 
     const restore_default = () => {
@@ -100,9 +104,13 @@
 
     const set_fingerings = () => {
       const text_area = document.getElementById('re_corder-fingerings');
-      set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
-        .then(() => alert('Success!'))
-        .catch(err => alert(err));
+      try {
+        set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
+          .then(() => alert('Success!'))
+          .catch(err => alert(err));
+      } catch(err) {
+        alert(err);
+      }
     }
 
     const get_keyboard_chart = () => {
@@ -114,9 +122,13 @@
 
     const set_keyboard_chart = () => {
       const text_area = document.getElementById('re_corder-keyboard');
-      set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
-        .then(() => alert('Success!'))
-        .catch(err => alert(err));
+      try {
+        set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
+          .then(() => alert('Success!'))
+          .catch(err => alert(err));
+      } catch(err) {
+        alert(err);
+      }
     }
 
     window.addEventListener('load', () => {
