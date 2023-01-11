@@ -4,6 +4,13 @@
   <title>Re.Configure</title>
   <script src="re_corder.js"></script>
   <script>
+    const TYPES = [{
+      description: 'JSON File',
+      accept: {'application/json': ['.json']},
+    }, {
+      description: 'Text File',
+      accept: {'text/plain': ['.txt']},
+    }];
     var re_corder = null;
 
     const enable_re_corder_elements = enabled => {
@@ -144,15 +151,7 @@
 
     const load_contents = (id, fn) => {
       const text_area = document.getElementById(id);
-      const opts = {
-        types: [{
-          description: 'JSON File',
-          accept: {'application/json': ['.json']},
-        }, {
-          description: 'Text File',
-          accept: {'text/plain': ['.txt']},
-        }]
-      };
+      const opts = {types: TYPES};
       window.showOpenFilePicker(opts)
         .then(f => read_file(f[0]))
         .then(s => text_area.value = s)
@@ -161,16 +160,7 @@
 
     const save_contents = (id, fn) => {
       const text_area = document.getElementById(id);
-      const opts = {
-        suggestedName: fn,
-        types: [{
-          description: 'JSON File',
-          accept: {'application/json': ['.json']},
-        }, {
-          description: 'Text File',
-          accept: {'text/plain': ['.txt']},
-        }]
-      };
+      const opts = {suggestedName: fn, types: TYPES};
       window.showSaveFilePicker(opts)
         .then(f => write_file(f, text_area.value))
         .catch(alert);
