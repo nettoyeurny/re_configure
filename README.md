@@ -3,7 +3,12 @@
 Unofficial command line configuration tools for
 [Artinoise re.corder](http://www.artinoise.com/) --- use at your own risk!
 
-## Setup
+The tools come in two flavors, Python and JavaScript. The
+[JavaScript version](blob/main/docs/re_corder.js)
+requires no setup and works in any browser that supports the Web MIDI API. Just
+click on the [link](https://nettoyeurny.github.io/re_configure/) and have fun!
+
+## Python Setup
 
 The Python version requires Python 3 (I have tried 3.6.3 and 3.9.6, but earlier
 versions might work as well). Python version management can be a bit gnarly;
