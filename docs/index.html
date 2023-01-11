@@ -144,7 +144,7 @@
       const text_area = document.getElementById(id);
       const file = document.getElementById(fn).files[0];
       const reader = new FileReader();
-      reader.addEventListener('load', () => text_area.value = reader.result);
+      reader.onload = () => text_area.value = reader.result;
       reader.readAsText(file);
     }
 
