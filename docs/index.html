@@ -142,10 +142,13 @@
 
     const load_contents = (id, fn) => {
       const text_area = document.getElementById(id);
-      const file = document.getElementById(fn).files[0];
+      const file_input = document.getElementById(fn);
       const reader = new FileReader();
-      reader.onload = () => text_area.value = reader.result;
-      reader.readAsText(file);
+      reader.onload = () => {
+        text_area.value = reader.result;
+      };
+      reader.readAsText(file_input.files[0]);
+      file_input.value = '';
     }
 
     window.addEventListener('load', () => {
