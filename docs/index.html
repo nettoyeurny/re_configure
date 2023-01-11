@@ -6,10 +6,10 @@
   <script>
     var re_corder = null;
 
-    const enable_buttons = enabled => {
-      const buttons = document.querySelectorAll('button');
-      for (const button of buttons) {
-        button.disabled = !enabled;
+    const enable_re_corder_elements = enabled => {
+      const elts = document.getElementsByClassName('re_corder');
+      for (const elt of elts) {
+        elt.disabled = !enabled;
       }
     }
 
@@ -50,7 +50,7 @@
       });
       selector.addEventListener('change', event => {
         if (re_corder) {
-          enable_buttons(false);
+          enable_re_corder_elements(false);
           re_corder.close();
           re_corder = null;
         }
@@ -62,7 +62,7 @@
               re_corder = r;
               return r.get_midi_channel();
             })
-            .then(() => enable_buttons(true))
+            .then(() => enable_re_corder_elements(true))
             .catch(err => alert(`${err} --- Wrong port, perhaps?`));
         }
       });
@@ -131,8 +131,17 @@
       }
     }
 
+    const save_contents = (id, fn) => {
+      const text_area = document.getElementById(id);
+      const blob = new Blob([text_area.value], {type: 'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fn;
+      a.click();
+    }
+
     window.addEventListener('load', () => {
-      enable_buttons(false);
+      enable_re_corder_elements(false);
       setInterval(() => monitor_connection(), 1000);
       if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess({sysex: true, software: true})
@@ -171,9 +180,12 @@
     </ul>
   </p>
   <p>
-    <button onclick="get_config();">Get Config</button>
-    <button onclick="set_config();">Set Config</button>
-    <button onclick="restore_default();">Restore Default</button>
+    <button class="re_corder" onclick="get_config();">Get Config</button>
+    <button class="re_corder" onclick="set_config();">Set Config</button>
+    <button class="re_corder" onclick="restore_default();">
+      Restore Default</button>
+    <button onclick="save_contents('re_corder-config', 'config.json');">
+      Download</button>
     <br>
     <textarea id="re_corder-config" rows="28" cols="32"></textarea>
   </p>
@@ -196,8 +208,10 @@
     in the opposite way (e.g., for left-handed fingerings).
   </p>
   <p>
-    <button onclick="get_fingerings();">Get Fingering</button>
-    <button onclick="set_fingerings();">Set Fingering</button>
+    <button class="re_corder" onclick="get_fingerings();">Get Fingering</button>
+    <button class="re_corder" onclick="set_fingerings();">Set Fingering</button>
+    <button onclick="save_contents('re_corder-fingerings', 'fingerings.json');">
+      Download</button>
     <br>
     <textarea id="re_corder-fingerings" rows="28" cols="32"></textarea>
   </p>
@@ -207,8 +221,12 @@
     top of the re.corder, sorted from left to right.
   </p>
   <p>
-    <button onclick="get_keyboard_chart();">Get Keyboard</button>
-    <button onclick="set_keyboard_chart();">Set Keyboard</button>
+    <button class="re_corder" onclick="get_keyboard_chart();">
+      Get Keyboard</button>
+    <button class="re_corder" onclick="set_keyboard_chart();">
+      Set Keyboard</button>
+    <button onclick="save_contents('re_corder-keyboard', 'keyboard.json');">
+      Download</button>
     <br>
     <textarea id="re_corder-keyboard" rows="12" cols="32"></textarea>
   </p>
