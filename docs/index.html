@@ -72,7 +72,7 @@
       const text_area = document.getElementById('re_corder-config');
       get_re_corder_config(re_corder)
         .then(conf => text_area.value = JSON.stringify(conf, null, 2))
-        .catch(err => alert(err));
+        .catch(alert);
     }
 
     const set_config = () => {
@@ -99,7 +99,7 @@
       const text_area = document.getElementById('re_corder-fingerings');
       get_re_corder_fingerings(re_corder)
         .then(f => text_area.value = JSON.stringify(f, null, 2))
-        .catch(err => alert(err));
+        .catch(alert);
     }
 
     const set_fingerings = () => {
@@ -107,7 +107,7 @@
       try {
         set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
           .then(() => alert('Success!'))
-          .catch(err => alert(err));
+          .catch(alert);
       } catch(err) {
         alert(err);
       }
@@ -117,7 +117,7 @@
       const text_area = document.getElementById('re_corder-keyboard');
       get_re_corder_keyboard(re_corder)
         .then(k => text_area.value = JSON.stringify(k, null, 2))
-        .catch(err => alert(err));
+        .catch(alert);
     }
 
     const set_keyboard_chart = () => {
@@ -125,30 +125,55 @@
       try {
         set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
           .then(() => alert('Success!'))
-          .catch(err => alert(err));
+          .catch(alert);
       } catch(err) {
         alert(err);
       }
     }
 
-    const save_contents = (id, fn) => {
-      const text_area = document.getElementById(id);
-      const blob = new Blob([text_area.value], {type: 'text/plain'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = fn;
-      a.click();
+    const read_file = async(h) => {
+      const f = await h.getFile();
+      return f.text();
+    }
+
+    const write_file = async (f, s) => {
+      const w = await f.createWritable();
+      await w.write(s);
+      await w.close();
     }
 
     const load_contents = (id, fn) => {
       const text_area = document.getElementById(id);
-      const file_input = document.getElementById(fn);
-      const reader = new FileReader();
-      reader.onload = () => {
-        text_area.value = reader.result;
+      const opts = {
+        types: [{
+          description: 'JSON File',
+          accept: {'application/json': ['.json']},
+        }, {
+          description: 'Text File',
+          accept: {'text/plain': ['.txt']},
+        }]
       };
-      reader.readAsText(file_input.files[0]);
-      file_input.value = '';
+      window.showOpenFilePicker(opts)
+        .then(f => read_file(f[0]))
+        .then(s => text_area.value = s)
+        .catch(alert);
+    }
+
+    const save_contents = (id, fn) => {
+      const text_area = document.getElementById(id);
+      const opts = {
+        suggestedName: fn,
+        types: [{
+          description: 'JSON File',
+          accept: {'application/json': ['.json']},
+        }, {
+          description: 'Text File',
+          accept: {'text/plain': ['.txt']},
+        }]
+      };
+      window.showSaveFilePicker(opts)
+        .then(f => write_file(f, text_area.value))
+        .catch(alert);
     }
 
     window.addEventListener('load', () => {
@@ -195,10 +220,7 @@
     <button class="re_corder" onclick="set_config();">Set Config</button>
     <button class="re_corder" onclick="restore_default();">
       Restore Default</button>
-    <button onclick="document.getElementById('config-file').click();">
-            Open</button>
-    <input type="file" id="config-file" style="display:none;"
-      oninput="load_contents('re_corder-config', 'config-file');">
+    <button onclick="load_contents('re_corder-config');">Open</button>
     <button onclick="save_contents('re_corder-config', 'config.json');">
       Save</button>
     <br>
@@ -225,10 +247,7 @@
   <p>
     <button class="re_corder" onclick="get_fingerings();">Get Fingering</button>
     <button class="re_corder" onclick="set_fingerings();">Set Fingering</button>
-    <button onclick="document.getElementById('fingering_chart-file').click();">
-            Open</button>
-    <input type="file" id="fingering_chart-file" style="display:none;"
-      oninput="load_contents('re_corder-fingerings', 'fingering_chart-file');">
+    <button onclick="load_contents('re_corder-fingerings');">Open</button>
     <button onclick="save_contents('re_corder-fingerings', 'fingerings.json');">
       Save</button>
     <br>
@@ -244,12 +263,9 @@
       Get Keyboard</button>
     <button class="re_corder" onclick="set_keyboard_chart();">
       Set Keyboard</button>
-    <button onclick="document.getElementById('keyboard-file').click();">
-            Open</button>
+    <button onclick="load_contents('re_corder-keyboard');">Open</button>
     <button onclick="save_contents('re_corder-keyboard', 'keyboard.json');">
       Save</button>
-    <input type="file" id="keyboard-file" style="display:none;"
-      oninput="load_contents('re_corder-keyboard', 'keyboard-file');">
     <br>
     <textarea id="re_corder-keyboard" rows="12" cols="48"></textarea>
   </p>
