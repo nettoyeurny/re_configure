@@ -140,6 +140,14 @@
       a.click();
     }
 
+    const load_contents = (id, fn) => {
+      const text_area = document.getElementById(id);
+      const file = document.getElementById(fn).files[0];
+      const reader = new FileReader();
+      reader.addEventListener('load', () => text_area.value = reader.result);
+      reader.readAsText(file);
+    }
+
     window.addEventListener('load', () => {
       enable_re_corder_elements(false);
       setInterval(() => monitor_connection(), 1000);
@@ -184,10 +192,14 @@
     <button class="re_corder" onclick="set_config();">Set Config</button>
     <button class="re_corder" onclick="restore_default();">
       Restore Default</button>
+    <button onclick="document.getElementById('config-file').click();">
+            Open</button>
+    <input type="file" id="config-file" style="display:none;"
+      oninput="load_contents('re_corder-config', 'config-file');">
     <button onclick="save_contents('re_corder-config', 'config.json');">
-      Download</button>
+      Save</button>
     <br>
-    <textarea id="re_corder-config" rows="28" cols="32"></textarea>
+    <textarea id="re_corder-config" rows="30" cols="48"></textarea>
   </p>
   <h2>Fingering Chart</h2>
   <p>
@@ -210,10 +222,14 @@
   <p>
     <button class="re_corder" onclick="get_fingerings();">Get Fingering</button>
     <button class="re_corder" onclick="set_fingerings();">Set Fingering</button>
+    <button onclick="document.getElementById('fingering_chart-file').click();">
+            Open</button>
+    <input type="file" id="fingering_chart-file" style="display:none;"
+      oninput="load_contents('re_corder-fingerings', 'fingering_chart-file');">
     <button onclick="save_contents('re_corder-fingerings', 'fingerings.json');">
-      Download</button>
+      Save</button>
     <br>
-    <textarea id="re_corder-fingerings" rows="28" cols="32"></textarea>
+    <textarea id="re_corder-fingerings" rows="30" cols="48"></textarea>
   </p>
   <h2>Keyboard Chart</h2>
   <p>
@@ -225,10 +241,14 @@
       Get Keyboard</button>
     <button class="re_corder" onclick="set_keyboard_chart();">
       Set Keyboard</button>
+    <button onclick="document.getElementById('keyboard-file').click();">
+            Open</button>
     <button onclick="save_contents('re_corder-keyboard', 'keyboard.json');">
-      Download</button>
+      Save</button>
+    <input type="file" id="keyboard-file" style="display:none;"
+      oninput="load_contents('re_corder-keyboard', 'keyboard-file');">
     <br>
-    <textarea id="re_corder-keyboard" rows="12" cols="32"></textarea>
+    <textarea id="re_corder-keyboard" rows="12" cols="48"></textarea>
   </p>
 </body>
 </html>
