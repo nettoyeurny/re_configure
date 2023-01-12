@@ -8,6 +8,8 @@
 'use strict';
 
 var re_corder = null;
+var cc_states = {};
+var flash_timeout = null;
 
 const RE_CORDER_TAG = 're_corder';
 const FILE_ACCESS_TAG = 'file_access';
@@ -26,14 +28,42 @@ const enable_elements = (tag, enabled) => {
   }
 };
 
-const log_button = data => {
-  console.log(`Re.corder button: ${data}`);
+const flash_update = s => {
+  const label = document.getElementById('flash_label');
+  label.innerText= s;
+  const dialog = document.getElementById('flash_dialog');
+  dialog.show();
+  clearTimeout(flash_timeout);
+  flash_timeout = setTimeout(() => dialog.close(), 1200);
 };
 
-const log_note_event = e => {
+const show_button = data => {
+  const val = data[1] < 0x40 ? data[1] : (data[1] - 0x80);
+  flash_update(`Re.corder button: (${BUTTONS[data[0]]}, ${val})`);
+};
+
+const three_digits = n => ('00' + n).substr(-3);
+
+const update_controllers = () => {
+  const label = document.getElementById('re_corder-cc');
+  label.innerText = Object.keys(cc_states).length
+    ? `Controllers: ${Object.entries(cc_states).map(
+      e => e[0] + ': ' + e[1]).join(', ')}`
+    : '';
+}
+
+const show_midi_event = e => {
   const data = e.data;
-  if (!(data[0] & 0x60)) {
-    console.log(`MIDI note event: ${to_hex(data)}`);
+  if ((data[0] & 0x60) == 0x00) {
+    flash_update(`MIDI Note ${(data[0] & 0x10) ? 'On' : 'Off'}: ${
+      from_midi_note(data[1])}, ${three_digits(data[2])}`);
+  } else {
+    if ((data[0] & 0xf0) == 0xb0) {
+      cc_states[`cc-${three_digits(data[1])}`] = three_digits(data[2]);
+    } else if ((data[0] & 0xf0) == 0xd0) {
+      cc_states['touch'] = three_digits(data[1]);
+    }
+    update_controllers();
   }
 };
 
@@ -70,7 +100,7 @@ const midi_setup = midi_access => {
     if (event.target.selectedIndex > 0) {
       const input_name = event.target.value;
       create_re_corder(
-        midi_access, input_name, log_button, log_note_event)
+        midi_access, input_name, show_button, show_midi_event)
         .then(r => {
           re_corder = r;
           return r.get_midi_channel();
@@ -92,8 +122,12 @@ const set_config = () => {
   const text_area = document.getElementById('re_corder-config');
   try {
     set_re_corder_config(re_corder, JSON.parse(text_area.value))
-      .then(conf => text_area.value = JSON.stringify(conf, null, 2))
-      .then(() => alert('Success!'))
+      .then(conf => {
+        text_area.value = JSON.stringify(conf, null, 2);
+        cc_states = {};
+        update_controllers();
+        flash_update('Success!');
+      })
       .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
   } catch (err) {
     alert(err);
@@ -119,7 +153,7 @@ const set_fingerings = () => {
   const text_area = document.getElementById('re_corder-fingerings');
   try {
     set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
-      .then(() => alert('Success!'))
+      .then(() => flash_update('Success!'))
       .catch(alert);
   } catch (err) {
     alert(err);
@@ -137,7 +171,7 @@ const set_keyboard_chart = () => {
   const text_area = document.getElementById('re_corder-keyboard');
   try {
     set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
-      .then(() => alert('Success!'))
+      .then(() => flash_update('Success!'))
       .catch(alert);
   } catch (err) {
     alert(err);

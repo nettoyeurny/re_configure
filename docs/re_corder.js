@@ -56,6 +56,14 @@ const CURVES = {
   21: 'Emb20'
 };
 
+const BUTTONS = {
+  1: 'Octave up/down',
+  2: 'Record',
+  3: 'Stop',
+  4: 'Play',
+  5: 'Disconnect'
+};
+
 const create_re_corder =
   async (midi_access, port_name, on_re_corder_button, on_midi_msg) => {
     for (const input of midi_access.inputs.values()) {

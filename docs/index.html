@@ -5,9 +5,14 @@
   <title>Re.Configure</title>
   <script src="re_corder.js"></script>
   <script src="ui.js"></script>
+  <style>
+    body {font-family: monospace;}
+    #flash_dialog {position: fixed;}
+  </style>
 </head>
 
 <body>
+  <dialog id="flash_dialog"><label id="flash_label"></label></dialog>
   <h1>Re.Configure</h1>
   <p>
     Unofficial <a href="https://github.com/nettoyeurny/re_configure">
@@ -17,7 +22,10 @@
   <p>
     <label>Re.corder Port:</label>
     <select id="input-port-selector"></select></label>
+    <br>
     <label id="re_corder-state">No connection.</label>
+    <br>
+    <label id="re_corder-cc"></label>
   </p>
   <h2>Re.corder Configuration</h2>
   <p>
