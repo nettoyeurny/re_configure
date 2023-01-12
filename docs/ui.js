@@ -9,6 +9,9 @@
 
 var re_corder = null;
 
+const RE_CORDER_TAG = 're_corder';
+const FILE_ACCESS_TAG = 'file_access';
+
 const TYPES = [{
   description: 'JSON File',
   accept: {
@@ -16,8 +19,8 @@ const TYPES = [{
   }
 }];
 
-const enable_re_corder_elements = enabled => {
-  const elts = document.getElementsByClassName('re_corder');
+const enable_elements = (tag, enabled) => {
+  const elts = document.getElementsByClassName(tag);
   for (const elt of elts) {
     elt.disabled = !enabled;
   }
@@ -60,7 +63,7 @@ const midi_setup = midi_access => {
   });
   selector.addEventListener('change', event => {
     if (re_corder) {
-      enable_re_corder_elements(false);
+      enable_elements(RE_CORDER_TAG, false);
       re_corder.close();
       re_corder = null;
     }
@@ -72,7 +75,7 @@ const midi_setup = midi_access => {
           re_corder = r;
           return r.get_midi_channel();
         })
-        .then(() => enable_re_corder_elements(true))
+        .then(() => enable_elements(RE_CORDER_TAG, true))
         .catch(err => alert(`${err} --- Wrong port, perhaps?`));
     }
   });
@@ -175,7 +178,8 @@ const save_contents = (id, fn) => {
 };
 
 window.addEventListener('load', () => {
-  enable_re_corder_elements(false);
+  enable_elements(FILE_ACCESS_TAG, window.showOpenFilePicker);
+  enable_elements(RE_CORDER_TAG, false);
   setInterval(() => monitor_connection(), 1000);
   if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess({

@@ -38,9 +38,10 @@
     <button class="re_corder" onclick="set_config();">Set Config</button>
     <button class="re_corder" onclick="restore_default();">
       Restore Default</button>
-    <button onclick="load_contents('re_corder-config');">Open</button>
-    <button onclick="save_contents('re_corder-config', 'config.json');">
-      Save</button>
+    <button class="file_access" onclick="load_contents('re_corder-config');">
+      Open</button>
+    <button class="file_access"
+      onclick="save_contents('re_corder-config', 'config.json');">Save</button>
     <br>
     <textarea id="re_corder-config" rows="30" cols="48"></textarea>
   </p>
@@ -65,8 +66,10 @@
   <p>
     <button class="re_corder" onclick="get_fingerings();">Get Fingering</button>
     <button class="re_corder" onclick="set_fingerings();">Set Fingering</button>
-    <button onclick="load_contents('re_corder-fingerings');">Open</button>
-    <button onclick="save_contents('re_corder-fingerings', 'fingerings.json');">
+    <button class="file_access"
+      onclick="load_contents('re_corder-fingerings');">Open</button>
+    <button class="file_access"
+      onclick="save_contents('re_corder-fingerings', 'fingerings.json');">
       Save</button>
     <br>
     <textarea id="re_corder-fingerings" rows="30" cols="48"></textarea>
@@ -81,8 +84,10 @@
       Get Keyboard</button>
     <button class="re_corder" onclick="set_keyboard_chart();">
       Set Keyboard</button>
-    <button onclick="load_contents('re_corder-keyboard');">Open</button>
-    <button onclick="save_contents('re_corder-keyboard', 'keyboard.json');">
+    <button class="file_access"
+      onclick="load_contents('re_corder-keyboard');">Open</button>
+    <button class="file_access"
+      onclick="save_contents('re_corder-keyboard', 'keyboard.json');">
       Save</button>
     <br>
     <textarea id="re_corder-keyboard" rows="12" cols="48"></textarea>
