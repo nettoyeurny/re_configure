@@ -63,13 +63,14 @@ const create_re_corder =
         for (const output of midi_access.outputs.values()) {
           if (output.name.includes(port_name)) {
             await Promise.all([input.open(), output.open()]);
-            return new ReCorder(input, output, on_re_corder_button, on_midi_msg);
+            return new ReCorder(
+              input, output, on_re_corder_button, on_midi_msg);
           }
         }
       }
     }
     throw new Error('No matching port found');
-  }
+  };
 
 class ReCorder {
   constructor(input, output, on_re_corder_button, on_midi_msg) {
@@ -181,9 +182,9 @@ class ReCorder {
     return {
       mode: USER_MODES[data[0]],
       notes: Array.from({
-          length: data.length / 3
-        },
-        (_, i) => data.slice(i * 3 + 1, i * 3 + 3 + 1))
+        length: data.length / 3
+      },
+      (_, i) => data.slice(i * 3 + 1, i * 3 + 3 + 1))
     };
   }
 
@@ -234,7 +235,7 @@ class ReCorder {
     return this._run(
       [0x30],
       [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
-    )
+    );
   }
 
   set_smoothing(maintain, smooth) {
@@ -305,7 +306,7 @@ const get_re_corder_config = async r => {
     maintain_note: smoothing.maintain_note,
     smooth_acc: smoothing.smooth_acc
   };
-}
+};
 
 const deep_update = (obj1, obj2) => {
   for (const key in obj2) {
@@ -315,7 +316,7 @@ const deep_update = (obj1, obj2) => {
       obj1[key] = obj2[key];
     }
   }
-}
+};
 
 const set_re_corder_config = async (r, new_conf) => {
   const conf = await get_re_corder_config(r);
@@ -333,7 +334,7 @@ const set_re_corder_config = async (r, new_conf) => {
   await r.set_smoothing(conf.maintain_note, conf.smooth_acc);
   await r.set_controller_config(conf.controllers);
   return conf;
-}
+};
 
 const NOTES = [
   'C', 'C', 'C#', 'Db', 'D', 'D', 'D#', 'Eb', 'E', 'E', 'F', 'F',
@@ -349,7 +350,7 @@ const RECORDER_ENCODING = [
   [0x0040, 0x0040], // Right middle finger
   [0x0300, 0x0100], // Right ring finger
   [0x0c00, 0x0400], // Right pinkie
-]
+];
 
 const to_midi_note = note => {
   const octave = +note.substring(note.length - 1);
@@ -358,15 +359,15 @@ const to_midi_note = note => {
     throw new Error(`Bad note: ${note}`);
   }
   return octave * 12 + (index >> 1);
-}
+};
 
 const from_midi_note = note => {
   return NOTES[(note % 12) * 2] + Math.floor(note / 12);
-}
+};
 
 const decode_fingering = fingering => {
   const f = (fingering[1] << 8) | fingering[2];
-  var s = ''
+  var s = '';
   for (let enc of RECORDER_ENCODING) {
     const full = enc[0];
     const partial = enc[1];
@@ -385,7 +386,7 @@ const decode_fingering = fingering => {
   }
   const note = fingering[0];
   return [from_midi_note(note), s];
-}
+};
 
 const encode_fingering = (note, fingering) => {
   const s = fingering.replace(/\./g, '');
@@ -407,7 +408,7 @@ const encode_fingering = (note, fingering) => {
     }
   }
   return [to_midi_note(note), f >> 8, f & 0x7f];
-}
+};
 
 const get_re_corder_fingerings = async (r) => {
   const f = await r.get_fingering_chart();
@@ -415,7 +416,7 @@ const get_re_corder_fingerings = async (r) => {
     throw new Error(`Can't get fingering chart in user mode ${f.mode}.`);
   }
   return f.notes.map(n => decode_fingering(n));
-}
+};
 
 const set_re_corder_fingerings = async (r, fingerings) => {
   const user_mode = await r.get_user_mode();
@@ -424,7 +425,7 @@ const set_re_corder_fingerings = async (r, fingerings) => {
   }
   const chart = fingerings.map(a => encode_fingering(a[0], a[1]));
   await r.set_fingering_chart(chart);
-}
+};
 
 const get_re_corder_keyboard = async (r) => {
   const f = await r.get_fingering_chart();
@@ -432,7 +433,7 @@ const get_re_corder_keyboard = async (r) => {
     throw new Error(`Can't get keyboard chart in user mode ${f.mode}.`);
   }
   return f.notes.map(n => from_midi_note(n[0]));
-}
+};
 
 const set_re_corder_keyboard = async (r, notes) => {
   if (notes.length !== 9) {
@@ -447,4 +448,4 @@ const set_re_corder_keyboard = async (r, notes) => {
     return [to_midi_note(note), bit >> 7, bit & 0x7f];
   });
   await r.set_fingering_chart(chart);
-}
+};
