@@ -4,14 +4,12 @@
   <title>Re.Configure</title>
   <script src="re_corder.js"></script>
   <script>
+    var re_corder = null;
+
     const TYPES = [{
       description: 'JSON File',
-      accept: {'application/json': ['.json']},
-    }, {
-      description: 'Text File',
-      accept: {'text/plain': ['.txt']},
+      accept: {'application/json': ['.json']}
     }];
-    var re_corder = null;
 
     const enable_re_corder_elements = enabled => {
       const elts = document.getElementsByClassName('re_corder');
