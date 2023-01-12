@@ -144,7 +144,7 @@
     const write_file = async (f, s) => {
       const w = await f.createWritable();
       await w.write(s);
-      await w.close();
+      w.close();
     }
 
     const load_contents = id => {
