@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Re.Configure</title>
   <script src="re_corder.js"></script>
@@ -8,7 +9,9 @@
 
     const TYPES = [{
       description: 'JSON File',
-      accept: {'application/json': ['.json']}
+      accept: {
+        'application/json': ['.json']
+      }
     }];
 
     const enable_re_corder_elements = enabled => {
@@ -87,7 +90,7 @@
           .then(conf => text_area.value = JSON.stringify(conf, null, 2))
           .then(() => alert('Success!'))
           .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
-      } catch(err) {
+      } catch (err) {
         alert(err);
       }
     }
@@ -113,7 +116,7 @@
         set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
           .then(() => alert('Success!'))
           .catch(alert);
-      } catch(err) {
+      } catch (err) {
         alert(err);
       }
     }
@@ -131,7 +134,7 @@
         set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
           .then(() => alert('Success!'))
           .catch(alert);
-      } catch(err) {
+      } catch (err) {
         alert(err);
       }
     }
@@ -149,7 +152,9 @@
 
     const load_contents = id => {
       const text_area = document.getElementById(id);
-      const opts = {types: TYPES};
+      const opts = {
+        types: TYPES
+      };
       window.showOpenFilePicker(opts)
         .then(f => read_file(f[0]))
         .then(s => text_area.value = s)
@@ -158,7 +163,10 @@
 
     const save_contents = (id, fn) => {
       const text_area = document.getElementById(id);
-      const opts = {suggestedName: fn, types: TYPES};
+      const opts = {
+        suggestedName: fn,
+        types: TYPES
+      };
       window.showSaveFilePicker(opts)
         .then(f => write_file(f, text_area.value))
         .catch(alert);
@@ -168,15 +176,20 @@
       enable_re_corder_elements(false);
       setInterval(() => monitor_connection(), 1000);
       if (navigator.requestMIDIAccess) {
-        navigator.requestMIDIAccess({sysex: true, software: true})
+        navigator.requestMIDIAccess({
+            sysex: true,
+            software: true
+          })
           .then(midi_access => midi_setup(midi_access))
           .catch(() => alert('Failed to get MIDI access!'));
       } else {
         alert('This browser does not support Web MIDI!');
       }
     });
+
   </script>
 </head>
+
 <body>
   <h1>Re.Configure</h1>
   <p>
@@ -191,17 +204,17 @@
   </p>
   <h2>Re.corder Configuration</h2>
   <p>
-    <ul>
-      <li>user_mode: "Breath", "Lip", "Keyboard"</li>
-      <li>midi_channel: 1-16</li>
-      <li>threshold: 601-16383</li>
-      <li>velocity: 0-127</li>
-      <li>aftertouch, curve: "None", "Linear", "Emb1"-"Emb20"</li>
-      <li>ctrl: 0-127</li>
-      <li>easy_connect: true, false</li>
-      <li>maintain_note: true, false</li>
-      <li>smooth_acc: 0-4</li>
-    </ul>
+  <ul>
+    <li>user_mode: "Breath", "Lip", "Keyboard"</li>
+    <li>midi_channel: 1-16</li>
+    <li>threshold: 601-16383</li>
+    <li>velocity: 0-127</li>
+    <li>aftertouch, curve: "None", "Linear", "Emb1"-"Emb20"</li>
+    <li>ctrl: 0-127</li>
+    <li>easy_connect: true, false</li>
+    <li>maintain_note: true, false</li>
+    <li>smooth_acc: 0-4</li>
+  </ul>
   </p>
   <p>
     <button class="re_corder" onclick="get_config();">Get Config</button>
@@ -217,7 +230,7 @@
   <h2>Fingering Chart</h2>
   <p>
     A fingering chart is a list of the form
-    <pre>
+  <pre>
   [
     ...
     [ "G5",  "*.***.oooo" ],
@@ -226,11 +239,11 @@
     ...
   ]
     </pre>
-    where each item specifies a note and a string representing a fingering to be
-    read from left to right (left thumb to right pinkie), where `o/*/@` stands
-    for an open/closed/partially closed hole, with optional dots for
-    readability. In addition, the letter `e` specifies a partially closed hole
-    in the opposite way (e.g., for left-handed fingerings).
+  where each item specifies a note and a string representing a fingering to be
+  read from left to right (left thumb to right pinkie), where `o/*/@` stands
+  for an open/closed/partially closed hole, with optional dots for
+  readability. In addition, the letter `e` specifies a partially closed hole
+  in the opposite way (e.g., for left-handed fingerings).
   </p>
   <p>
     <button class="re_corder" onclick="get_fingerings();">Get Fingering</button>
@@ -258,4 +271,5 @@
     <textarea id="re_corder-keyboard" rows="12" cols="48"></textarea>
   </p>
 </body>
+
 </html>

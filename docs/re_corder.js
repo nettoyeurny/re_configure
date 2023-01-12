@@ -57,19 +57,19 @@ const CURVES = {
 };
 
 const create_re_corder =
-    async (midi_access, port_name, on_re_corder_button, on_midi_msg) => {
-  for (const input of midi_access.inputs.values()) {
-    if (input.name.includes(port_name)) {
-      for (const output of midi_access.outputs.values()) {
-        if (output.name.includes(port_name)) {
-          await Promise.all([input.open(), output.open()]);
-          return new ReCorder(input, output, on_re_corder_button, on_midi_msg);
+  async (midi_access, port_name, on_re_corder_button, on_midi_msg) => {
+    for (const input of midi_access.inputs.values()) {
+      if (input.name.includes(port_name)) {
+        for (const output of midi_access.outputs.values()) {
+          if (output.name.includes(port_name)) {
+            await Promise.all([input.open(), output.open()]);
+            return new ReCorder(input, output, on_re_corder_button, on_midi_msg);
+          }
         }
       }
     }
+    throw new Error('No matching port found');
   }
-  throw new Error('No matching port found');
-}
 
 class ReCorder {
   constructor(input, output, on_re_corder_button, on_midi_msg) {
@@ -95,7 +95,7 @@ class ReCorder {
   _handle_midi(event) {
     const suffix_start = event.data.length - SUFFIX.length;
     if (PREFIX.every((v, i) => v === event.data[i]) &&
-        SUFFIX.every((v, i) => v === event.data[i + suffix_start])) {
+      SUFFIX.every((v, i) => v === event.data[i + suffix_start])) {
       const payload = event.data.slice(PREFIX.length, suffix_start);
       if (payload[0] === 0x01 || payload[0] === 0x02) {
         const resolve = this._queue.shift();
@@ -114,7 +114,7 @@ class ReCorder {
     }
   }
 
-  async _run(cmd, data=[]) {
+  async _run(cmd, data = []) {
     const payload = await new Promise((resolve, reject) => {
       this._queue.push(resolve);
       this._output.send([...PREFIX, ...cmd, ...data, ...SUFFIX]);
@@ -149,12 +149,18 @@ class ReCorder {
 
   async get_smoothing() {
     const data = await this._run([0x31, 0x08], [0x01]);
-    return { maintain_note: Boolean(data[2]), smooth_acc: data[4] };
+    return {
+      maintain_note: Boolean(data[2]),
+      smooth_acc: data[4]
+    };
   }
 
   async get_sensitivity() {
     const data = await this._run([0x31, 0x07], [0x01]);
-    return { threshold: (data[2] << 7) | data[3], velocity: data[5] };
+    return {
+      threshold: (data[2] << 7) | data[3],
+      velocity: data[5]
+    };
   }
 
   async get_controller_config() {
@@ -174,8 +180,10 @@ class ReCorder {
     const data = await this._run([0x31, 0x00], [0x00]);
     return {
       mode: USER_MODES[data[0]],
-      notes: Array.from({length: data.length / 3},
-                             (_, i) => data.slice(i * 3 + 1, i * 3 + 3 + 1))
+      notes: Array.from({
+          length: data.length / 3
+        },
+        (_, i) => data.slice(i * 3 + 1, i * 3 + 3 + 1))
     };
   }
 
@@ -224,8 +232,8 @@ class ReCorder {
       throw new Error('Bad velocity value.');
     }
     return this._run(
-        [0x30],
-        [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
+      [0x30],
+      [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
     )
   }
 
@@ -234,8 +242,8 @@ class ReCorder {
       throw new Error('Bad accelerator smoothing value value.');
     }
     return this._run(
-        [0x30],
-        [0x08, 0x02, 0x03, maintain ? 1 : 0, 0x04, smooth]
+      [0x30],
+      [0x08, 0x02, 0x03, maintain ? 1 : 0, 0x04, smooth]
     );
   }
 
@@ -258,7 +266,7 @@ class ReCorder {
     const a = find_key(CURVES, ctrls.aftertouch);
     if (a) {
       data[5] = a;
-      data[10] = 0;  // Aftertouch replaces pressure controller.
+      data[10] = 0; // Aftertouch replaces pressure controller.
     }
     return this._run([0x30], data);
   }
@@ -333,15 +341,14 @@ const NOTES = [
 ];
 
 const RECORDER_ENCODING = [
-// Full    Partial
-  [0x0003, 0x0002],   // Left thumb
-  [0x0004, 0x0004],   // Left index finger
-  [0x0008, 0x0008],   // Left middle finger
-  [0x0010, 0x0010],   // Left ring finger
-  [0x0020, 0x0020],   // Right index finger
-  [0x0040, 0x0040],   // Right middle finger
-  [0x0300, 0x0100],   // Right ring finger
-  [0x0c00, 0x0400]    // Right pinkie
+  [0x0003, 0x0002], // Left thumb
+  [0x0004, 0x0004], // Left index finger
+  [0x0008, 0x0008], // Left middle finger
+  [0x0010, 0x0010], // Left ring finger
+  [0x0020, 0x0020], // Right index finger
+  [0x0040, 0x0040], // Right middle finger
+  [0x0300, 0x0100], // Right ring finger
+  [0x0c00, 0x0400], // Right pinkie
 ]
 
 const to_midi_note = note => {
