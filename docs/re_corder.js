@@ -424,7 +424,7 @@ const set_re_corder_fingerings = async (r, fingerings) => {
     throw new Error(`Can't set fingering chart in user mode ${user_mode}.`);
   }
   const chart = fingerings.map(a => encode_fingering(a[0], a[1]));
-  await r.set_fingering_chart(chart);
+  return r.set_fingering_chart(chart);
 };
 
 const get_re_corder_keyboard = async (r) => {
@@ -447,5 +447,5 @@ const set_re_corder_keyboard = async (r, notes) => {
     const bit = 2 << i;
     return [to_midi_note(note), bit >> 7, bit & 0x7f];
   });
-  await r.set_fingering_chart(chart);
+  return r.set_fingering_chart(chart);
 };
