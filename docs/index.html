@@ -136,7 +136,7 @@
       }
     }
 
-    const read_file = async (h) => {
+    const read_file = async h => {
       const f = await h.getFile();
       return f.text();
     }
@@ -147,7 +147,7 @@
       await w.close();
     }
 
-    const load_contents = (id) => {
+    const load_contents = id => {
       const text_area = document.getElementById(id);
       const opts = {types: TYPES};
       window.showOpenFilePicker(opts)
