@@ -184,56 +184,56 @@ class ReCorder {
     return (data[2] << 7) | data[3];
   }
 
-  async factory_reset() {
-    this._run([0x10])
+  factory_reset() {
+    return this._run([0x10])
       .then(() => {
         throw new Error('Still connected after reset?!?');
       })
       .catch(() => {});
   }
 
-  async restore_default_settings() {
-    await this._run([0x2f]);
+  restore_default_settings() {
+    return this._run([0x2f]);
   }
 
-  async set_user_mode(mode) {
+  set_user_mode(mode) {
     const m = find_key(USER_MODES, mode);
     if (!m) {
       throw new Error(`Unknown user mode: ${mode}`);
     }
-    await this._run([0x21], [0x05, m]);
+    return this._run([0x21], [0x05, m]);
   }
 
-  async set_midi_channel(ch) {
+  set_midi_channel(ch) {
     if (ch < 1 || ch > 16) {
       throw new Error(`Invalid MIDI channel: ${ch}`);
     }
-    await this._run([0x21], [0x03, ch]);
+    return this._run([0x21], [0x03, ch]);
   }
 
-  async set_easy_connect_status(on) {
+  set_easy_connect_status(on) {
     const s = on ? 0 : 1;
-    await this._run([0x21], [0x01, s]);
+    return this._run([0x21], [0x01, s]);
   }
 
-  async set_sensitivity(threshold, velocity) {
+  set_sensitivity(threshold, velocity) {
     if (threshold < 601 || threshold > 0x3fff) {
       throw new Error('Bad threshold value.');
     }
     if (velocity < 0 || velocity > 0x7f) {
       throw new Error('Bad velocity value.');
     }
-    await this._run(
+    return this._run(
         [0x30],
         [0x07, 0x02, 0x00, threshold >> 7, threshold & 0x7f, 0x01, velocity]
     )
   }
 
-  async set_smoothing(maintain, smooth) {
+  set_smoothing(maintain, smooth) {
     if (smooth < 0 || smooth > 4) {
       throw new Error('Bad accelerator smoothing value value.');
     }
-    await this._run(
+    return this._run(
         [0x30],
         [0x08, 0x02, 0x03, maintain ? 1 : 0, 0x04, smooth]
     );
@@ -243,7 +243,7 @@ class ReCorder {
   // to pairs of integers specifying the MIDI controller (0-127) and curve
   // ('None', 'Linear', 'Emb1', ..., 'Emb20'). The aftertouch setting is also
   // given by a curve.
-  async set_controller_config(ctrls) {
+  set_controller_config(ctrls) {
     const data = from_hex(
       '0100000000007f01007f007f02007f007f03007f007f04007f007f');
     for (let i = 1; i < 5; ++i) {
@@ -260,14 +260,14 @@ class ReCorder {
       data[5] = a;
       data[10] = 0;  // Aftertouch replaces pressure controller.
     }
-    await this._run([0x30], data);
+    return this._run([0x30], data);
   }
 
   // chart is a list of three-byte arrays [xx, yy, zz], where xx is a MIDI note
   // value and yyzz represents an 11-bit number, yy << 7 | zz, whose bits
   // correspond to tone holes on the re.corder. E.g., [0x3f, 0x01, 0x7f]
   // represents D#5.
-  async set_fingering_chart(chart) {
+  set_fingering_chart(chart) {
     if (chart.length < 1 || chart.length > 62) {
       throw new Error('Bad fingering chart.');
     }
@@ -276,7 +276,7 @@ class ReCorder {
         throw new Error(`Bad fingering: ${b}`);
       }
     }
-    await this._run([0x30], [0x00, 0x00, ...chart.flat()]);
+    return this._run([0x30], [0x00, 0x00, ...chart.flat()]);
   }
 }
 
