@@ -5,7 +5,6 @@
 // BSD 3-Clause License
 // For information on usage and redistribution, and for a DISCLAIMER OF ALL
 // WARRANTIES, see the file LICENSE in this distribution.
-'use strict';
 
 import {
   BUTTONS,
