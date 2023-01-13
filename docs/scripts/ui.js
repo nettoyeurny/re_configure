@@ -64,7 +64,7 @@ const update_controllers = () => {
     ? `Controllers: ${Object.entries(cc_states).map(
       e => e[0] + ': ' + e[1]).join(', ')}`
     : '';
-}
+};
 
 const show_midi_event = e => {
   const data = e.data;
@@ -226,27 +226,27 @@ const save_contents = (id, fn) => {
 };
 
 window.addEventListener('load', () => {
-  get_by_id("btn_get_config").onclick = get_config;
-  get_by_id("btn_set_config").onclick = set_config;
-  get_by_id("btn_restore_default").onclick = restore_default;
-  get_by_id("btn_open_config").onclick =
-    () => load_contents("re_corder-config");
-  get_by_id("btn_save_config").onclick =
-    () => save_contents("re_corder-config", "config.json");
+  get_by_id('btn_get_config').onclick = get_config;
+  get_by_id('btn_set_config').onclick = set_config;
+  get_by_id('btn_restore_default').onclick = restore_default;
+  get_by_id('btn_open_config').onclick =
+    () => load_contents('re_corder-config');
+  get_by_id('btn_save_config').onclick =
+    () => save_contents('re_corder-config', 'config.json');
 
-  get_by_id("btn_get_fingerings").onclick = get_fingerings;
-  get_by_id("btn_set_fingerings").onclick = set_fingerings;
-  get_by_id("btn_open_fingerings").onclick =
-    () => load_contents("re_corder-fingerings");
-  get_by_id("btn_save_fingerings").onclick =
-    () => save_contents("re_corder-fingerings", "fingerings.json");
+  get_by_id('btn_get_fingerings').onclick = get_fingerings;
+  get_by_id('btn_set_fingerings').onclick = set_fingerings;
+  get_by_id('btn_open_fingerings').onclick =
+    () => load_contents('re_corder-fingerings');
+  get_by_id('btn_save_fingerings').onclick =
+    () => save_contents('re_corder-fingerings', 'fingerings.json');
 
-  get_by_id("btn_get_keyboard_chart").onclick = get_keyboard_chart;
-  get_by_id("btn_set_keyboard_chart").onclick = set_keyboard_chart;
-  get_by_id("btn_open_keyboard_chart").onclick =
-    () => load_contents("re_corder-keyboard_chart");
-  get_by_id("btn_save_keyboard_chart").onclick =
-    () => save_contents("re_corder-keyboard_chart", "keyboard_chart.json");
+  get_by_id('btn_get_keyboard_chart').onclick = get_keyboard_chart;
+  get_by_id('btn_set_keyboard_chart').onclick = set_keyboard_chart;
+  get_by_id('btn_open_keyboard_chart').onclick =
+    () => load_contents('re_corder-keyboard_chart');
+  get_by_id('btn_save_keyboard_chart').onclick =
+    () => save_contents('re_corder-keyboard_chart', 'keyboard_chart.json');
 
   enable_elements(FILE_ACCESS_TAG, window.showOpenFilePicker);
   enable_elements(RE_CORDER_TAG, false);
