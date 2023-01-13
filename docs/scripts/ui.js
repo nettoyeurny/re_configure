@@ -7,6 +7,18 @@
 // WARRANTIES, see the file LICENSE in this distribution.
 'use strict';
 
+import {
+  BUTTONS,
+  create_re_corder,
+  get_re_corder_config,
+  set_re_corder_config,
+  from_midi_note,
+  get_re_corder_fingerings,
+  set_re_corder_fingerings,
+  get_re_corder_keyboard,
+  set_re_corder_keyboard
+} from './re_corder.js';
+
 var re_corder = null;
 var cc_states = {};
 var flash_timeout = null;
@@ -28,10 +40,12 @@ const enable_elements = (tag, enabled) => {
   }
 };
 
+const get_by_id = document.getElementById.bind(document);
+
 const flash_update = s => {
-  const label = document.getElementById('flash_label');
+  const label = get_by_id('flash_label');
   label.innerText= s;
-  const dialog = document.getElementById('flash_dialog');
+  const dialog = get_by_id('flash_dialog');
   dialog.show();
   clearTimeout(flash_timeout);
   flash_timeout = setTimeout(() => dialog.close(), 1200);
@@ -45,7 +59,7 @@ const show_button = data => {
 const three_digits = n => ('00' + n).substr(-3);
 
 const update_controllers = () => {
-  const label = document.getElementById('re_corder-cc');
+  const label = get_by_id('re_corder-cc');
   label.innerText = Object.keys(cc_states).length
     ? `Controllers: ${Object.entries(cc_states).map(
       e => e[0] + ': ' + e[1]).join(', ')}`
@@ -68,7 +82,7 @@ const show_midi_event = e => {
 };
 
 const monitor_connection = () => {
-  const label = document.getElementById('re_corder-state');
+  const label = get_by_id('re_corder-state');
   if (re_corder) {
     re_corder.get_battery_state()
       .then(b => label.innerText =
@@ -112,14 +126,14 @@ const midi_setup = midi_access => {
 };
 
 const get_config = () => {
-  const text_area = document.getElementById('re_corder-config');
+  const text_area = get_by_id('re_corder-config');
   get_re_corder_config(re_corder)
     .then(conf => text_area.value = JSON.stringify(conf, null, 2))
     .catch(alert);
 };
 
 const set_config = () => {
-  const text_area = document.getElementById('re_corder-config');
+  const text_area = get_by_id('re_corder-config');
   try {
     set_re_corder_config(re_corder, JSON.parse(text_area.value))
       .then(conf => {
@@ -135,7 +149,7 @@ const set_config = () => {
 };
 
 const restore_default = () => {
-  const text_area = document.getElementById('re_corder-config');
+  const text_area = get_by_id('re_corder-config');
   re_corder.restore_default_settings()
     .then(() => get_re_corder_config(re_corder))
     .then(conf => text_area.value = JSON.stringify(conf, null, 2))
@@ -143,14 +157,14 @@ const restore_default = () => {
 };
 
 const get_fingerings = () => {
-  const text_area = document.getElementById('re_corder-fingerings');
+  const text_area = get_by_id('re_corder-fingerings');
   get_re_corder_fingerings(re_corder)
     .then(f => text_area.value = JSON.stringify(f, null, 2))
     .catch(alert);
 };
 
 const set_fingerings = () => {
-  const text_area = document.getElementById('re_corder-fingerings');
+  const text_area = get_by_id('re_corder-fingerings');
   try {
     set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
       .then(() => flash_update('Success!'))
@@ -161,14 +175,14 @@ const set_fingerings = () => {
 };
 
 const get_keyboard_chart = () => {
-  const text_area = document.getElementById('re_corder-keyboard');
+  const text_area = get_by_id('re_corder-keyboard_chart');
   get_re_corder_keyboard(re_corder)
     .then(k => text_area.value = JSON.stringify(k, null, 2))
     .catch(alert);
 };
 
 const set_keyboard_chart = () => {
-  const text_area = document.getElementById('re_corder-keyboard');
+  const text_area = get_by_id('re_corder-keyboard_chart');
   try {
     set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
       .then(() => flash_update('Success!'))
@@ -190,7 +204,7 @@ const write_file = async (f, s) => {
 };
 
 const load_contents = id => {
-  const text_area = document.getElementById(id);
+  const text_area = get_by_id(id);
   const opts = {
     types: TYPES
   };
@@ -201,7 +215,7 @@ const load_contents = id => {
 };
 
 const save_contents = (id, fn) => {
-  const text_area = document.getElementById(id);
+  const text_area = get_by_id(id);
   const opts = {
     suggestedName: fn,
     types: TYPES
@@ -212,6 +226,28 @@ const save_contents = (id, fn) => {
 };
 
 window.addEventListener('load', () => {
+  get_by_id("btn_get_config").onclick = get_config;
+  get_by_id("btn_set_config").onclick = set_config;
+  get_by_id("btn_restore_default").onclick = restore_default;
+  get_by_id("btn_open_config").onclick =
+    () => load_contents("re_corder-config");
+  get_by_id("btn_save_config").onclick =
+    () => save_contents("re_corder-config", "config.json");
+
+  get_by_id("btn_get_fingerings").onclick = get_fingerings;
+  get_by_id("btn_set_fingerings").onclick = set_fingerings;
+  get_by_id("btn_open_fingerings").onclick =
+    () => load_contents("re_corder-fingerings");
+  get_by_id("btn_save_fingerings").onclick =
+    () => save_contents("re_corder-fingerings", "fingerings.json");
+
+  get_by_id("btn_get_keyboard_chart").onclick = get_keyboard_chart;
+  get_by_id("btn_set_keyboard_chart").onclick = set_keyboard_chart;
+  get_by_id("btn_open_keyboard_chart").onclick =
+    () => load_contents("re_corder-keyboard_chart");
+  get_by_id("btn_save_keyboard_chart").onclick =
+    () => save_contents("re_corder-keyboard_chart", "keyboard_chart.json");
+
   enable_elements(FILE_ACCESS_TAG, window.showOpenFilePicker);
   enable_elements(RE_CORDER_TAG, false);
   setInterval(() => monitor_connection(), 1000);

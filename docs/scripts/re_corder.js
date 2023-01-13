@@ -7,17 +7,6 @@
 // WARRANTIES, see the file LICENSE in this distribution.
 'use strict';
 
-const from_hex = s => new Uint8Array(s.match(/.{1,2}/g)
-  .map(byte => parseInt(byte, 16)));
-
-const to_hex = a => Array.prototype.map.call(a, b => ('0' + (b & 0xFF)
-  .toString(16)).slice(-2)).join('');
-
-const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
-
-const PREFIX = from_hex('f0002f7f0001');
-const SUFFIX = from_hex('f7');
-
 const USER_MODES = {
   1: 'Breath',
   2: 'Lip',
@@ -64,21 +53,16 @@ const BUTTONS = {
   5: 'Disconnect'
 };
 
-const create_re_corder =
-  async (midi_access, port_name, on_re_corder_button, on_midi_msg) => {
-    for (const input of midi_access.inputs.values()) {
-      if (input.name.includes(port_name)) {
-        for (const output of midi_access.outputs.values()) {
-          if (output.name.includes(port_name)) {
-            await Promise.all([input.open(), output.open()]);
-            return new ReCorder(
-              input, output, on_re_corder_button, on_midi_msg);
-          }
-        }
-      }
-    }
-    throw new Error('No matching port found');
-  };
+const from_hex = s => new Uint8Array(s.match(/.{1,2}/g)
+  .map(byte => parseInt(byte, 16)));
+
+const to_hex = a => Array.prototype.map.call(a, b => ('0' + (b & 0xFF)
+  .toString(16)).slice(-2)).join('');
+
+const find_key = (dict, val) => Object.keys(dict).find(k => dict[k] === val);
+
+const PREFIX = from_hex('f0002f7f0001');
+const SUFFIX = from_hex('f7');
 
 class ReCorder {
   constructor(input, output, on_re_corder_button, on_midi_msg) {
@@ -297,6 +281,22 @@ class ReCorder {
   }
 }
 
+const create_re_corder =
+  async (midi_access, port_name, on_re_corder_button, on_midi_msg) => {
+    for (const input of midi_access.inputs.values()) {
+      if (input.name.includes(port_name)) {
+        for (const output of midi_access.outputs.values()) {
+          if (output.name.includes(port_name)) {
+            await Promise.all([input.open(), output.open()]);
+            return new ReCorder(
+              input, output, on_re_corder_button, on_midi_msg);
+          }
+        }
+      }
+    }
+    throw new Error('No matching port found');
+  };
+
 const get_re_corder_config = async r => {
   const user_mode = await r.get_user_mode();
   const midi_channel = await r.get_midi_channel();
@@ -457,3 +457,21 @@ const set_re_corder_keyboard = async (r, notes) => {
   });
   return r.set_fingering_chart(chart);
 };
+
+export {
+  USER_MODES,
+  CONTROLLERS,
+  CURVES,
+  BUTTONS,
+  ReCorder,
+  create_re_corder,
+  get_re_corder_config,
+  set_re_corder_config,
+  get_re_corder_fingerings,
+  set_re_corder_fingerings,
+  get_re_corder_keyboard,
+  set_re_corder_keyboard,
+  from_midi_note,
+  to_midi_note
+};
+

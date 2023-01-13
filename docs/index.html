@@ -3,8 +3,7 @@
 
 <head>
   <title>Re.Configure</title>
-  <script src="scripts/re_corder.js"></script>
-  <script src="scripts/ui.js"></script>
+  <script type="module" src="./scripts/ui.js"></script>
   <style>
     html {max-width:72ex;}
     body {font-family: monospace;}
@@ -43,14 +42,11 @@
   </ul>
   </p>
   <p>
-    <button class="re_corder" onclick="get_config();">Get Config</button>
-    <button class="re_corder" onclick="set_config();">Set Config</button>
-    <button class="re_corder" onclick="restore_default();">
-      Restore Default</button>
-    <button class="file_access" onclick="load_contents('re_corder-config');">
-      Open</button>
-    <button class="file_access"
-      onclick="save_contents('re_corder-config', 'config.json');">Save</button>
+    <button class="re_corder" id="btn_get_config">Get Config</button>
+    <button class="re_corder" id="btn_set_config">Set Config</button>
+    <button class="re_corder" id="btn_restore_default">Restore Default</button>
+    <button class="file_access" id="btn_open_config">Open</button>
+    <button class="file_access" id="btn_save_config">Save</button>
     <br>
     <textarea id="re_corder-config" rows="30" cols="48"></textarea>
   </p>
@@ -73,13 +69,10 @@
   in the opposite way (e.g., for left-handed fingerings).
   </p>
   <p>
-    <button class="re_corder" onclick="get_fingerings();">Get Fingering</button>
-    <button class="re_corder" onclick="set_fingerings();">Set Fingering</button>
-    <button class="file_access"
-      onclick="load_contents('re_corder-fingerings');">Open</button>
-    <button class="file_access"
-      onclick="save_contents('re_corder-fingerings', 'fingerings.json');">
-      Save</button>
+    <button class="re_corder" id="btn_get_fingerings">Get Fingering</button>
+    <button class="re_corder" id="btn_set_fingerings">Set Fingering</button>
+    <button class="file_access" id="btn_open_fingerings">Open</button>
+    <button class="file_access" id="btn_save_fingerings">Save</button>
     <br>
     <textarea id="re_corder-fingerings" rows="30" cols="48"></textarea>
   </p>
@@ -89,17 +82,12 @@
     top of the re.corder, sorted from left to right.
   </p>
   <p>
-    <button class="re_corder" onclick="get_keyboard_chart();">
-      Get Keyboard</button>
-    <button class="re_corder" onclick="set_keyboard_chart();">
-      Set Keyboard</button>
-    <button class="file_access"
-      onclick="load_contents('re_corder-keyboard');">Open</button>
-    <button class="file_access"
-      onclick="save_contents('re_corder-keyboard', 'keyboard.json');">
-      Save</button>
+    <button class="re_corder" id="btn_get_keyboard_chart">Get Keyboard</button>
+    <button class="re_corder" id="btn_set_keyboard_chart">Set Keyboard</button>
+    <button class="file_access" id="btn_open_keyboard_chart">Open</button>
+    <button class="file_access" id="btn_save_keyboard_chart">Save</button>
     <br>
-    <textarea id="re_corder-keyboard" rows="12" cols="48"></textarea>
+    <textarea id="re_corder-keyboard_chart" rows="12" cols="48"></textarea>
   </p>
 </body>
 
