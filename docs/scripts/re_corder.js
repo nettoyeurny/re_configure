@@ -474,4 +474,3 @@ export {
   from_midi_note,
   to_midi_note
 };
-
