@@ -123,6 +123,7 @@ const midi_setup = midi_access => {
         .catch(err => alert(`${err} --- Wrong port, perhaps?`));
     }
   });
+  setInterval(() => monitor_connection(), 1000);
 };
 
 const get_config = () => {
@@ -250,7 +251,6 @@ window.addEventListener('load', () => {
 
   enable_elements(FILE_ACCESS_TAG, window.showOpenFilePicker);
   enable_elements(RE_CORDER_TAG, false);
-  setInterval(() => monitor_connection(), 1000);
   if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess({
       sysex: true,
