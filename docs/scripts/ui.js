@@ -200,7 +200,7 @@ const read_file = async h => {
 const write_file = async (f, s) => {
   const w = await f.createWritable();
   await w.write(s);
-  w.close();
+  return w.close();
 };
 
 const load_contents = id => {
