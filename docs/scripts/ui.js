@@ -6,8 +6,8 @@
 // For information on usage and redistribution, and for a DISCLAIMER OF ALL
 // WARRANTIES, see the file LICENSE in this distribution.
 
+import { BUTTONS } from './re_corder.js';
 import {
-  BUTTONS,
   create_re_corder,
   get_re_corder_config,
   set_re_corder_config,
@@ -16,7 +16,7 @@ import {
   set_re_corder_fingerings,
   get_re_corder_keyboard,
   set_re_corder_keyboard
-} from './re_corder.js';
+} from './re_corder_utils.js';
 
 var re_corder = null;
 var cc_states = {};
@@ -31,6 +31,41 @@ const TYPES = [{
     'application/json': ['.json']
   }
 }];
+
+const read_file = async h => {
+  const f = await h.getFile();
+  return f.text();
+};
+
+const write_file = async (f, s) => {
+  const w = await f.createWritable();
+  await w.write(s);
+  return w.close();
+};
+
+const load_contents = id => {
+  const text_area = get_by_id(id);
+  const opts = {
+    types: TYPES
+  };
+  window.showOpenFilePicker(opts)
+    .then(f => read_file(f[0]))
+    .then(s => text_area.value = s)
+    .catch(alert);
+};
+
+const save_contents = (id, fn) => {
+  const text_area = get_by_id(id);
+  const opts = {
+    suggestedName: fn,
+    types: TYPES
+  };
+  window.showSaveFilePicker(opts)
+    .then(f => write_file(f, text_area.value))
+    .catch(alert);
+};
+
+const three_digits = n => ('00' + n).substr(-3);
 
 const enable_elements = (tag, enabled) => {
   const elts = document.getElementsByClassName(tag);
@@ -54,8 +89,6 @@ const show_button = data => {
   const val = data[1] < 0x40 ? data[1] : (data[1] - 0x80);
   flash_update(`Re.corder button: (${BUTTONS[data[0]]}, ${val})`);
 };
-
-const three_digits = n => ('00' + n).substr(-3);
 
 const update_controllers = () => {
   const label = get_by_id('re_corder-cc');
@@ -91,38 +124,6 @@ const monitor_connection = () => {
   } else {
     label.innerText = 'No connection.';
   }
-};
-
-const midi_setup = midi_access => {
-  const selector = document.querySelector('#input-port-selector');
-  const none_option = document.createElement('option');
-  none_option.textContent = 'None';
-  selector.appendChild(none_option);
-  midi_access.inputs.forEach(input => {
-    const option = document.createElement('option');
-    option.value = input.name;
-    option.textContent = input.name;
-    selector.appendChild(option);
-  });
-  selector.addEventListener('change', event => {
-    if (re_corder) {
-      enable_elements(RE_CORDER_TAG, false);
-      re_corder.close();
-      re_corder = null;
-    }
-    if (event.target.selectedIndex > 0) {
-      const input_name = event.target.value;
-      create_re_corder(
-        midi_access, input_name, show_button, show_midi_event)
-        .then(r => {
-          re_corder = r;
-          return r.get_midi_channel();
-        })
-        .then(() => enable_elements(RE_CORDER_TAG, true))
-        .catch(err => alert(`${err} --- Wrong port, perhaps?`));
-    }
-  });
-  setInterval(() => monitor_connection(), 1000);
 };
 
 const get_config = () => {
@@ -192,62 +193,52 @@ const set_keyboard_chart = () => {
   }
 };
 
-const read_file = async h => {
-  const f = await h.getFile();
-  return f.text();
+const midi_setup = midi_access => {
+  const selector = document.querySelector('#input-port-selector');
+  const none_option = document.createElement('option');
+  none_option.textContent = 'None';
+  selector.appendChild(none_option);
+  midi_access.inputs.forEach(input => {
+    const option = document.createElement('option');
+    option.value = input.name;
+    option.textContent = input.name;
+    selector.appendChild(option);
+  });
+  selector.addEventListener('change', event => {
+    if (re_corder) {
+      enable_elements(RE_CORDER_TAG, false);
+      re_corder.close();
+      re_corder = null;
+    }
+    if (event.target.selectedIndex > 0) {
+      const input_name = event.target.value;
+      create_re_corder(
+        midi_access, input_name, show_button, show_midi_event)
+        .then(r => {
+          re_corder = r;
+          return r.get_midi_channel();
+        })
+        .then(() => enable_elements(RE_CORDER_TAG, true))
+        .catch(err => alert(`${err} --- Wrong port, perhaps?`));
+    }
+  });
+  setInterval(() => monitor_connection(), 1000);
 };
 
-const write_file = async (f, s) => {
-  const w = await f.createWritable();
-  await w.write(s);
-  return w.close();
-};
-
-const load_contents = id => {
-  const text_area = get_by_id(id);
-  const opts = {
-    types: TYPES
-  };
-  window.showOpenFilePicker(opts)
-    .then(f => read_file(f[0]))
-    .then(s => text_area.value = s)
-    .catch(alert);
-};
-
-const save_contents = (id, fn) => {
-  const text_area = get_by_id(id);
-  const opts = {
-    suggestedName: fn,
-    types: TYPES
-  };
-  window.showSaveFilePicker(opts)
-    .then(f => write_file(f, text_area.value))
-    .catch(alert);
-};
+const install_handlers = (label, getter, setter) => {
+  get_by_id(`btn_get_${label}`).addEventListener('click', getter);
+  get_by_id(`btn_set_${label}`).addEventListener('click', setter);
+  get_by_id(`btn_open_${label}`).addEventListener('click',
+    () => load_contents(`re_corder-${label}`));
+  get_by_id(`btn_save_${label}`).addEventListener('click',
+    () => save_contents(`re_corder-${label}`, `${label}.json`));
+}
 
 window.addEventListener('load', () => {
-  get_by_id('btn_get_config').onclick = get_config;
-  get_by_id('btn_set_config').onclick = set_config;
-  get_by_id('btn_restore_default').onclick = restore_default;
-  get_by_id('btn_open_config').onclick =
-    () => load_contents('re_corder-config');
-  get_by_id('btn_save_config').onclick =
-    () => save_contents('re_corder-config', 'config.json');
-
-  get_by_id('btn_get_fingerings').onclick = get_fingerings;
-  get_by_id('btn_set_fingerings').onclick = set_fingerings;
-  get_by_id('btn_open_fingerings').onclick =
-    () => load_contents('re_corder-fingerings');
-  get_by_id('btn_save_fingerings').onclick =
-    () => save_contents('re_corder-fingerings', 'fingerings.json');
-
-  get_by_id('btn_get_keyboard_chart').onclick = get_keyboard_chart;
-  get_by_id('btn_set_keyboard_chart').onclick = set_keyboard_chart;
-  get_by_id('btn_open_keyboard_chart').onclick =
-    () => load_contents('re_corder-keyboard_chart');
-  get_by_id('btn_save_keyboard_chart').onclick =
-    () => save_contents('re_corder-keyboard_chart', 'keyboard_chart.json');
-
+  get_by_id('btn_restore_default').addEventListener('click', restore_default);
+  install_handlers('config', get_config, set_config);
+  install_handlers('fingerings', get_fingerings, set_fingerings);
+  install_handlers('keyboard_chart', get_keyboard_chart, set_keyboard_chart);
   enable_elements(FILE_ACCESS_TAG, window.showOpenFilePicker);
   enable_elements(RE_CORDER_TAG, false);
   if (navigator.requestMIDIAccess) {
