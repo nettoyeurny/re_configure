@@ -90,6 +90,11 @@ const show_button = data => {
 
 const three_digits = n => ('00' + n).substr(-3);
 
+const clear_state = () => {
+  cc_states = {};
+  get_by_id('lbl-cc').innerText = '';
+}
+
 const show_midi_event = e => {
   const data = e.data;
   if ((data[0] & 0x60) == 0x00) {
@@ -105,6 +110,10 @@ const show_midi_event = e => {
     label.innerText = `Controllers: ${Object.entries(cc_states).map(
         e => e[0] + ': ' + e[1]).join(', ')}`;
   }
+};
+
+const clear_connection = () => {
+  get_by_id('lbl-state').innerText = '';
 };
 
 const monitor_connection = () => {
@@ -132,8 +141,7 @@ const set_config = () => {
     set_re_corder_config(re_corder, JSON.parse(text_area.value))
       .then(conf => {
         text_area.value = JSON.stringify(conf, null, 2);
-        cc_states = {};
-        get_by_id('lbl-cc').innerText = '';
+        clear_state();
         flash_update('Success!');
       })
       .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
@@ -225,9 +233,8 @@ const midi_setup = midi_access => {
       .then(() => {
         enable_elements(RE_CORDER_TAG, false);
         clearInterval(monitor_interval);
-        cc_states = {};
-        get_by_id('lbl-state').innerText = '';
-        get_by_id('lbl-cc').innerText = '';
+        clear_connection();
+        clear_state();
         re_corder = null;
         if (event.target.selectedIndex) {
           const input_name = event.target.value;
