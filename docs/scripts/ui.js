@@ -88,14 +88,6 @@ const show_button = data => {
   flash_update(`Re.corder button: (${BUTTONS[data[0]]}, ${val})`);
 };
 
-const update_controllers = () => {
-  const label = get_by_id('re_corder-cc');
-  label.innerText = Object.keys(cc_states).length
-    ? `Controllers: ${Object.entries(cc_states).map(
-      e => e[0] + ': ' + e[1]).join(', ')}`
-    : '';
-};
-
 const three_digits = n => ('00' + n).substr(-3);
 
 const show_midi_event = e => {
@@ -109,7 +101,9 @@ const show_midi_event = e => {
     } else if ((data[0] & 0xf0) == 0xd0) {
       cc_states['touch'] = three_digits(data[1]);
     }
-    update_controllers();
+    const label = get_by_id('re_corder-cc');
+    label.innerText = `Controllers: ${Object.entries(cc_states).map(
+        e => e[0] + ': ' + e[1]).join(', ')}`;
   }
 };
 
@@ -120,27 +114,25 @@ const monitor_connection = () => {
       .then(b => label.innerText =
         `Battery: ${Math.max(Math.min(
           Math.round((b - 3200) / 8), 100), 0)}%`)
-      .catch(() => label.innerText = 'No connection.');
-  } else {
-    label.innerText = 'No connection.';
+      .catch(() => label.innerText = 'Lost connection.');
   }
 };
 
 const get_config = () => {
-  const text_area = get_by_id('re_corder-config');
+  const text_area = get_by_id('txt-config');
   get_re_corder_config(re_corder)
     .then(conf => text_area.value = JSON.stringify(conf, null, 2))
     .catch(alert);
 };
 
 const set_config = () => {
-  const text_area = get_by_id('re_corder-config');
+  const text_area = get_by_id('txt-config');
   try {
     set_re_corder_config(re_corder, JSON.parse(text_area.value))
       .then(conf => {
         text_area.value = JSON.stringify(conf, null, 2);
         cc_states = {};
-        update_controllers();
+        get_by_id('re_corder-cc').innerText = '';
         flash_update('Success!');
       })
       .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
@@ -150,7 +142,7 @@ const set_config = () => {
 };
 
 const restore_default = () => {
-  const text_area = get_by_id('re_corder-config');
+  const text_area = get_by_id('txt-config');
   re_corder.restore_default_settings()
     .then(() => get_re_corder_config(re_corder))
     .then(conf => text_area.value = JSON.stringify(conf, null, 2))
@@ -158,14 +150,14 @@ const restore_default = () => {
 };
 
 const get_fingerings = () => {
-  const text_area = get_by_id('re_corder-fingerings');
+  const text_area = get_by_id('txt-fingerings');
   get_re_corder_fingerings(re_corder)
     .then(f => text_area.value = JSON.stringify(f, null, 2))
     .catch(alert);
 };
 
 const set_fingerings = () => {
-  const text_area = get_by_id('re_corder-fingerings');
+  const text_area = get_by_id('txt-fingerings');
   try {
     set_re_corder_fingerings(re_corder, JSON.parse(text_area.value))
       .then(() => flash_update('Success!'))
@@ -176,14 +168,14 @@ const set_fingerings = () => {
 };
 
 const get_keyboard_chart = () => {
-  const text_area = get_by_id('re_corder-keyboard_chart');
+  const text_area = get_by_id('txt-keyboard_chart');
   get_re_corder_keyboard(re_corder)
     .then(k => text_area.value = JSON.stringify(k, null, 2))
     .catch(alert);
 };
 
 const set_keyboard_chart = () => {
-  const text_area = get_by_id('re_corder-keyboard_chart');
+  const text_area = get_by_id('txt-keyboard_chart');
   try {
     set_re_corder_keyboard(re_corder, JSON.parse(text_area.value))
       .then(() => flash_update('Success!'))
@@ -230,8 +222,11 @@ const midi_setup = midi_access => {
   selector.addEventListener('change', event => {
     (re_corder ? re_corder.close() : Promise.resolve())
       .then(() => {
-        clearInterval(monitor_interval);
         enable_elements(RE_CORDER_TAG, false);
+        clearInterval(monitor_interval);
+        cc_states = {};
+        get_by_id('re_corder-state').innerText = '';
+        get_by_id('re_corder-cc').innerText = '';
         re_corder = null;
         if (event.target.selectedIndex) {
           const input_name = event.target.value;
@@ -258,9 +253,9 @@ const install_handlers = (label, getter, setter) => {
   get_by_id(`btn_get_${label}`).addEventListener('click', getter);
   get_by_id(`btn_set_${label}`).addEventListener('click', setter);
   get_by_id(`btn_open_${label}`).addEventListener('click',
-    () => load_contents(`re_corder-${label}`));
+    () => load_contents(`txt-${label}`));
   get_by_id(`btn_save_${label}`).addEventListener('click',
-    () => save_contents(`re_corder-${label}`, `${label}.json`));
+    () => save_contents(`txt-${label}`, `${label}.json`));
 }
 
 window.addEventListener('load', () => {
