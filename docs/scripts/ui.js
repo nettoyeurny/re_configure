@@ -75,7 +75,7 @@ const enable_elements = (tag, enabled) => {
 const get_by_id = document.getElementById.bind(document);
 
 const flash_update = s => {
-  const label = get_by_id('flash_label');
+  const label = get_by_id('lbl-flash');
   label.innerText= s;
   const dialog = get_by_id('flash_dialog');
   dialog.show();
@@ -101,21 +101,22 @@ const show_midi_event = e => {
     } else if ((data[0] & 0xf0) == 0xd0) {
       cc_states['touch'] = three_digits(data[1]);
     }
-    const label = get_by_id('re_corder-cc');
+    const label = get_by_id('lbl-cc');
     label.innerText = `Controllers: ${Object.entries(cc_states).map(
         e => e[0] + ': ' + e[1]).join(', ')}`;
   }
 };
 
 const monitor_connection = () => {
-  const label = get_by_id('re_corder-state');
-  if (re_corder) {
-    re_corder.get_battery_state()
-      .then(b => label.innerText =
-        `Battery: ${Math.max(Math.min(
-          Math.round((b - 3200) / 8), 100), 0)}%`)
-      .catch(() => label.innerText = 'Lost connection.');
+  if (!re_corder) {
+    return;
   }
+  const label = get_by_id('lbl-state');
+  re_corder.get_battery_state()
+    .then(b => label.innerText =
+      `Battery: ${Math.max(Math.min(
+        Math.round((b - 3200) / 8), 100), 0)}%`)
+    .catch(() => label.innerText = 'Lost connection.');
 };
 
 const get_config = () => {
@@ -132,7 +133,7 @@ const set_config = () => {
       .then(conf => {
         text_area.value = JSON.stringify(conf, null, 2);
         cc_states = {};
-        get_by_id('re_corder-cc').innerText = '';
+        get_by_id('lbl-cc').innerText = '';
         flash_update('Success!');
       })
       .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
@@ -225,8 +226,8 @@ const midi_setup = midi_access => {
         enable_elements(RE_CORDER_TAG, false);
         clearInterval(monitor_interval);
         cc_states = {};
-        get_by_id('re_corder-state').innerText = '';
-        get_by_id('re_corder-cc').innerText = '';
+        get_by_id('lbl-state').innerText = '';
+        get_by_id('lbl-cc').innerText = '';
         re_corder = null;
         if (event.target.selectedIndex) {
           const input_name = event.target.value;
