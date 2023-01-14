@@ -204,6 +204,27 @@ const midi_setup = midi_access => {
     option.textContent = input.name;
     selector.appendChild(option);
   });
+  midi_access.addEventListener('statechange', e => {
+    if (e.port.type !== 'input') {
+      return;
+    }
+    const connected = e.port.state === 'connected';
+    for (let i = 0; i < selector.options.length; ++i) {
+      if (selector.options[i].value === e.port.name) {
+        if (!connected) {
+          selector.remove(i);
+        }
+        return;
+      }
+    }
+    if (connected) {
+      const option = document.createElement('option');
+      option.value = e.port.name;
+      option.textContent = e.port.name;
+      selector.appendChild(option);
+    }
+  });
+
   var monitor_interval = null;
   selector.addEventListener('change', event => {
     if (re_corder) {
