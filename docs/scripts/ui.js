@@ -75,8 +75,7 @@ const enable_elements = (tag, enabled) => {
 const get_by_id = document.getElementById.bind(document);
 
 const flash_update = s => {
-  const label = get_by_id('lbl-flash');
-  label.innerText= s;
+  get_by_id('lbl-flash').innerText= s;
   const dialog = get_by_id('flash_dialog');
   dialog.show();
   clearTimeout(flash_timeout);
@@ -106,8 +105,8 @@ const show_midi_event = e => {
     } else if ((data[0] & 0xf0) == 0xd0) {
       cc_states['touch'] = three_digits(data[1]);
     }
-    const label = get_by_id('lbl-cc');
-    label.innerText = `Controllers: ${Object.entries(cc_states).map(
+    get_by_id('lbl-cc').innerText =
+      `Controllers: ${Object.entries(cc_states).map(
         e => e[0] + ': ' + e[1]).join(', ')}`;
   }
 };
