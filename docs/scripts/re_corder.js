@@ -76,8 +76,7 @@ class ReCorder {
 
   close() {
     this._input.onmidimessage = null;
-    this._input.close();
-    this._output.close();
+    return Promise.all([this._input.close(), this._output.close()]);
   }
 
   toString() {
