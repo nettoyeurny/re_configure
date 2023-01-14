@@ -92,7 +92,7 @@ const three_digits = n => ('00' + n).substr(-3);
 const clear_state = () => {
   cc_states = {};
   get_by_id('lbl-cc').innerText = '';
-}
+};
 
 const show_midi_event = e => {
   const data = e.data;
@@ -198,7 +198,7 @@ const add_option = (selector, name) => {
   option.value = name;
   option.textContent = name;
   selector.appendChild(option);
-}
+};
 
 const midi_setup = midi_access => {
   const selector = document.querySelector('#input-port-selector');
@@ -263,7 +263,7 @@ const install_handlers = (label, getter, setter) => {
     () => load_contents(`txt-${label}`));
   get_by_id(`btn_save_${label}`).addEventListener('click',
     () => save_contents(`txt-${label}`, `${label}.json`));
-}
+};
 
 window.addEventListener('load', () => {
   get_by_id('btn_restore_default').addEventListener('click', restore_default);
