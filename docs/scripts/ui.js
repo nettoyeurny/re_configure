@@ -193,16 +193,20 @@ const set_keyboard_chart = () => {
   }
 };
 
+const add_option = (selector, name) => {
+  const option = document.createElement('option');
+  option.value = name;
+  option.textContent = name;
+  selector.appendChild(option);
+}
+
 const midi_setup = midi_access => {
   const selector = document.querySelector('#input-port-selector');
   const none_option = document.createElement('option');
   none_option.textContent = 'None';
   selector.appendChild(none_option);
   midi_access.inputs.forEach(input => {
-    const option = document.createElement('option');
-    option.value = input.name;
-    option.textContent = input.name;
-    selector.appendChild(option);
+    add_option(selector, input.name);
   });
   midi_access.addEventListener('statechange', e => {
     if (e.port.type !== 'input') {
@@ -218,10 +222,7 @@ const midi_setup = midi_access => {
       }
     }
     if (connected) {
-      const option = document.createElement('option');
-      option.value = e.port.name;
-      option.textContent = e.port.name;
-      selector.appendChild(option);
+      add_option(selector, e.port.name);
     }
   });
 
