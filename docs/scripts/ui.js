@@ -65,8 +65,6 @@ const save_contents = (id, fn) => {
     .catch(alert);
 };
 
-const three_digits = n => ('00' + n).substr(-3);
-
 const enable_elements = (tag, enabled) => {
   const elts = document.getElementsByClassName(tag);
   for (const elt of elts) {
@@ -97,6 +95,8 @@ const update_controllers = () => {
       e => e[0] + ': ' + e[1]).join(', ')}`
     : '';
 };
+
+const three_digits = n => ('00' + n).substr(-3);
 
 const show_midi_event = e => {
   const data = e.data;
