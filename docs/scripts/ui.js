@@ -228,27 +228,29 @@ const midi_setup = midi_access => {
 
   var monitor_interval = null;
   selector.addEventListener('change', event => {
-    if (re_corder) {
-      enable_elements(RE_CORDER_TAG, false);
-      clearInterval(monitor_interval);
-      re_corder.close();
-      re_corder = null;
-    }
-    if (event.target.selectedIndex) {
-      const input_name = event.target.value;
-      create_re_corder(midi_access, input_name, show_button, show_midi_event)
-        .then(r => r.get_midi_channel()
-          .then(() => {
-            re_corder = r;
-            enable_elements(RE_CORDER_TAG, true);
-            monitor_interval = setInterval(() => monitor_connection(), 1000);
-          })
-          .catch(err => {
-            r.close();
-            alert(`${err} --- Wrong port, perhaps?`);
-          }))
-        .catch(alert);
-    }
+    (re_corder ? re_corder.close() : Promise.resolve())
+      .then(() => {
+        clearInterval(monitor_interval);
+        enable_elements(RE_CORDER_TAG, false);
+        re_corder = null;
+        if (event.target.selectedIndex) {
+          const input_name = event.target.value;
+          create_re_corder(
+            midi_access, input_name, show_button, show_midi_event)
+            .then(r => r.get_midi_channel()
+              .then(() => {
+                re_corder = r;
+                enable_elements(RE_CORDER_TAG, true);
+                monitor_interval = setInterval(
+                  () => monitor_connection(), 1000);
+              })
+              .catch(err => {
+                r.close();
+                alert(`${err} --- Wrong port, perhaps?`);
+              }))
+            .catch(alert);
+        }
+      });
   });
 };
 
