@@ -11,11 +11,11 @@ import {
   create_re_corder,
   get_re_corder_config,
   set_re_corder_config,
-  from_midi_note,
   get_re_corder_fingerings,
   set_re_corder_fingerings,
   get_re_corder_keyboard,
-  set_re_corder_keyboard
+  set_re_corder_keyboard,
+  from_midi_note
 } from './re_corder_utils.js';
 
 var re_corder = null;
