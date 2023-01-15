@@ -8,21 +8,20 @@
 
 import { ReCorder } from './re_corder.js';
 
-const create_re_corder =
-  async (midi_access, port_name, on_re_corder_button, on_midi_msg) => {
-    for (const input of midi_access.inputs.values()) {
-      if (input.name.includes(port_name)) {
-        for (const output of midi_access.outputs.values()) {
-          if (output.name.includes(port_name)) {
-            await Promise.all([input.open(), output.open()]);
-            return new ReCorder(
-              input, output, on_re_corder_button, on_midi_msg);
-          }
+const create_re_corder = async (midi_access, port, on_transport, on_midi) => {
+  for (const input of midi_access.inputs.values()) {
+    if (input.name.includes(port)) {
+      for (const output of midi_access.outputs.values()) {
+        if (output.name.includes(port)) {
+          await Promise.all([input.open(), output.open()]);
+          return new ReCorder(
+            input, output, on_transport, on_midi);
         }
       }
     }
-    throw new Error('No matching port found');
-  };
+  }
+  throw new Error('No matching port found');
+};
 
 const get_re_corder_config = async r => {
   const user_mode = await r.get_user_mode();
