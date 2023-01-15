@@ -64,11 +64,11 @@ const PREFIX = from_hex('f0002f7f0001');
 const SUFFIX = from_hex('f7');
 
 class ReCorder {
-  constructor(input, output, on_re_corder_button, on_midi_msg) {
+  constructor(input, output, on_transport, on_midi) {
     this._input = input;
     this._output = output;
-    this._on_re_corder_button = on_re_corder_button;
-    this._on_midi_msg = on_midi_msg;
+    this._on_transport = on_transport;
+    this._on_midi = on_midi;
     this._queue = [];
 
     this._input.onmidimessage = this._handle_midi.bind(this);
@@ -96,12 +96,12 @@ class ReCorder {
           console.warn(`Unhandled payload: ${to_hex(payload)}`);
         }
       } else if (payload[0] === 0x34) {
-        this._on_re_corder_button(payload.slice(1));
+        this._on_transport(payload.slice(1));
       } else {
         console.warn(`Unexpected payload: ${to_hex(payload)}`);
       }
     } else {
-      this._on_midi_msg(event);
+      this._on_midi(event);
     }
   }
 
