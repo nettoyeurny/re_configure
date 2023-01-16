@@ -248,6 +248,7 @@ const midi_setup = midi_access => {
               })
               .catch(err => {
                 r.close();
+                selector.selectedIndex = 0;
                 alert(`${err} --- Wrong port, perhaps?`);
               }))
             .catch(alert);
