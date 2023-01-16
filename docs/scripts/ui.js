@@ -227,34 +227,34 @@ const midi_setup = midi_access => {
   });
 
   var monitor_interval = null;
-  selector.addEventListener('change', event => {
-    (re_corder ? re_corder.close() : Promise.resolve())
-      .then(() => {
-        enable_elements(RE_CORDER_TAG, false);
-        clearInterval(monitor_interval);
-        clear_connection();
-        clear_state();
-        re_corder = null;
-        if (event.target.selectedIndex) {
-          const input_name = event.target.value;
-          create_re_corder(
-            midi_access, input_name, show_button, show_midi_event)
-            .then(r => r.get_midi_channel()
-              .then(() => {
-                re_corder = r;
-                enable_elements(RE_CORDER_TAG, true);
-                monitor_interval = setInterval(
-                  () => monitor_connection(), 1000);
-              })
-              .catch(err => {
-                r.close();
-                selector.selectedIndex = 0;
-                alert(`${err} --- Wrong port, perhaps?`);
-              }))
-            .catch(alert);
-        }
-      });
-  });
+  const connect = async e => {
+    if (re_corder) {
+      await re_corder.close();
+    }
+    enable_elements(RE_CORDER_TAG, false);
+    clearInterval(monitor_interval);
+    clear_connection();
+    clear_state();
+    re_corder = null;
+    if (!e.target.selectedIndex) {
+      return;
+    }
+    const input_name = e.target.value;
+    const r = await create_re_corder(
+      midi_access, input_name, show_button, show_midi_event);
+    try {
+      await r.get_midi_channel();
+    } catch (err) {
+      await r.close();
+      selector.selectedIndex = 0;
+      throw new Error(`${err.message} --- Wrong port, perhaps?`);
+    }
+    re_corder = r;
+    enable_elements(RE_CORDER_TAG, true);
+    monitor_interval = setInterval(
+      () => monitor_connection(), 1000);
+  };
+  selector.addEventListener('change', e => connect(e).catch(alert));
 };
 
 const install_handlers = (label, getter, setter) => {
