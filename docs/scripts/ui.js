@@ -74,12 +74,12 @@ const enable_elements = (tag, enabled) => {
 
 const get_by_id = document.getElementById.bind(document);
 
-const flash_update = s => {
+const flash_update = (s, t = 1200) => {
   get_by_id('lbl-flash').innerText= s;
   const dialog = get_by_id('flash_dialog');
   dialog.show();
   clearTimeout(flash_timeout);
-  flash_timeout = setTimeout(() => dialog.close(), 1200);
+  flash_timeout = setTimeout(() => dialog.close(), t);
 };
 
 const show_button = data => {
@@ -248,7 +248,7 @@ const midi_setup = midi_access => {
     re_corder = r;
     enable_elements(RE_CORDER_TAG, true);
     interval = setInterval(() => display_battery_state(re_corder)
-      .catch(() => flash_update('Lost connection!')),
+      .catch(() => flash_update('Lost connection!', 1100)),
       1000);
   };
   selector.addEventListener('change', e => {
