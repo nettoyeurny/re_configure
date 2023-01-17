@@ -115,16 +115,11 @@ const clear_connection = () => {
   get_by_id('lbl-state').innerText = '';
 };
 
-const monitor_connection = () => {
-  if (!re_corder) {
-    return;
-  }
+const display_battery_state = async r => {
   const label = get_by_id('lbl-state');
-  re_corder.get_battery_state()
-    .then(b => label.innerText =
-      `Battery: ${Math.max(Math.min(
-        Math.round((b - 3200) / 8), 100), 0)}%`)
-    .catch(() => label.innerText = 'Lost connection.');
+  const b = await r.get_battery_state();
+  label.innerText = `Battery: ${Math.max(Math.min(Math.round(
+    (b - 3200) / 8), 100), 0)}%`;
 };
 
 const get_config = () => {
@@ -227,13 +222,13 @@ const midi_setup = midi_access => {
   });
 
   const port_input = get_by_id('input_port-name');
-  var monitor_interval = null;
+  var interval = null;
   const connect = async port => {
     if (re_corder) {
       await re_corder.close();
     }
     enable_elements(RE_CORDER_TAG, false);
-    clearInterval(monitor_interval);
+    clearInterval(interval);
     clear_connection();
     clear_state();
     re_corder = null;
@@ -243,7 +238,7 @@ const midi_setup = midi_access => {
     const r = await create_re_corder(
       midi_access, port, show_button, show_midi_event);
     try {
-      await r.get_midi_channel();
+      await display_battery_state(r);
     } catch (err) {
       await r.close();
       selector.selectedIndex = 0;
@@ -252,7 +247,9 @@ const midi_setup = midi_access => {
     }
     re_corder = r;
     enable_elements(RE_CORDER_TAG, true);
-    monitor_interval = setInterval(() => monitor_connection(), 1000);
+    interval = setInterval(() => display_battery_state(re_corder)
+      .catch(() => flash_update('Lost connection!')),
+      1000);
   };
   selector.addEventListener('change', e => {
     port_input.value = '';
