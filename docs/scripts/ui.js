@@ -111,7 +111,7 @@ const show_midi_event = e => {
   }
 };
 
-const clear_connection = () => {
+const clear_battery_state = () => {
   get_by_id('lbl-state').innerText = '';
 };
 
@@ -195,69 +195,77 @@ const add_option = (selector, name) => {
   selector.appendChild(option);
 };
 
+const connect_re_corder = async (midi_access, port) => {
+  enable_elements(RE_CORDER_TAG, false);
+  if (re_corder) {
+    await re_corder.close();
+    re_corder = null;
+  }
+  clear_battery_state();
+  clear_state();
+  if (!port) {
+    return;
+  }
+  const r = await create_re_corder(
+    midi_access, port, show_button, show_midi_event);
+  try {
+    await display_battery_state(r);
+  } catch (err) {
+    await r.close();
+    throw new Error(`${err.message} --- Wrong port, perhaps?`);
+  }
+  re_corder = r;
+  enable_elements(RE_CORDER_TAG, true);
+};
+
+const update_ports = (selector, e) => {
+  if (e.port.type !== 'input') {
+    return;
+  }
+  const connected = e.port.state === 'connected';
+  for (let i = 0; i < selector.options.length; ++i) {
+    if (selector.options[i].value === e.port.name) {
+      if (!connected) {
+        selector.remove(i);
+      }
+      return;
+    }
+  }
+  if (connected) {
+    add_option(selector, e.port.name);
+  }
+};
+
 const midi_setup = midi_access => {
   const selector = document.querySelector('#input_port-selector');
   const none_option = document.createElement('option');
   none_option.textContent = 'None';
   selector.appendChild(none_option);
-  midi_access.inputs.forEach(input => {
-    add_option(selector, input.name);
-  });
-  midi_access.addEventListener('statechange', e => {
-    if (e.port.type !== 'input') {
-      return;
-    }
-    const connected = e.port.state === 'connected';
-    for (let i = 0; i < selector.options.length; ++i) {
-      if (selector.options[i].value === e.port.name) {
-        if (!connected) {
-          selector.remove(i);
-        }
-        return;
-      }
-    }
-    if (connected) {
-      add_option(selector, e.port.name);
-    }
-  });
+  midi_access.inputs.forEach(input => add_option(selector, input.name));
+  midi_access.addEventListener('statechange', e => update_ports(selector, e));
 
   const port_input = get_by_id('input_port-name');
   var interval = null;
-  const connect = async port => {
-    if (re_corder) {
-      await re_corder.close();
-    }
-    enable_elements(RE_CORDER_TAG, false);
+  const connect = port => {
     clearInterval(interval);
-    clear_connection();
-    clear_state();
-    re_corder = null;
-    if (!port) {
-      return;
-    }
-    const r = await create_re_corder(
-      midi_access, port, show_button, show_midi_event);
-    try {
-      await display_battery_state(r);
-    } catch (err) {
-      await r.close();
-      selector.selectedIndex = 0;
-      port_input.value = '';
-      throw new Error(`${err.message} --- Wrong port, perhaps?`);
-    }
-    re_corder = r;
-    enable_elements(RE_CORDER_TAG, true);
-    interval = setInterval(() => display_battery_state(re_corder)
-      .catch(() => flash_update('Lost connection!', 1100)), 1000);
+    connect_re_corder(midi_access, port)
+      .then(() =>
+        interval = setInterval(() => display_battery_state(re_corder)
+          .catch(() => flash_update('Lost connection!', 1100)), 1000))
+      .catch(err => {
+        selector.selectedIndex = 0;
+        port_input.value = '';
+        alert(err);
+      });
   };
   selector.addEventListener('change', e => {
     port_input.value = '';
-    connect(e.target.selectedIndex ? e.target.value : null).catch(alert);
+    connect(e.target.selectedIndex ? e.target.value : null);
   });
   port_input.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       selector.selectedIndex = 0;
-      connect(e.target.value).catch(alert);
+      connect(e.target.value);
     }
   });
 };
