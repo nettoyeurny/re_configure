@@ -249,9 +249,12 @@ const midi_setup = midi_access => {
   const connect = port => {
     clearInterval(interval);
     connect_re_corder(midi_access, port)
-      .then(() =>
-        interval = setInterval(() => display_battery_state(re_corder)
-          .catch(() => flash_update('Lost connection!', 1100)), 1000))
+      .then(() => {
+        if (re_corder) {
+          interval = setInterval(() => display_battery_state(re_corder)
+            .catch(() => flash_update('Lost connection!', 1100)), 1000);
+        }
+      })
       .catch(err => {
         selector.selectedIndex = 0;
         port_input.value = '';
