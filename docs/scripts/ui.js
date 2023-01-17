@@ -195,6 +195,24 @@ const add_option = (selector, name) => {
   selector.appendChild(option);
 };
 
+const update_ports = (selector, e) => {
+  if (e.port.type !== 'input') {
+    return;
+  }
+  const connected = e.port.state === 'connected';
+  for (let i = 0; i < selector.options.length; ++i) {
+    if (selector.options[i].value === e.port.name) {
+      if (!connected) {
+        selector.remove(i);
+      }
+      return;
+    }
+  }
+  if (connected) {
+    add_option(selector, e.port.name);
+  }
+};
+
 const connect_re_corder = async (midi_access, port) => {
   enable_elements(RE_CORDER_TAG, false);
   if (re_corder) {
@@ -216,24 +234,6 @@ const connect_re_corder = async (midi_access, port) => {
   }
   re_corder = r;
   enable_elements(RE_CORDER_TAG, true);
-};
-
-const update_ports = (selector, e) => {
-  if (e.port.type !== 'input') {
-    return;
-  }
-  const connected = e.port.state === 'connected';
-  for (let i = 0; i < selector.options.length; ++i) {
-    if (selector.options[i].value === e.port.name) {
-      if (!connected) {
-        selector.remove(i);
-      }
-      return;
-    }
-  }
-  if (connected) {
-    add_option(selector, e.port.name);
-  }
 };
 
 const midi_setup = midi_access => {
