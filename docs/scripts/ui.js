@@ -201,7 +201,7 @@ const add_option = (selector, name) => {
 };
 
 const midi_setup = midi_access => {
-  const selector = document.querySelector('#input-port-selector');
+  const selector = document.querySelector('#input_port-selector');
   const none_option = document.createElement('option');
   none_option.textContent = 'None';
   selector.appendChild(none_option);
@@ -226,8 +226,9 @@ const midi_setup = midi_access => {
     }
   });
 
+  const port_input = get_by_id('input_port-name');
   var monitor_interval = null;
-  const connect = async e => {
+  const connect = async port => {
     if (re_corder) {
       await re_corder.close();
     }
@@ -236,17 +237,17 @@ const midi_setup = midi_access => {
     clear_connection();
     clear_state();
     re_corder = null;
-    if (!e.target.selectedIndex) {
+    if (!port) {
       return;
     }
-    const input_name = e.target.value;
     const r = await create_re_corder(
-      midi_access, input_name, show_button, show_midi_event);
+      midi_access, port, show_button, show_midi_event);
     try {
       await r.get_midi_channel();
     } catch (err) {
       await r.close();
       selector.selectedIndex = 0;
+      port_input.value = '';
       throw new Error(`${err.message} --- Wrong port, perhaps?`);
     }
     re_corder = r;
@@ -254,7 +255,13 @@ const midi_setup = midi_access => {
     monitor_interval = setInterval(
       () => monitor_connection(), 1000);
   };
-  selector.addEventListener('change', e => connect(e).catch(alert));
+  selector.addEventListener('change',
+    e => connect(e.target.selectedIndex ? e.target.value : null).catch(alert));
+  port_input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      connect(e.target.value).catch(alert);
+    }
+  });
 };
 
 const install_handlers = (label, getter, setter) => {
