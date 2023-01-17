@@ -252,13 +252,15 @@ const midi_setup = midi_access => {
     }
     re_corder = r;
     enable_elements(RE_CORDER_TAG, true);
-    monitor_interval = setInterval(
-      () => monitor_connection(), 1000);
+    monitor_interval = setInterval(() => monitor_connection(), 1000);
   };
-  selector.addEventListener('change',
-    e => connect(e.target.selectedIndex ? e.target.value : null).catch(alert));
+  selector.addEventListener('change', e => {
+    port_input.value = '';
+    connect(e.target.selectedIndex ? e.target.value : null).catch(alert);
+  });
   port_input.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
+      selector.selectedIndex = 0;
       connect(e.target.value).catch(alert);
     }
   });
