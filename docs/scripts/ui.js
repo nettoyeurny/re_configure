@@ -249,7 +249,7 @@ const midi_setup = midi_access => {
     enable_elements(RE_CORDER_TAG, true);
     interval = setInterval(() => display_battery_state(re_corder)
       .catch(() => flash_update('Lost connection!', 1100)),
-      1000);
+    1000);
   };
   selector.addEventListener('change', e => {
     port_input.value = '';
