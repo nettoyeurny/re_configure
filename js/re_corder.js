@@ -74,9 +74,9 @@ class ReCorder {
     this._input.onmidimessage = this._handle_midi.bind(this);
   }
 
-  close() {
+  async close() {
+    await Promise.all([this._input.close(), this._output.close()]);
     this._input.onmidimessage = null;
-    return Promise.all([this._input.close(), this._output.close()]);
   }
 
   toString() {
