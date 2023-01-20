@@ -6,23 +6,6 @@
 // For information on usage and redistribution, and for a DISCLAIMER OF ALL
 // WARRANTIES, see the file LICENSE in this distribution.
 
-import { ReCorder } from './re_corder.js';
-
-const create_re_corder = async (midi_access, port, on_transport, on_midi) => {
-  for (const input of midi_access.inputs.values()) {
-    if (input.name.includes(port)) {
-      for (const output of midi_access.outputs.values()) {
-        if (output.name.includes(port)) {
-          await Promise.all([input.open(), output.open()]);
-          return new ReCorder(
-            input, output, on_transport, on_midi);
-        }
-      }
-    }
-  }
-  throw new Error('No matching port found');
-};
-
 const get_re_corder_config = async r => {
   const user_mode = await r.get_user_mode();
   const midi_channel = await r.get_midi_channel();
@@ -185,7 +168,6 @@ const set_re_corder_keyboard = async (r, notes) => {
 };
 
 export {
-  create_re_corder,
   get_re_corder_config,
   set_re_corder_config,
   get_re_corder_fingerings,

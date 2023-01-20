@@ -6,9 +6,8 @@
 // For information on usage and redistribution, and for a DISCLAIMER OF ALL
 // WARRANTIES, see the file LICENSE in this distribution.
 
-import { BUTTONS } from './re_corder.js';
+import { BUTTONS, ReCorder } from './re_corder.js';
 import {
-  create_re_corder,
   get_re_corder_config,
   set_re_corder_config,
   get_re_corder_fingerings,
@@ -188,20 +187,17 @@ const set_keyboard_chart = () => {
   }
 };
 
-const add_option = (selector, name) => {
+const add_option = (selector, id, name) => {
   const option = document.createElement('option');
-  option.value = name;
+  option.value = id;
   option.textContent = name;
   selector.appendChild(option);
 };
 
 const update_ports = (selector, e) => {
-  if (e.port.type !== 'input') {
-    return;
-  }
   const connected = e.port.state === 'connected';
   for (let i = 0; i < selector.options.length; ++i) {
-    if (selector.options[i].value === e.port.name) {
+    if (selector.options[i].value === e.port.id) {
       if (!connected) {
         selector.remove(i);
       }
@@ -209,67 +205,53 @@ const update_ports = (selector, e) => {
     }
   }
   if (connected) {
-    add_option(selector, e.port.name);
+    add_option(selector, e.port.id, e.port.name);
   }
 };
 
-const connect_re_corder = async (midi_access, port) => {
-  enable_elements(RE_CORDER_TAG, false);
+const connect_re_corder = async (midi_access, in_id, out_id) => {
   if (re_corder) {
     await re_corder.close();
     re_corder = null;
   }
   clear_battery_state();
   clear_state();
-  if (!port) {
-    return;
-  }
-  const r = await create_re_corder(
-    midi_access, port, show_button, show_midi_event);
+  const input = midi_access.inputs.get(in_id);
+  const output = midi_access.outputs.get(out_id);
+  await Promise.all([input.open(), output.open()]);
+  const r = new ReCorder(input, output, show_button, show_midi_event);
   try {
     await display_battery_state(r);
   } catch (err) {
     await r.close();
-    throw new Error(`${err.message} --- Wrong port, perhaps?`);
+    throw new Error(`${err.message} --- Wrong ports, perhaps?`);
   }
   re_corder = r;
-  enable_elements(RE_CORDER_TAG, true);
 };
 
 const midi_setup = midi_access => {
-  const selector = document.querySelector('#input_port-selector');
-  const none_option = document.createElement('option');
-  none_option.textContent = 'None';
-  selector.appendChild(none_option);
-  midi_access.inputs.forEach(input => add_option(selector, input.name));
-  midi_access.addEventListener('statechange', e => update_ports(selector, e));
+  const iselector = document.querySelector('#input_port-selector');
+  const oselector = document.querySelector('#output_port-selector');
+  midi_access.inputs.forEach(
+    input => add_option(iselector, input.id, input.name));
+  midi_access.outputs.forEach(
+    output => add_option(oselector, output.id, output.name));
+  midi_access.addEventListener('statechange',
+    e => update_ports(e.port.type === 'input' ? iselector : oselector, e));
 
-  const port_input = get_by_id('input_port-name');
   var interval = null;
-  const connect = port => {
+  get_by_id('btn_connect').addEventListener('click', e => {
+    enable_elements(RE_CORDER_TAG, false);
     clearInterval(interval);
-    connect_re_corder(midi_access, port)
+    connect_re_corder(midi_access, iselector.value, oselector.value)
       .then(() => {
         if (re_corder) {
+          enable_elements(RE_CORDER_TAG, true);
           interval = setInterval(() => display_battery_state(re_corder)
             .catch(() => flash_update('Lost connection!', 1100)), 1000);
         }
       })
-      .catch(err => {
-        selector.selectedIndex = 0;
-        port_input.value = '';
-        alert(err);
-      });
-  };
-  selector.addEventListener('change', e => {
-    port_input.value = '';
-    connect(e.target.selectedIndex ? e.target.value : null);
-  });
-  port_input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      selector.selectedIndex = 0;
-      connect(e.target.value);
-    }
+      .catch(alert);
   });
 };
 
