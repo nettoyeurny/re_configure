@@ -187,10 +187,10 @@ const set_keyboard_chart = () => {
   }
 };
 
-const add_option = (selector, id, name) => {
+const add_option = (selector, port) => {
   const option = document.createElement('option');
-  option.value = id;
-  option.textContent = name;
+  option.value = port.id;
+  option.textContent = port.name;
   selector.appendChild(option);
 };
 
@@ -205,13 +205,13 @@ const update_ports = (selector, e) => {
     }
   }
   if (connected) {
-    add_option(selector, e.port.id, e.port.name);
+    add_option(selector, e.port);
   }
 };
 
 const find_matching_output = (midi_access, name) => {
   for (const output of midi_access.outputs.values()) {
-    if (output.name == name) {
+    if (output.name === name) {
       return output;
     }
   }
@@ -248,9 +248,9 @@ const midi_setup = midi_access => {
   match.addEventListener('change', () => oselector.disabled = match.checked);
 
   midi_access.inputs.forEach(
-    input => add_option(iselector, input.id, input.name));
+    input => add_option(iselector, input));
   midi_access.outputs.forEach(
-    output => add_option(oselector, output.id, output.name));
+    output => add_option(oselector, output));
   midi_access.addEventListener('statechange',
     e => update_ports(e.port.type === 'input' ? iselector : oselector, e));
 
