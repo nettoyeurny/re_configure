@@ -244,8 +244,12 @@ const midi_setup = midi_access => {
   const oselector = document.querySelector('#output_port-selector');
   const match = get_by_id('chk_match_ports');
   match.checked = true;
-  oselector.disabled = true;
-  match.addEventListener('change', () => oselector.disabled = match.checked);
+  const update_output = () => {
+    oselector.disabled = match.checked;
+    oselector.hidden = match.checked;
+  };
+  update_output();
+  match.addEventListener('change', update_output);
 
   midi_access.inputs.forEach(
     input => add_option(iselector, input));
