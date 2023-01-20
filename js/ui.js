@@ -216,7 +216,7 @@ const find_matching_output = (midi_access, name) => {
     }
   }
   throw new Error(`No matching output: ${name}`);
-}
+};
 
 const connect_re_corder = async (midi_access, in_id, out_id) => {
   if (re_corder) {
@@ -255,7 +255,7 @@ const midi_setup = midi_access => {
     e => update_ports(e.port.type === 'input' ? iselector : oselector, e));
 
   var interval = null;
-  get_by_id('btn_connect').addEventListener('click', e => {
+  get_by_id('btn_connect').addEventListener('click', () => {
     enable_elements(RE_CORDER_TAG, false);
     clearInterval(interval);
     connect_re_corder(midi_access, iselector.value,
