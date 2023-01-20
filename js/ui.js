@@ -209,6 +209,15 @@ const update_ports = (selector, e) => {
   }
 };
 
+const find_matching_output = (midi_access, name) => {
+  for (const output of midi_access.outputs.values()) {
+    if (output.name == name) {
+      return output;
+    }
+  }
+  throw new Error(`No matching output: ${name}`);
+}
+
 const connect_re_corder = async (midi_access, in_id, out_id) => {
   if (re_corder) {
     await re_corder.close();
@@ -217,7 +226,8 @@ const connect_re_corder = async (midi_access, in_id, out_id) => {
   clear_battery_state();
   clear_state();
   const input = midi_access.inputs.get(in_id);
-  const output = midi_access.outputs.get(out_id);
+  const output = (out_id !== undefined) ? midi_access.outputs.get(out_id) :
+    find_matching_output(midi_access, input.name);
   await Promise.all([input.open(), output.open()]);
   const r = new ReCorder(input, output, show_button, show_midi_event);
   try {
@@ -232,6 +242,11 @@ const connect_re_corder = async (midi_access, in_id, out_id) => {
 const midi_setup = midi_access => {
   const iselector = document.querySelector('#input_port-selector');
   const oselector = document.querySelector('#output_port-selector');
+  const match = get_by_id('chk_match_ports');
+  match.checked = true;
+  oselector.disabled = true;
+  match.addEventListener('change', () => oselector.disabled = match.checked);
+
   midi_access.inputs.forEach(
     input => add_option(iselector, input.id, input.name));
   midi_access.outputs.forEach(
@@ -243,7 +258,8 @@ const midi_setup = midi_access => {
   get_by_id('btn_connect').addEventListener('click', e => {
     enable_elements(RE_CORDER_TAG, false);
     clearInterval(interval);
-    connect_re_corder(midi_access, iselector.value, oselector.value)
+    connect_re_corder(midi_access, iselector.value,
+      match.checked ? undefined : oselector.value)
       .then(() => {
         if (re_corder) {
           enable_elements(RE_CORDER_TAG, true);
