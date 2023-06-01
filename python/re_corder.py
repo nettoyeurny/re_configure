@@ -150,7 +150,9 @@ class Re_corder(object):
     except queue.Empty as e:
       raise NoSysexResponseException() from e
     if payload[0] != 0x01:
-      raise FailedRequestException('Try holding Record, perhaps?', payload)
+      raise FailedRequestException(
+          'Try holding Record (the circle button) on the re.corder, perhaps?',
+          payload)
     if payload[1:].startswith(cmd):
       return payload[len(cmd) + 1:]
     raise FailedRequestException(

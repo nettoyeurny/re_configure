@@ -137,7 +137,8 @@ const set_config = () => {
         clear_state();
         flash_update('Success!');
       })
-      .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
+      .catch(err => alert(
+        `${err} --- Try holding Record (the circle button) on the re.corder.`));
   } catch (err) {
     alert(err);
   }
@@ -148,7 +149,8 @@ const restore_default = () => {
   re_corder.restore_default_settings()
     .then(() => get_re_corder_config(re_corder))
     .then(conf => text_area.value = JSON.stringify(conf, null, 2))
-    .catch(err => alert(`${err} --- Try holding Record, perhaps?`));
+    .catch(err => alert(
+      `${err} --- Try holding Record (the circle button) on the re.corder.`));
 };
 
 const get_fingerings = () => {
